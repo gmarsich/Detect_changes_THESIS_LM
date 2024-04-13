@@ -1,2 +1,2 @@
-# Thesis - Editable scene representation"
+# Thesis - Editable scene representation
 ### Gaia Marsich
