@@ -37,7 +37,7 @@ else:
 
 
 # See the image got from the matrices
-# WARNING: it seems that the image that this script produces has a different brightness compared to the preview given by Apple
+# WARNING: the brightness is strange, but this is because of the absence of a tonemapping
 
 import h5py
 import numpy as np
