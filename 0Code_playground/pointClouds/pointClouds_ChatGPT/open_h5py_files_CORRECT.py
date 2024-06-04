@@ -63,23 +63,16 @@ else:
             # Read the data from the dataset
             data = dataset[:]
             
-            # Normalize the data
-            data_min = data.min()
-            data_max = data.max()
-            print(f"Data range before normalization: [{data_min}..{data_max}]")
-            normalized_data = (data - data_min) / (data_max - data_min)
-            print(f"Data range after normalization: [{normalized_data.min()}..{normalized_data.max()}]")
-            
             # Convert data type to float32 for compatibility with matplotlib
-            normalized_data = normalized_data.astype(np.float32)
+            data = data.astype(np.float32)
             
             # Display the image using matplotlib
-            plt.imshow(normalized_data)
+            plt.imshow(data)
             plt.title('Image from HDF5 Dataset')
             plt.axis('off')  # Turn off axis numbers and ticks
             
             # Save the plot to a file
-            output_file = 'image_from_hdf5_dark.png'
+            output_file = 'image_from_hdf5_CORRECT.png'
             plt.savefig(output_file)
             print(f"Image saved as '{output_file}'")
         else:
