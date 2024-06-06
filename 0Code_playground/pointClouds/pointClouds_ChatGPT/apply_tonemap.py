@@ -1,3 +1,5 @@
+# the hints for the tonempa to apply were taken from here: https://github.com/apple/ml-hypersim/blob/main/code/python/tools/scene_generate_images_tonemap.py
+
 import h5py
 import glob
 import os
@@ -51,8 +53,8 @@ def apply_tonemapping_to_directory(in_dir, out_dir):
 
 def main():
     # Specify input and output directories
-    in_dir = "/path/to/input_directory"
-    out_dir = "/path/to/output_directory"
+    in_dir = "/path/to/input_directory" # TODO TOSET: should modify the path
+    out_dir = "/path/to/output_directory" # TODO TOSET: should modify the path
 
     # Apply tonemapping to all HDF5 files in the input directory and save tonemapped data to new HDF5 files in the output directory
     apply_tonemapping_to_directory(in_dir, out_dir)
