@@ -7,7 +7,7 @@ import os
 print("Current working directory:", os.getcwd())
 
 # Verify that the file exists
-basis_path = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/pointClouds/pointClouds_ChatGPT/' # TODO TOSET: change the path to the folder of the file to render
+basis_path = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/pointClouds_Hypersim' # TODO TOSET: change the path to the folder of the file to render
 file_name = 'frame.0000.depth_meters.hdf5' # TODO TOSET: change the file to render
 file_path = os.path.join(basis_path, file_name)
 

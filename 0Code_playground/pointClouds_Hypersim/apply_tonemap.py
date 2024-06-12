@@ -1,4 +1,4 @@
-# the hints for the tonempa to apply were taken from here: https://github.com/apple/ml-hypersim/blob/main/code/python/tools/scene_generate_images_tonemap.py
+# the hints for the tonemap to apply were taken from here: https://github.com/apple/ml-hypersim/blob/main/code/python/tools/scene_generate_images_tonemap.py
 
 import h5py
 import glob
