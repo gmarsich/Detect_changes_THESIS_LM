@@ -17,7 +17,7 @@ import pandas as pd
 
 
 # path_metadata_camera_parameters example: '/local/home/gmarsich/Desktop/Thesis/0Code_playground/pointClouds_Hypersim/withDepths/metadata_camera_parameters.csv'
-# scene example: 'ai_022_006'
+# scene example: 'ai_001_001'
 # cam_xx example: 'cam_00'
 # path_point_cloud example: "/local/home/gmarsich/data2TB/Hypersim/MyThings/point_cloud_DEPTHS_TONEMAP_ai_001_001_cam_00_ASSETS.ply"
 
@@ -46,7 +46,8 @@ def convert_to_meters(path_metadata_camera_parameters, scene, cam_xx, path_point
 
 
 #
-# The following two methods are to visualise the point cloud together with the reference axes. The spheres represent units on the axis
+# The following two methods are to visualise the point cloud together with the reference axes. The spheres represent units on the axis.
+# Just render_pcd_and_axes(path_point_cloud, n_points) has to be used
 #
 
 def create_marker(position, color=[1, 0, 0]):
@@ -67,9 +68,9 @@ def render_pcd_and_axes(path_point_cloud, n_points):
     coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0, origin=[0, 0, 0])
 
     # Create markers for units along each axis
-    x_markers = [create_marker([i, 0, 0], [1, 0, 0]) for i in range(1, n_points + 1)]
-    y_markers = [create_marker([0, i, 0], [0, 1, 0]) for i in range(1, n_points + 1)]
-    z_markers = [create_marker([0, 0, i], [0, 0, 1]) for i in range(1, n_points + 1)]
+    x_markers = [create_marker([i, 0, 0], [1, 0, 0]) for i in range(-n_points, n_points + 1)]
+    y_markers = [create_marker([0, i, 0], [0, 1, 0]) for i in range(-n_points, n_points + 1)]
+    z_markers = [create_marker([0, 0, i], [0, 0, 1]) for i in range(-n_points, n_points + 1)]
 
     # Combine all geometries for visualization
     all_geometries = [pcd_assets, coordinate_frame] + x_markers + y_markers + z_markers
@@ -81,3 +82,16 @@ def render_pcd_and_axes(path_point_cloud, n_points):
                                     lookat=[0.0, 0.0, 0.0],
                                     up=[0.0, -1.0, 0.0])
 
+
+
+
+
+#
+# Using the methods
+#
+
+# convert_to_meters('/local/home/gmarsich/Desktop/Thesis/0Code_playground/pointClouds_Hypersim/withDepths/metadata_camera_parameters.csv',
+#                   'ai_022_006', 'cam_00',
+#                   "/local/home/gmarsich/data2TB/Hypersim/MyThings/point_cloud_DEPTHS_TONEMAP_ai_022_006_cam_00_ASSETS.ply") # TODO TOSET: change with what you need
+
+render_pcd_and_axes("/local/home/gmarsich/data2TB/Hypersim/MyThings/point_cloud_DEPTHS_TONEMAP_ai_022_006_cam_00_METERS.ply", 4) # TODO TOSET: change with what you need
