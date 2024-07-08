@@ -1,0 +1,1 @@
+{"Camera_0": {"type": "camera", "position": [3.0, 3.0, 3.0], "look_at": [0.0, 0.0, 0.0], "up": [0.0, 0.0, 1.0], "focal_length": 28.0, "animation": false}, "PointClouds": {"type": "points", "visible": false, "alpha": 1.0, "shading_type": 0, "point_size": 25, "num_points": 200, "binary_filename": "PointClouds.bin"}}
