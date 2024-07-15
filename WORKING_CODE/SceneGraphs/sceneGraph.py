@@ -6,18 +6,17 @@ import open3d as o3d
 from scipy.spatial import distance
 import copy
 import pyviz3d.visualizer as viz
-import numpy as np
 
 import scannet200_constants # local file. From https://github.com/cvg/Mask3D/blob/e07b115fb7830d600f9db865489612f5739bbb50/mask3d/datasets/scannet200/scannet200_constants.py
 
-pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
-#o3d.visualization.draw_geometries([pcd_mask3D])
+pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
+o3d.visualization.draw_geometries([pcd_mask3D])
 
 
 
 
 # Path to "predictions.txt"
-base_path = "/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
+base_path = "/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
 path_predictions = os.path.join(base_path, "predictions.txt") # TODO TOSET: change if necessary
 
 # Paths to the pred_mask files
@@ -190,7 +189,7 @@ def compute_distance_matrix(list_instances, compute_distance):
 
 list_instances, transposed_list_instances = get_list_instances(path_predictions, sorted_txt_paths, pcd_mask3D)
 
-matrix_distances = compute_distance_matrix(list_instances, compute_distance = distance_Euclidean_closest_points) # TODO TOSET: change the distance metric you want to use
+matrix_distances = compute_distance_matrix(list_instances, compute_distance = distance_Euclidean_centroids) # TODO TOSET: change the distance metric you want to use
 
 
 
@@ -311,7 +310,7 @@ def load_and_visualise_sceneGraph(vertices_filename="sceneGraph_vertices.ply", e
 
 save_sceneGraph(points, lines)
 
-# load_and_visualise_sceneGraph()
+load_and_visualise_sceneGraph()
 
 
 

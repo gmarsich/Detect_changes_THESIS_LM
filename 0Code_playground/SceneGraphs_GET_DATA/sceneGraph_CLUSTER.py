@@ -6,18 +6,18 @@ import open3d as o3d
 from scipy.spatial import distance
 import copy
 import pyviz3d.visualizer as viz
-import numpy as np
+import concurrent.futures # for parallel computations
 
 import scannet200_constants # local file. From https://github.com/cvg/Mask3D/blob/e07b115fb7830d600f9db865489612f5739bbb50/mask3d/datasets/scannet200/scannet200_constants.py
 
-pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
-o3d.visualization.draw_geometries([pcd_mask3D])
+pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
+#o3d.visualization.draw_geometries([pcd_mask3D])
 
 
 
 
 # Path to "predictions.txt"
-base_path = "/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
+base_path = "/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
 path_predictions = os.path.join(base_path, "predictions.txt") # TODO TOSET: change if necessary
 
 # Paths to the pred_mask files
@@ -128,6 +128,7 @@ def distance_Euclidean_closest_points(list_points_1, list_points_2):
     return min_distance
 
 
+
 #
 # Useful functions
 #
@@ -187,10 +188,35 @@ def compute_distance_matrix(list_instances, compute_distance):
 
 
 
+def compute_distance_matrix_parallel(list_instances, compute_distance):
+    num_cpus = int(os.getenv('SLURM_CPUS_PER_TASK'))
+    matrix_distances = np.full((len(list_instances), len(list_instances)), np.inf)
+    
+    def compute_distance_pair(i, j):
+        if compute_distance == distance_Euclidean_centroids:
+            dist = compute_distance(list_instances[i][2], list_instances[j][2])
+        else:
+            dist = compute_distance(list_instances[i][4], list_instances[j][4])
+        return (i, j, dist)
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_cpus) as executor:
+        futures = []
+        for i in range(len(matrix_distances)):
+            for j in range(i + 1, len(matrix_distances)):
+                futures.append(executor.submit(compute_distance_pair, i, j))
+
+        for future in concurrent.futures.as_completed(futures):
+            i, j, result = future.result()
+            matrix_distances[i][j] = result
+            matrix_distances[j][i] = result
+    
+    return matrix_distances
+
+
 
 list_instances, transposed_list_instances = get_list_instances(path_predictions, sorted_txt_paths, pcd_mask3D)
 
-matrix_distances = compute_distance_matrix(list_instances, compute_distance = distance_Euclidean_centroids) # TODO TOSET: change the distance metric you want to use
+matrix_distances = compute_distance_matrix_parallel(list_instances, compute_distance = distance_Euclidean_closest_points) # TODO TOSET: change the distance metric you want to use
 
 
 
@@ -311,7 +337,7 @@ def load_and_visualise_sceneGraph(vertices_filename="sceneGraph_vertices.ply", e
 
 save_sceneGraph(points, lines)
 
-load_and_visualise_sceneGraph()
+# load_and_visualise_sceneGraph()
 
 
 
