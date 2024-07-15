@@ -10,6 +10,7 @@
 #SBATCH --mail-type=BEGIN,END
 
 # Activate your virtual environment if needed
+conda init bash
 conda activate sceneGraphs_Gaia
 
 # Run your Python script
