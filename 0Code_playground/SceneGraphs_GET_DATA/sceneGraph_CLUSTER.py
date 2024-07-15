@@ -187,23 +187,24 @@ def compute_distance_matrix(list_instances, compute_distance):
     return matrix_distances
 
 
+def compute_distance_pair(i, j, list_instances, compute_distance):
+    if compute_distance == distance_Euclidean_centroids:
+        dist = compute_distance(list_instances[i][2], list_instances[j][2])
+    else:
+        dist = compute_distance(list_instances[i][4], list_instances[j][4])
+    return (i, j, dist)
+    
+
 
 def compute_distance_matrix_parallel(list_instances, compute_distance):
     num_cpus = int(os.getenv('SLURM_CPUS_PER_TASK'))
     matrix_distances = np.full((len(list_instances), len(list_instances)), np.inf)
     
-    def compute_distance_pair(i, j):
-        if compute_distance == distance_Euclidean_centroids:
-            dist = compute_distance(list_instances[i][2], list_instances[j][2])
-        else:
-            dist = compute_distance(list_instances[i][4], list_instances[j][4])
-        return (i, j, dist)
-
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_cpus) as executor:
         futures = []
         for i in range(len(matrix_distances)):
             for j in range(i + 1, len(matrix_distances)):
-                futures.append(executor.submit(compute_distance_pair, i, j))
+                futures.append(executor.submit(compute_distance_pair, i, j, list_instances, compute_distance))
 
         for future in concurrent.futures.as_completed(futures):
             i, j, result = future.result()
