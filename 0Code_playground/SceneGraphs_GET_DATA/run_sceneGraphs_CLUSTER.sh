@@ -13,4 +13,5 @@
 conda activate sceneGraphs_Gaia
 
 # Run your Python script
-python sceneGraph_CLUSTER.py
+#python sceneGraph_CLUSTER.py
+python prova.py
