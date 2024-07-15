@@ -13,4 +13,4 @@
 conda activate sceneGraphs_Gaia
 
 # Run your Python script
-python /cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/prova.py
+python /cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_CLUSTER.py
