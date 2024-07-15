@@ -10,8 +10,8 @@
 #SBATCH --mail-type=BEGIN,END
 
 # Activate your virtual environment if needed
-conda init bash
+source /cluster/home/gmarsich/miniconda3/etc/profile.d/conda.sh
 conda activate sceneGraphs_Gaia
 
 # Run your Python script
-python /cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_CLUSTER.py
+/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/bin/python /cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_CLUSTER.py
