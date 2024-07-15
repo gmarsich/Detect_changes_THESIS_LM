@@ -1,0 +1,29 @@
+
+CondaError: Run 'conda init' before 'conda activate'
+
+concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+AttributeError: Can't pickle local object 'compute_distance_matrix_parallel.<locals>.compute_distance_pair'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_CLUSTER.py", line 219, in <module>
+    matrix_distances = compute_distance_matrix_parallel(list_instances, compute_distance = distance_Euclidean_closest_points) # TODO TOSET: change the distance metric you want to use
+  File "/cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_CLUSTER.py", line 209, in compute_distance_matrix_parallel
+    i, j, result = future.result()
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/cluster/home/gmarsich/miniconda3/envs/sceneGraphs_Gaia/lib/python3.10/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+AttributeError: Can't pickle local object 'compute_distance_matrix_parallel.<locals>.compute_distance_pair'
