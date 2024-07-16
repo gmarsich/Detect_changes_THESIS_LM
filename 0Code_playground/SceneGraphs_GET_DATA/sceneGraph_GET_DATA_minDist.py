@@ -9,14 +9,15 @@ import pyviz3d.visualizer as viz
 
 import scannet200_constants # local file. From https://github.com/cvg/Mask3D/blob/e07b115fb7830d600f9db865489612f5739bbb50/mask3d/datasets/scannet200/scannet200_constants.py
 
-pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
+pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
+#pcd_mask3D = o3d.io.read_point_cloud(os.path.join("/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1/mesh_labelled.ply")) # TODO TOSET: change the name of the point cloud to open
 #o3d.visualization.draw_geometries([pcd_mask3D])
 
 
 
 
 # Path to "predictions.txt"
-base_path = "/cluster/home/gmarsich/DATA/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
+base_path = "/local/home/gmarsich/data2TB/LabelMaker/processed_ARKitScenes/40753679/intermediate/scannet200_mask3d_1" # TODO TOSET
 path_predictions = os.path.join(base_path, "predictions.txt") # TODO TOSET: change if necessary
 
 # Paths to the pred_mask files
@@ -116,14 +117,34 @@ def distance_Euclidean_centroids(centroid_1, centroid_2):
     return distance
 
 
+# def distance_Euclidean_closest_points(list_points_1, list_points_2):
+#     min_distance = np.inf
+#     print(len(list_points_1))
+#     print(len(list_points_2))
+#     for point1 in list_points_1:
+#         for point2 in list_points_2:
+#             dist = np.linalg.norm(point1 - point2)
+#             if dist < min_distance:
+#                 min_distance = dist
+#     print("aaaaaaaaaaaaaaaaaaaaaaaaaaa")
+#     return min_distance
+
+
+# from scipy.spatial.distance import cdist
+# def distance_Euclidean_closest_points(list_points_1, list_points_2):
+#     distances = cdist(list_points_1, list_points_2, metric='euclidean')
+#     min_distance = np.min(distances)
+#     return min_distance
+
+from scipy.spatial import KDTree
 def distance_Euclidean_closest_points(list_points_1, list_points_2):
+    tree = KDTree(list_points_2)
     min_distance = np.inf
     for point1 in list_points_1:
-        for point2 in list_points_2:
-            dist = np.linalg.norm(point1 - point2)
-            if dist < min_distance:
-                min_distance = dist
-
+        dist, _ = tree.query(point1)
+        if dist < min_distance:
+            min_distance = dist
+    print("aaaaaa")
     return min_distance
 
 
