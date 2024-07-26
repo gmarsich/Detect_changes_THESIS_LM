@@ -1,7 +1,0 @@
-
-************************************************************************
-1) Start local server:
-    cd /cluster/home/gmarsich/Thesis/0Code_playground/SceneGraphs_GET_DATA/sceneGraph_PyViz3D; python -m http.server 6008
-2) Open in browser:
-    http://localhost:6008
-************************************************************************
