@@ -7,7 +7,6 @@ import numpy as np
 import os
 import open3d as o3d
 import json
-import csv
 import pyviz3d.visualizer as viz
 
 from side_code.side_code import * # local file
@@ -30,10 +29,18 @@ name_semantic = "info_semantic.json"
 
 chosen_distance = distance_Euclidean_centerBoundingBoxes
 
+threshold = 8 # threshold for the existance of an edge, in meters
+
+path_pcd_scene_graph = os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply")
+
+point_size = 15 # in the scene graph
+
+distances_on = False # do you want the distances on the edges on the scene graph?
+
 
 
 #
-# Get a folder containing a point cloud (storing also the faces) in .ply format for each instance
+# Get a folder containing for each instance a point cloud (storing also the faces) in .ply format
 #
 
 if need_pcd_instances:
@@ -86,8 +93,8 @@ if need_pcd_instances:
 
 
 #
-# Get the list list_of_object_id_and_paths made of lists in the form [obj_id, path] of all the point clouds (one point cloud = one instance = one [obj_id, path])
-# Create list_points
+# Get the list list_of_object_id_and_paths made of lists in the form [object_id, path] of all the point clouds (one point cloud = one instance = one [object_id, path])
+# Create list_points, made of lists in the form [object_id, list_points_pcd]
 #
 
 all_items = os.listdir(segmentation_dir)
@@ -114,7 +121,7 @@ for l in list_of_object_id_and_paths:
 
 
 #
-# Create list_info with information for each instance [obj_id, class_name, center]
+# Create list_info with information for each instance. Each element is in the form: [object_id, class_name, center]
 #
 
 path_info_semantic = os.path.join(path_in_base, name_semantic)
@@ -132,17 +139,19 @@ for obj in objects:
     list_info.append([obj_id, class_name, center])
 
 
-#TODO: Be aware that we may have that `len(list_file_paths) != len(list_info)`, but I don't really know why. Some ids seem to be missing in the `.json` file
+#TODO: be aware that we may have that `len(list_of_object_id_and_paths) != len(list_info)`, but I don't really know why. Some ids seem to be missing in the `.json` file
 
 
 
 #
-# Get the matrix with the distances between instances
+# Get the matrix with the distances between instances, and save it in matrix_distances_file.txt. Save also list_instances (without list_points_pcd) in list_objects.txt
 #
 
 list_instances, transposed_list_instances = get_list_instances(list_info, list_points)
 matrix_distances = compute_distance_matrix(list_instances, compute_distance = chosen_distance)
 
+
+'''
 
 #
 # Get the scene graph using PyViz3D
@@ -151,8 +160,6 @@ matrix_distances = compute_distance_matrix(list_instances, compute_distance = ch
 # I use the `PyViz3D` package (https://github.com/francisengelmann/PyViz3D),
     # taking inspiration from this example: https://github.com/francisengelmann/PyViz3D/blob/master/examples/example_point_clouds.py
 
-
-threshold = 8 # TODO TOSET: distance threshold in meters
 
 def create_sceneGraph(list_instances, matrix_distances, threshold, custom_color=[0, 0, 0]):
     # custom_color gives the color for vertices and edges
@@ -181,17 +188,16 @@ def create_sceneGraph(list_instances, matrix_distances, threshold, custom_color=
 
 v = viz.Visualizer()
 
-pcd = o3d.io.read_point_cloud(os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply")) # TODO TOSET: change the name of the point cloud to open
+pcd_scene_graph = o3d.io.read_point_cloud(path_pcd_scene_graph)
 
 name = '3D segmentation'
-point_positions = np.asarray(pcd.points)
-point_colors = (np.asarray(pcd.colors) * 255).astype(np.uint8)
-point_size = 15 # TODO TOSET
+point_positions = np.asarray(pcd_scene_graph.points)
+point_colors = (np.asarray(pcd_scene_graph.colors) * 255).astype(np.uint8)
 
 # Here we add point clouds to the visualiser
 v.add_points(name, point_positions, point_colors, point_size=point_size, visible=False)
 
-colors = [np.array([0, 0, 0]) for label in transposed_list_instances[0]] # TODO TOSET
+colors = [np.array([0, 0, 0]) for label in transposed_list_instances[0]] # TOSET
 
 v.add_labels(name ='Labels',
                  labels = [label.upper() for label in transposed_list_instances[1]], # TOSET: if you want in capital letters or not
@@ -203,8 +209,6 @@ lines_start, lines_end, lines_colors, midpoints, _, distances_str = create_scene
 
 v.add_lines(name='Edges', lines_start=lines_start, lines_end=lines_end, colors=lines_colors, visible=True)
 
-# The following is to have the distances among instances
-distances_on = True #TODO TOSET
 if distances_on:
     v.add_labels(name ='Distances',
                     labels = distances_str,
@@ -212,9 +216,8 @@ if distances_on:
                     colors = [0, 0, 0] * len(midpoints), # TOSET change the color of the text of distances
                     visible=True)
 
-# When we added everything we need to the visualizer, we save it.
+# When we added everything we need to the visualizer, we save it
 v.save('sceneGraph_PyViz3D')
 
 
-
-
+'''

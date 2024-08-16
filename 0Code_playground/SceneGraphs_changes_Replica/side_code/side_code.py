@@ -11,6 +11,10 @@ from scipy.spatial import KDTree
 #
 
 def distance_Euclidean_centerBoundingBoxes(center_1, center_2):
+    # Convert centers to numpy arrays since they are lists
+    center_1 = np.array(center_1)
+    center_2 = np.array(center_2)
+
     distance = np.linalg.norm(center_1 - center_2)
     return distance
 
@@ -31,14 +35,13 @@ def distance_Euclidean_closest_points(list_points_1, list_points_2):
 #
 
 def get_list_instances(list_info, list_points):
-    list_instances = [] # will contain a list of [obj_id, class_name, center, points]
-
-    for obj in list_info:
-        obj_id = obj[0]
-        class_name = obj[1]
-        center = obj[2]
-        if obj_id < len(list_points):
-            list_instances.append([obj_id, class_name, np.array(center), list_points[obj_id]])        
+    info_dict = {info[0]: info[1:] for info in list_info}
+    list_instances = []
+    
+    for obj_id, points in list_points:
+        if obj_id in info_dict:
+            class_name, center = info_dict[obj_id]
+            list_instances.append([obj_id, class_name, center, points])    
     
     transposed_list_instances = [list(row) for row in zip(*list_instances)]
 
@@ -59,7 +62,7 @@ def compute_distance_matrix(list_instances, compute_distance):
             matrix_distances[j][i] = matrix_distances[i][j]
 
     # Save matrix_distances in a file
-    with open("matrix_distances_file.txt", 'w') as file_matrix:
+    with open("matrix_distances_file" + str(compute_distance) + ".txt", 'w') as file_matrix: #TODO: the name can be improved, due to str(compute_distance)
         file_matrix.write("\n")
         np.savetxt(file_matrix, matrix_distances, fmt='%.18e')
 
