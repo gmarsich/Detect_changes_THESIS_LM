@@ -17,7 +17,7 @@ from side_code.side_code import * # local file
 # Variables to set
 #
 
-path_in_base = '/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/habitat/'
+path_in_base = '/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/habitat/'
 name = "mesh_semantic.ply"
 
 segmentation_dir = os.path.join(path_in_base, "Segmentation/")  # data of instance point clouds will be / are saved in this folder
@@ -27,7 +27,7 @@ path_to_output_ply = '/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartmen
 
 name_semantic = "info_semantic.json"
 
-chosen_distance = distance_Euclidean_centerBoundingBoxes
+chosen_distance = distance_Euclidean_centroids
 
 
 
@@ -113,7 +113,7 @@ for l in list_of_object_id_and_paths:
 
 
 #
-# Create list_info with information for each instance. Each element is in the form: [object_id, class_name, center]
+# Create list_labels with labels for each instance. Each element is in the form: [object_id, class_name]
 #
 
 path_info_semantic = os.path.join(path_in_base, name_semantic)
@@ -122,16 +122,15 @@ with open(path_info_semantic, 'r') as file:
     data = json.load(file)
 
 objects = data.get('objects', [])
-list_info = [] # remark that it will not be ordered
+list_labels = [] # remark that it will not be ordered
 
 for obj in objects:
     obj_id = obj.get('id')
     class_name = obj.get('class_name')
-    center = obj.get('oriented_bbox', {}).get('abb', {}).get('center', [])
-    list_info.append([obj_id, class_name, center])
+    list_labels.append([obj_id, class_name])
 
 
-#TODO: be aware that we may have that `len(list_of_object_id_and_paths) != len(list_info)`, but I don't really know why. Some ids seem to be missing in the `.json` file
+#TODO: be aware that we may have that `len(list_of_object_id_and_paths) != len(list_labels)`, but I don't really know why. Some ids seem to be missing in the `.json` file
 
 
 
@@ -139,5 +138,5 @@ for obj in objects:
 # Get the matrix with the distances between instances, and save it in matrix_distances_file.txt (in the filename the distance that has been used is specified). Save also list_instances (without list_points_pcd) in list_objects.txt
 #
 
-list_instances, transposed_list_instances = get_list_instances(list_info, list_points)
+list_instances = get_list_instances(list_labels, list_points)
 matrix_distances = compute_distance_matrix(list_instances, compute_distance = chosen_distance)
