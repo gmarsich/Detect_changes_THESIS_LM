@@ -1,6 +1,6 @@
 # environment: sceneGraphs_groundTruth_Replica
 
-'''Collection of function useful to get the segmentation ground truth of a Replica scene'''
+'''Collection of functions useful to get the segmentation ground truth of a Replica scene'''
 
 import numpy as np
 from scipy.spatial import KDTree
@@ -67,10 +67,10 @@ def compute_distance_matrix(list_instances, compute_distance):
 
     # Save list_instances
     with open("list_objects.txt", 'w') as file_objects:
-        list_instances_noPoints = [sublist[:-1] for sublist in list_instances]
-        for sublist in list_instances_noPoints:
-            obj_id, class_name, center = sublist
-            center_str = ', '.join(f'{coord:.6f}' for coord in center)
-            file_objects.write(f"{obj_id}\t{class_name}\t{center_str}\n")
+        for sublist in list_instances:
+            obj_id, class_name, centroid, points = sublist
+            center_str = ', '.join(f'{coord:.18e}' for coord in centroid)
+            points_str = '; '.join(', '.join(f'{coord:.18e}' for coord in point) for point in points)
+            file_objects.write(f"{obj_id}\t{class_name}\t({center_str})\t{points_str}\n")
     
     return matrix_distances
