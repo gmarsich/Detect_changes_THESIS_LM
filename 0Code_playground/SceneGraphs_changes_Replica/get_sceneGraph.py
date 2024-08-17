@@ -13,8 +13,8 @@ import open3d as o3d
 # Variables to set
 #
 
-path_to_matrixDistance = '/local/home/gmarsich/Desktop/Thesis/matrix_distances_file_distance_Euclidean_centroids_frl_0.txt'
-path_to_listObjects = '/local/home/gmarsich/Desktop/Thesis/list_objects_frl_0.txt'
+path_to_matrixDistance = '/local/home/gmarsich/Desktop/data_Replica/matrix_distances_file_distance_Euclidean_centroids_frl_0.txt'
+path_to_listObjects = '/local/home/gmarsich/Desktop/data_Replica/list_objects_frl_0.txt'
 
 # list_things = [0, 1, 2, 3, 4, 5] # which objects do you want to take into account? Numbers indicate the object_id # TODO: a possible improvement in the code
 
