@@ -2,25 +2,20 @@
 
 '''Define the class sceneGraph. An instance of this class is a scene graph.'''
 
-import pyviz3d.visualizer as viz
-import os
-import numpy as np
-import open3d as o3d
-
 
 class sceneGraph:
-    def __init__(self, list_instances, list_instancesPoints, matrix_distances): # the inputs are variables elaborated from the files list_instances.txt, list_points.txt and matrix_distances_file.txt
-        self.build_nodes(self, list_instances, list_instancesPoints)
+    def __init__(self, list_instances, list_points, matrix_distances): # the inputs are variables obtained from the files list_instances.txt, list_points.txt and matrix_distances_file.txt
+        self.build_nodes(self, list_instances, list_points)
         self.build_edges(self, list_instances, matrix_distances)
     
-    def build_nodes(self, list_instances, list_instancesPoints): # info on nodes are stored in a dictionary
+    def build_nodes(self, list_instances, list_points): # info on nodes are stored in a dictionary
         dict = {}
 
         for instance in list_instances:
             obj_id = instance[0]
             class_name = instance[1]
             centroid = instance[2]
-            points = next((item[1] for item in list_instancesPoints if item[0] == obj_id), None) # in theory everything should work in the proper way, and no None should appear
+            points = next((item[1] for item in list_points if item[0] == obj_id), None) # in theory everything should work in the proper way, and no None should appear
             dict[obj_id] = {
                 "class_name": class_name,
                 "centroid": centroid,
