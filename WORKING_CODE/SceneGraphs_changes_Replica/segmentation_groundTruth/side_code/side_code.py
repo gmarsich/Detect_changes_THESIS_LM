@@ -36,15 +36,15 @@ def distance_Euclidean_closest_points(list_points_1, list_points_2):
 
 def get_list_instances_complete(list_labels, list_points):
     info_dict = {info[0]: info[1] for info in list_labels}
-    list_instances = []
+    list_instances_complete = []
     
     for obj_id, points in list_points:
         if obj_id in info_dict:
             class_name = info_dict[obj_id]
             centroid = np.mean(points, axis=0)
-            list_instances.append([obj_id, class_name, centroid, points])    
+            list_instances_complete.append([obj_id, class_name, centroid, points])    
 
-    return list_instances
+    return list_instances_complete
 
 
 def compute_distance_matrix(list_instances, compute_distance):
