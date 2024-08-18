@@ -140,5 +140,3 @@ if distances_on:
 
 # Save the rendering
 v.save('sceneGraph_PyViz3D')
-
-
