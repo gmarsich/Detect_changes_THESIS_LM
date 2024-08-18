@@ -22,7 +22,7 @@ name = "mesh_semantic.ply"
 
 segmentation_dir = os.path.join(path_in_base, "Segmentation/")  # data of instance point clouds will be / are saved in this folder
 
-need_pcd_instances = True # do you need to generate the point cloud of each instance or do you already have them?
+need_pcd_instances = False # do you need to generate the point cloud of each instance or do you already have them?
 path_to_output_ply = '/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/habitat/Segmentation/mesh_semantic.ply_47.ply' # instance to visualise as a test
 
 name_semantic = "info_semantic.json"
@@ -141,7 +141,7 @@ for obj in objects:
 
 with open("list_points.txt", 'w') as file_points: # save list_points.txt
     for sublist in list_points:
-        obj_id, _, _, points = sublist
+        obj_id, points = sublist
         points_str = '; '.join(', '.join(f'{coord:.18e}' for coord in point) for point in points)
         file_points.write(f"{obj_id}\t{points_str}\n")
 

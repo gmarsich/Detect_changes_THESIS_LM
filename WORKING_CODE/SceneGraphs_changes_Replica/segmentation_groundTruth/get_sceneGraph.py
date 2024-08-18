@@ -13,8 +13,10 @@ import open3d as o3d
 # Variables to set
 #
 
-path_to_matrixDistance = '/local/home/gmarsich/Desktop/data_Replica/matrix_distances_file_distance_Euclidean_centroids_frl_0.txt'
-path_to_listObjects = '/local/home/gmarsich/Desktop/data_Replica/list_objects_frl_0.txt'
+path_to_matrixDistances = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/matrix_distances_file_distance_Euclidean_centroids.txt'
+path_to_listInstances = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/list_instances.txt'
+path_to_listPoints = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/list_points.txt'
+
 
 # list_things = [0, 1, 2, 3, 4, 5] # which objects do you want to take into account? Numbers indicate the object_id # TODO: a possible improvement in the code
 
@@ -35,14 +37,14 @@ distances_on = False # do you want the distances on the edges in the scene graph
 # I use the `PyViz3D` package (https://github.com/francisengelmann/PyViz3D),
     # taking inspiration from this example: https://github.com/francisengelmann/PyViz3D/blob/master/examples/example_point_clouds.py
 
-with open(path_to_matrixDistance, 'r') as file:
+with open(path_to_matrixDistances, 'r') as file:
     next(file) # skip the first line
     matrix_distances = np.loadtxt(file)
 
 
-list_objects = []
+list_instances = []
 
-with open(path_to_listObjects, 'r') as file:
+with open(path_to_listInstances, 'r') as file:
     for line in file:
         parts = line.strip().split('\t')
 
@@ -51,17 +53,27 @@ with open(path_to_listObjects, 'r') as file:
         centroid_str = parts[2].strip('()')  # remove the parentheses around the centroid
         centroid = list(map(float, centroid_str.split(', ')))
 
-        points_str = parts[3]
+        list_instances.append([obj_id, class_name, centroid])
+
+transposed_list_instances = [list(row) for row in zip(*list_instances)]
+
+
+list_points = []
+
+with open(path_to_listPoints, 'r') as file:
+    for line in file:
+        parts = line.strip().split('\t')
+
+        obj_id = int(parts[0])
+        points_str = parts[1]
         points = [np.array(list(map(float, point.split(', ')))) for point in points_str.split('; ')]
 
-        list_objects.append([obj_id, class_name, centroid, points])
-
-transposed_list_objects = [list(row) for row in zip(*list_objects)]
+        list_points.append([obj_id, points])
 
 
-def create_sceneGraph(list_objects, matrix_distances, threshold, custom_color=[0, 0, 0]):
+def create_sceneGraph(list_instances, matrix_distances, threshold, custom_color=[0, 0, 0]):
     # custom_color gives the color for vertices and edges
-    vertices = [label[2] for label in list_objects] # the vertices are the centroids
+    vertices = [label[2] for label in list_instances] # the vertices are the centroids
 
     # Create lines for the edges and save the associated distances
     edges = []
@@ -85,20 +97,27 @@ def create_sceneGraph(list_objects, matrix_distances, threshold, custom_color=[0
 
 
 #
-# Get a array_allPoints with all the points, associate colors to instances creating a list list_colors
+# Build list_instancesPoints containing the points of the identified instances (list_points contains more info).
+# Then, get an array_allPoints with all the points and associate colors to instances creating a list list_colors
 #
 
-np.random.seed(42)
+info_dict = {info[0]: info[1] for info in list_instances}
+list_instancesPoints = []
+
+for obj_id, points in list_points:
+    if obj_id in info_dict:
+        list_instancesPoints.append([obj_id, points])  
 
 list_allPoints_tmp = []
-for obj_id, class_name, centroid, points in list_objects:
+for obj_id, points in list_instancesPoints:
     list_allPoints_tmp.extend(points)
 array_allPoints = np.asarray(list_allPoints_tmp)
 
-list_colors = (np.random.rand(len(list_objects), 3) * 255).astype(np.uint8) # each element describes the color for an instace
+np.random.seed(42)
+list_colors = (np.random.rand(len(list_instancesPoints), 3) * 255).astype(np.uint8) # each element describes the color for an instance
 array_colors = []
-for i in range(len(list_objects)):
-    array_colors.extend([list_colors[i]] * len(list_objects[i][3]))
+for i in range(len(list_instancesPoints)):
+    array_colors.extend([list_colors[i]] * len(list_instancesPoints[i][1]))
 array_colors = np.asarray(array_colors).astype(np.uint8) # contains the colors for each point
 
 
@@ -121,13 +140,13 @@ v.add_points('Segmentation', array_allPoints, array_colors, point_size=point_siz
 # Labels for the scene graph
 colors = list_colors
 v.add_labels(name ='Labels',
-                 labels = [label.upper() for label in transposed_list_objects[1]], # TOSET: if you want in capital letters or not
-                 positions = transposed_list_objects[2],
+                 labels = [label.upper() for label in transposed_list_instances[1]], # TOSET: if you want in capital letters or not
+                 positions = transposed_list_instances[2],
                  colors = colors,
                  visible=True)
 
 # Edges of the scene graph
-lines_start, lines_end, lines_colors, midpoints, _, distances_str = create_sceneGraph(list_objects, matrix_distances, threshold, custom_color=[0, 0, 0])
+lines_start, lines_end, lines_colors, midpoints, _, distances_str = create_sceneGraph(list_instances, matrix_distances, threshold, custom_color=[0, 0, 0])
 v.add_lines(name='Edges', lines_start=lines_start, lines_end=lines_end, colors=lines_colors, visible=True)
 
 # Distances on the scene graph
