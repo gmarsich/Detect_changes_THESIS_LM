@@ -34,7 +34,7 @@ def distance_Euclidean_closest_points(list_points_1, list_points_2):
 # Other useful functions
 #
 
-def get_list_instances_complete(list_labels, list_points):
+def get_list_instances(list_labels, list_points):
     info_dict = {info[0]: info[1] for info in list_labels}
     list_instances = []
     
@@ -66,10 +66,11 @@ def compute_distance_matrix(list_instances, compute_distance):
         np.savetxt(file_matrix, matrix_distances, fmt='%.18e')
 
     # Save list_instances
-    with open("list_instances.txt", 'w') as file_objects:
+    with open("list_objects.txt", 'w') as file_objects:
         for sublist in list_instances:
-            obj_id, class_name, centroid, _ = sublist
+            obj_id, class_name, centroid, points = sublist
             center_str = ', '.join(f'{coord:.18e}' for coord in centroid)
-            file_objects.write(f"{obj_id}\t{class_name}\t({center_str})\n")
+            points_str = '; '.join(', '.join(f'{coord:.18e}' for coord in point) for point in points)
+            file_objects.write(f"{obj_id}\t{class_name}\t({center_str})\t{points_str}\n")
     
     return matrix_distances

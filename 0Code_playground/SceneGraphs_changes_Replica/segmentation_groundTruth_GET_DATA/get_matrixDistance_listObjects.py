@@ -1,7 +1,7 @@
 # environment: sceneGraphs_groundTruth_Replica
 
 '''To retrieve the ground truth on the segmentation in a scene from the Replica dataset.
-This code creates three files, matrix_distances_file.txt (in the filename the distance that has been used is specified), list_instances.txt and list_points.txt.
+This code creates two files, matrix_distances_file.txt (in the filename the distance that has been used is specified) and list_objects.txt.
 They will be used later to get the scene graph.'''
 
 from plyfile import PlyData, PlyElement
@@ -135,15 +135,8 @@ for obj in objects:
 
 
 #
-# Get the matrix with the distances between instances, and save it in matrix_distances_file.txt (in the filename the distance that has been used is specified).
-# Save also list_instances.txt (each row will contain obj_id, class_name, centroid) and list_points.txt (each row contains the object_id followed by the list of points of the associated instance)
+# Get the matrix with the distances between instances, and save it in matrix_distances_file.txt (in the filename the distance that has been used is specified). Save also list_instances in list_objects.txt
 #
 
-with open("list_points.txt", 'w') as file_points: # save list_points.txt
-    for sublist in list_points:
-        obj_id, _, _, points = sublist
-        points_str = '; '.join(', '.join(f'{coord:.18e}' for coord in point) for point in points)
-        file_points.write(f"{obj_id}\t{points_str}\n")
-
-list_instances_complete = get_list_instances_complete(list_labels, list_points) # list with elements in the form [obj_id, class_name, centroid, points]
-matrix_distances = compute_distance_matrix(list_instances_complete, compute_distance = chosen_distance) # saves matrix_distances_file.txt and list_instances.txt
+list_instances = get_list_instances(list_labels, list_points) # list with elements in the form [obj_id, class_name, centroid, points]
+matrix_distances = compute_distance_matrix(list_instances, compute_distance = chosen_distance)
