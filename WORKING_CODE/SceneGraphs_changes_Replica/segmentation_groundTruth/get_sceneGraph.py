@@ -13,16 +13,16 @@ import open3d as o3d
 # Variables to set
 #
 
-path_to_matrixDistances = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/matrix_distances_file_distance_Euclidean_centroids.txt'
-path_to_listInstances = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/list_instances.txt'
-path_to_listPoints = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/list_points.txt'
+path_to_matrixDistances = '/local/home/gmarsich/Desktop/data_Replica/frl_1/matrix_distances_file_distance_Euclidean_centroids.txt'
+path_to_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_1/list_instances.txt'
+path_to_listPoints = '/local/home/gmarsich/Desktop/data_Replica/frl_1/list_points.txt'
 
 
 # list_things = [0, 1, 2, 3, 4, 5] # which objects do you want to take into account? Numbers indicate the object_id # TODO: a possible improvement in the code
 
 threshold = 1 # threshold for the existance of an edge, in meters
 
-path_pcd_scene_graph = os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply") # path to the original point cloud
+path_pcd_scene_graph = os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply") # path to the original point cloud
 
 point_size = 15 # in the scene graph
 
