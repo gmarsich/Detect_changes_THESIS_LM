@@ -13,16 +13,16 @@ import open3d as o3d
 # Variables to set
 #
 
-path_to_matrixDistances = '/local/home/gmarsich/Desktop/data_Replica/frl_1/matrix_distances_file_distance_Euclidean_centroids.txt'
-path_to_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_1/list_instances.txt'
-path_to_listPoints = '/local/home/gmarsich/Desktop/data_Replica/frl_1/list_points.txt'
+path_to_matrixDistances = '/local/home/gmarsich/Desktop/data_Replica/frl_0/matrix_distances_file_distance_Euclidean_centroids.txt'
+path_to_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_0/list_instances.txt'
+path_to_listPoints = '/local/home/gmarsich/Desktop/data_Replica/frl_0/list_points.txt'
 
 
 # list_things = [0, 1, 2, 3, 4, 5] # which objects do you want to take into account? Numbers indicate the object_id # TODO: a possible improvement in the code
 
 threshold = 1 # threshold for the existance of an edge, in meters
 
-path_pcd_scene_graph = os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply") # path to the original point cloud
+path_pcd_scene_graph = os.path.join("/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply") # path to the original point cloud
 
 point_size = 15 # in the scene graph
 
@@ -126,34 +126,44 @@ array_colors = np.asarray(array_colors).astype(np.uint8) # contains the colors f
 # Generate the rendering of the ground truth segmentation and the scene graph
 #
 
+# Place the origin of the axes in a nice position
+def centering_axes(points): # by Joana
+    point_cloud_centroid = np.mean(points, axis=0)
+    points = points - point_cloud_centroid
+    return points, point_cloud_centroid
+ 
+def transform_points(points, point_cloud_centroid): # by Joana
+    return points - point_cloud_centroid
+
+
 v = viz.Visualizer()
 
 # Original point cloud
 pcd_scene_graph = o3d.io.read_point_cloud(path_pcd_scene_graph)
-point_positions = np.asarray(pcd_scene_graph.points)
+point_positions, pcd_centroid = centering_axes(np.asarray(pcd_scene_graph.points))
 point_colors = (np.asarray(pcd_scene_graph.colors) * 255).astype(np.uint8)
 v.add_points('Point cloud', point_positions, point_colors, point_size=point_size, visible=False)
 
 # Ground truth segmentation
-v.add_points('Segmentation', array_allPoints, array_colors, point_size=point_size, visible=False)
+v.add_points('Segmentation', transform_points(array_allPoints, pcd_centroid), array_colors, point_size=point_size, visible=False)
 
 # Labels for the scene graph
 colors = list_colors
 v.add_labels(name ='Labels',
                  labels = [label.upper() for label in transposed_list_instances[1]], # TOSET: if you want in capital letters or not
-                 positions = transposed_list_instances[2],
+                 positions = transform_points(transposed_list_instances[2], pcd_centroid),
                  colors = colors,
                  visible=True)
 
 # Edges of the scene graph
 lines_start, lines_end, lines_colors, midpoints, _, distances_str = create_sceneGraph(list_instances, matrix_distances, threshold, custom_color=[0, 0, 0])
-v.add_lines(name='Edges', lines_start=lines_start, lines_end=lines_end, colors=lines_colors, visible=True)
+v.add_lines(name='Edges', lines_start=transform_points(lines_start, pcd_centroid), lines_end=transform_points(lines_end, pcd_centroid), colors=lines_colors, visible=True)
 
 # Distances on the scene graph
 if distances_on:
     v.add_labels(name ='Distances',
                     labels = distances_str,
-                    positions = midpoints,
+                    positions = transform_points(midpoints, pcd_centroid),
                     colors = [0, 0, 0] * len(midpoints), # TOSET change the color of the text of distances
                     visible=True)
 
