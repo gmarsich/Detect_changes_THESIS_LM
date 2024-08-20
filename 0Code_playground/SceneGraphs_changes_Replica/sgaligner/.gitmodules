@@ -1,3 +1,0 @@
-[submodule "src/GeoTransformer"]
-	path = src/GeoTransformer
-	url = git@github.com:sayands/GeoTransformer.git
