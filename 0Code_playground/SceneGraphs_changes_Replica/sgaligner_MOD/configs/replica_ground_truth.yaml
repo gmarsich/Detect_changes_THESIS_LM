@@ -1,0 +1,37 @@
+seed: 42
+num_workers : 4
+
+model_name    : 'sgaligner'
+modules       : ['point'] # ['point', 'gat', 'rel', 'attr'] # TODO: add other modules
+use_predicted : True # GAIA I don't have a ground truth, I want a prediction
+registration  : False # GAIA same as default
+scan_type     : 'subscan' # GAIA same as default
+
+data :
+  name            : Replica
+  root_dir        : /local/home/gmarsich/data2TB/DATASETS/Replica
+  # label_file_name : labels.instances.align.annotated.v2.ply
+  # pred_subfix     : inseg.ply
+
+preprocess :
+#   pc_resolutions      : [64, 128, 256, 512]
+  subscenes_per_scene : 7 # GAIA same as default
+  filter_segment_size : 512 # GAIA same as default
+  min_obj_points      : 50 # GAIA same as default
+  anchor_type_name    : '' # GAIA same as default
+
+model :
+  rel_dim             : 9 # GAIA no idea on what it is, but let's keep it
+  attr_dim            : 164 # GAIA same as default
+  alignment_thresh    : 0.4 # GAIA same as default
+
+# train :
+#   batch_size          : 2 
+
+val :
+  batch_size          : 1 # GAIA I want everything to be processed together, since I am in the test phase
+  overlap_low         : 0.0 # GAIA same as default
+  overlap_high        : 0.0 # GAIA same as default
+
+val :
+  pc_res : 512 # GAIA same as default

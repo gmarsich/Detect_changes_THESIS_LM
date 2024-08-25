@@ -17,7 +17,6 @@ from aligner.sg_aligner import *
 from datasets.loaders import get_val_dataloader
 from configs import config, update_config
 from utils import alignment, common, point_cloud
-from GeoTransformer.config import make_cfg as make_cfg_reg
 
 class AlignerRegTester(SingleTester):
     def __init__(self, cfg, parser):
@@ -43,9 +42,15 @@ class AlignerRegTester(SingleTester):
         for recall_mode in self.recall_modes:
             self.alignment_metrics_meter['sgar'][recall_mode] = []
 
+
+
+
+
+
+
         # dataloader
         start_time = time.time()
-        dataset, data_loader = get_val_dataloader(cfg)
+        dataset, data_loader = get_val_dataloader(cfg) # GAIA TODO here I give as input the things I need to be processed 
         loading_time = time.time() - start_time
         message = f'Data loader created: {loading_time:.3f}s collapsed.'
         self.logger.info(message)
@@ -53,20 +58,26 @@ class AlignerRegTester(SingleTester):
         self.register_loader(data_loader)
         self.register_dataset(dataset)
 
+
+
+
+
+
+
         # model 
-        model = self.create_model()
+        model = self.create_model() # GAIA the model will give as output the embeddings
         self.register_model(model)
         self.model.eval()
 
         # Registration
-        if self.run_reg:
+        if self.run_reg: # GAIA should be False by default, and in theory it should be fine like this
             self.reg_k = cfg.reg_model.K
             reg_snapshot = self.args.reg_snapshot
             self.registration_evaluator = RegistrationEvaluator(self.device, cfg, reg_snapshot, self.logger, visualise_registration=True)
             self.visualise_registration = True
 
     def create_model(self):
-        model = MultiModalEncoder(modules = self.modules, rel_dim = self.rel_dim, attr_dim=self.attr_dim).to(self.device)
+        model = MultiModalEncoder(modules = self.modules, rel_dim = self.rel_dim, attr_dim=self.attr_dim).to(self.device) # GAIA the output of the network is made of the embeddings
         message = 'Model created'
         self.logger.info(message)
         return model
@@ -95,7 +106,7 @@ class AlignerRegTester(SingleTester):
 
         return metrics_dict
         
-    def eval_step(self, iteration, data_dict, output_dict):
+    def eval_step(self, iteration, data_dict, output_dict): # GAIA somewhere in this function you should put the threshold to say if an object was removed 
         data_dict = torch_util.release_cuda(data_dict)
         embedding = output_dict['joint'] if len(self.modules) > 1 else output_dict[self.modules[0]]
 
@@ -125,26 +136,32 @@ class AlignerRegTester(SingleTester):
                 emb = embedding[obj_cnt_start_idx : obj_cnt_end_idx]
                 emb = emb / emb.norm(dim=1)[:, None]
                 sim = 1 - torch.mm(emb, emb.transpose(0,1))
-                rank_list = torch.argsort(sim, dim = 1)
+                rank_list = torch.argsort(sim, dim = 1) # GAIA it is basically a matrix
                 assert np.max(e1i_idxs) <= rank_list.shape[0]
 
-                # Compute Mean Reciprocal Rank
-                self.alignment_metrics_meter['mrr'] = alignment.compute_mean_reciprocal_rank(rank_list, e1i_idxs, e2i_idxs, self.alignment_metrics_meter['mrr'] )
+                # GAIA the following can be commented because they are evaluation metrics that need the ground truth
+                # # Compute Mean Reciprocal Rank
+                # self.alignment_metrics_meter['mrr'] = alignment.compute_mean_reciprocal_rank(rank_list, e1i_idxs, e2i_idxs, self.alignment_metrics_meter['mrr'] )
 
-                # Compute Hits@k = {1, 2, 3, 4, 5}
-                for k in self.all_k:
-                    correct, total = alignment.compute_hits_k(rank_list, e1i_idxs, e2i_idxs, k)
-                    self.alignment_metrics_meter[k]['correct'] += correct
-                    self.alignment_metrics_meter[k]['total'] += total
+                # # Compute Hits@k = {1, 2, 3, 4, 5}
+                # for k in self.all_k:
+                #     correct, total = alignment.compute_hits_k(rank_list, e1i_idxs, e2i_idxs, k)
+                #     self.alignment_metrics_meter[k]['correct'] += correct
+                #     self.alignment_metrics_meter[k]['total'] += total
                 
-                # Compute SGAR
-                sgar_vals = alignment.compute_sgar(sim, rank_list, e1i_idxs, e2i_idxs, self.recall_modes)
-                for recall_mode in self.recall_modes:
-                    self.alignment_metrics_meter['sgar'][recall_mode].append(sgar_vals[recall_mode])
+                # # Compute SGAR
+                # sgar_vals = alignment.compute_sgar(sim, rank_list, e1i_idxs, e2i_idxs, self.recall_modes)
+                # for recall_mode in self.recall_modes:
+                #     self.alignment_metrics_meter['sgar'][recall_mode].append(sgar_vals[recall_mode])
 
                 self.anchors.append(len(e1i_idxs))
                 
-                if self.run_reg:
+
+                
+
+
+                if self.run_reg: # GAIA should be False by default. It is the registration evaluation (a process used to assess how well two or more point clouds, or objects represented in a 3D space, have been aligned or registered;
+                        # (GAIA) Registration is the process of aligning two or more 3D datasets (point clouds) so that corresponding points in each dataset are mapped to the same spatial location.)
                     node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
                     node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count)
                     
@@ -188,7 +205,39 @@ class AlignerRegTester(SingleTester):
         return { 'alignment_metrics' : self.alignment_metrics_meter, 'normal_registration_metrics' : self.normal_registration_metrics_meter,
                 'aligner_registration_metrics' : self.aligner_registration_metrics_meter }
         
-def parse_args(parser=None):
+
+
+# def parse_args(parser=None):
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--config', dest='config', default='', type=str, help='configuration file name')
+#     parser.add_argument('--snapshot', default=None, help='load from snapshot')
+#     parser.add_argument('--test_epoch', type=int, default=None, help='test epoch')
+#     parser.add_argument('--test_iter', type=int, default=None, help='test iteration')
+#     parser.add_argument('--reg_snapshot', default=None, help='load from snapshot')
+
+#     args = parser.parse_args()
+#     return parser, args
+    
+# def main_Sayan(): # GAIA originally the main() provided by Sayan
+#     parser, args = parse_args() # GAIA get the directives from the user on the data to be used
+#     cfg = update_config(config, args.config) # GAIA config is something that has been imported (see first lines of this file), specifially a _C; args.config is the configuration file (the path is given by the used with --config)
+#     # GAIA update_config returns the updated and finalized configuration object
+
+#     tester = AlignerRegTester(cfg, parser) # GAIA creates the instance of the class that do the stuff
+#     tester.run()
+
+
+def main():
+    # Get info on the input and prepare the configuration
+
+    input_args = [
+        '--config', '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD/configs/replica_ground_truth.yaml',  # path to your config file
+        '--snapshot', '/local/home/gmarsich/Desktop/weights+files/gat-point-rel-attr-epoch-50.pth.tar',   # snapshot path
+        # '--test_epoch', '10',               # test epoch you want to use
+        # '--test_iter', '200',               # test iteration you want to use
+        # '--reg_snapshot', 'path/to/reg_snapshot'  # reg_snapshot path; performs some kind of assessment base on the ground truth, that I don't have
+    ]
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', dest='config', default='', type=str, help='configuration file name')
     parser.add_argument('--snapshot', default=None, help='load from snapshot')
@@ -196,12 +245,11 @@ def parse_args(parser=None):
     parser.add_argument('--test_iter', type=int, default=None, help='test iteration')
     parser.add_argument('--reg_snapshot', default=None, help='load from snapshot')
 
-    args = parser.parse_args()
-    return parser, args
-    
-def main():
-    parser, args = parse_args()
+    args = parser.parse_args(input_args)
+
     cfg = update_config(config, args.config)
+
+    # Run the model
 
     tester = AlignerRegTester(cfg, parser)
     tester.run()

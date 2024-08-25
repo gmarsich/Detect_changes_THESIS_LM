@@ -10,7 +10,7 @@ sys.path.append('..')
 
 from utils import common, scan3r
 
-class Scan3RDataset(data.Dataset):
+class Scan3RDataset(data.Dataset): # GAIA for me, it is ReplicaDataset
     def __init__(self, cfg, split):
         self.split = split
         self.use_predicted = cfg.use_predicted
@@ -33,7 +33,7 @@ class Scan3RDataset(data.Dataset):
         print('[INFO] Reading from {} with point cloud resolution - {}'.format(self.anchor_data_filename, self.pc_resolution))
         self.anchor_data = common.load_json(self.anchor_data_filename)[:]
         
-        if split == 'val' and cfg.val.overlap_low != cfg.val.overlap_high:
+        if split == 'val' and cfg.val.overlap_low != cfg.val.overlap_high: # GAIA if executed, filters the anchors
             final_anchor_data = []
             for anchor_data_idx in self.anchor_data:
                 if anchor_data_idx['overlap'] >= cfg.val.overlap_low and anchor_data_idx['overlap'] < cfg.val.overlap_high:
