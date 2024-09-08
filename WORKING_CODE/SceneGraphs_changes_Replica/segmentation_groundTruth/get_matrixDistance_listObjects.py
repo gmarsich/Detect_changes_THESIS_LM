@@ -4,6 +4,8 @@
 This code creates three files, matrix_distances_file.txt (in the filename the distance that has been used is specified), list_instances.txt and list_points.txt.
 They will be used later to get the scene graph.'''
 
+# Had to use in the terminal: export PYTHONNOUSERSITE=True
+
 from plyfile import PlyData, PlyElement
 import numpy as np
 import os
