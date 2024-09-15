@@ -51,7 +51,7 @@ _C.train.augmentation_noise = 0.005
 # Validation params
 _C.val = CN()
 _C.val.data_mode = 'orig'
-_C.val.batch_size = 1 # GAIA was 4 but tried with 1 for Replica purpose
+_C.val.batch_size = 1 # GAIA was 4 but tried with 1 for Replica purpose; as a matter of fact, if it is not 1 with two subscenes from 3RScan the program fails
 _C.val.pc_res = 512
 _C.val.overlap_low = 0.0
 _C.val.overlap_high = 0.0
