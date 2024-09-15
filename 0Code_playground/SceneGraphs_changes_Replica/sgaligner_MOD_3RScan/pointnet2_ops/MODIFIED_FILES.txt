@@ -1,0 +1,3 @@
+Original repository: https://github.com/fishbotics/pointnet2_ops
+
+renamed: /local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/pointnet2_ops/pointnet2_ops/_ext

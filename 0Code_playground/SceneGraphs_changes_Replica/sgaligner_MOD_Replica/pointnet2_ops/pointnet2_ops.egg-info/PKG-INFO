@@ -1,0 +1,5 @@
+Metadata-Version: 2.1
+Name: pointnet2-ops
+Version: 3.3.0
+Author: Erik Wijmans (Modified by Adam Fishman)
+License-File: LICENSE
