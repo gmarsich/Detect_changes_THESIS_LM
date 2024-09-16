@@ -53,7 +53,7 @@ class AlignerRegTester(SingleTester):
         self.logger.info(message)
 
         self.register_loader(data_loader) # GAIA to change. It sets test_loader
-        self.register_dataset(dataset)
+        #self.register_dataset(dataset) # GAIA: it seems that we don't need this
 
         # model 
         model = self.create_model()
@@ -112,7 +112,7 @@ class AlignerRegTester(SingleTester):
             # ref_objects_count = data_dict['graph_per_obj_count'][batch_idx][1]
             # pcl_center = data_dict['pcl_center'][batch_idx]
             
-            all_objects_ids = data_dict['obj_ids']
+            #all_objects_ids = data_dict['obj_ids']
             e1i_end_idx = e1i_start_idx + data_dict['e1i_count'][batch_idx]
             e2i_end_idx = e2i_start_idx + data_dict['e2i_count'][batch_idx]
             obj_cnt_end_idx = obj_cnt_start_idx + data_dict['tot_obj_count'][batch_idx]
@@ -131,30 +131,35 @@ class AlignerRegTester(SingleTester):
                 rank_list = torch.argsort(sim, dim = 1)
                 assert np.max(e1i_idxs) <= rank_list.shape[0]
 
-                # Compute Mean Reciprocal Rank
-                self.alignment_metrics_meter['mrr'] = alignment.compute_mean_reciprocal_rank(rank_list, e1i_idxs, e2i_idxs, self.alignment_metrics_meter['mrr'] )
 
-                # Compute Hits@k = {1, 2, 3, 4, 5}
-                for k in self.all_k:
-                    correct, total = alignment.compute_hits_k(rank_list, e1i_idxs, e2i_idxs, k)
-                    self.alignment_metrics_meter[k]['correct'] += correct
-                    self.alignment_metrics_meter[k]['total'] += total
-                
-                # Compute SGAR
-                sgar_vals = alignment.compute_sgar(sim, rank_list, e1i_idxs, e2i_idxs, self.recall_modes)
-                for recall_mode in self.recall_modes:
-                    self.alignment_metrics_meter['sgar'][recall_mode].append(sgar_vals[recall_mode])
+                # GAIA: the following is not useful for me
+                # # Compute Mean Reciprocal Rank
+                # self.alignment_metrics_meter['mrr'] = alignment.compute_mean_reciprocal_rank(rank_list, e1i_idxs, e2i_idxs, self.alignment_metrics_meter['mrr'] )
 
-                self.anchors.append(len(e1i_idxs))
+                # # Compute Hits@k = {1, 2, 3, 4, 5}
+                # for k in self.all_k:
+                #     correct, total = alignment.compute_hits_k(rank_list, e1i_idxs, e2i_idxs, k)
+                #     self.alignment_metrics_meter[k]['correct'] += correct
+                #     self.alignment_metrics_meter[k]['total'] += total
                 
+                # # Compute SGAR
+                # sgar_vals = alignment.compute_sgar(sim, rank_list, e1i_idxs, e2i_idxs, self.recall_modes)
+                # for recall_mode in self.recall_modes:
+                #     self.alignment_metrics_meter['sgar'][recall_mode].append(sgar_vals[recall_mode])
+
+                # self.anchors.append(len(e1i_idxs))
+                
+                # GAIA: end of unuseful things
+
 
 
                 # BEGINNING OF if
                 node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
                 print("\n\nASSOCIATIONS BETWEEN NODES")
                 print(node_corrs)
-                print("\n\n")
-                node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count)
+                print("\n")
+                # node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count) # GAIA: "global IDs"
+            
                 
                 
                 # Load subscene points
@@ -199,8 +204,8 @@ class AlignerRegTester(SingleTester):
 
             
             
-        return { 'alignment_metrics' : self.alignment_metrics_meter, 'normal_registration_metrics' : self.normal_registration_metrics_meter,
-                'aligner_registration_metrics' : self.aligner_registration_metrics_meter }
+        return 
+        # GAIA: the return was: { 'alignment_metrics' : self.alignment_metrics_meter, 'normal_registration_metrics' : self.normal_registration_metrics_meter, 'aligner_registration_metrics' : self.aligner_registration_metrics_meter }
         
         
 # def parse_args(parser=None):
