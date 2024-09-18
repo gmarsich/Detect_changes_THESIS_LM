@@ -21,4 +21,5 @@ ADDED:
 /local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/inference/sgaligner/GAIA_modify_ckp.py
 /local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/datasets/replica.py
 /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/preprocessing/replica
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/inference/sgaligner/GAIA_modify_ckp_POINTS.py
 

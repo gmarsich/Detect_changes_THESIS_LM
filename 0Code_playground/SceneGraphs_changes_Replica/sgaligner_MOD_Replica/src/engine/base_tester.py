@@ -24,7 +24,7 @@ class BaseTester(abc.ABC):
         message = 'Command executed: ' + ' '.join(sys.argv)
         self.logger.info(message)
 
-        self.args.snapshot = '/local/home/gmarsich/Desktop/weights+files/gat-point-epoch-50.pth.tar' # GAIA: added because with my custom main the snapshot path is not carried properly across the code
+        self.args.snapshot = '/local/home/gmarsich/Desktop/weights+files/point-epoch-50.pth.tar' # GAIA: added because with my custom main the snapshot path is not carried properly across the code
 
         # find snapshot
         if self.args.snapshot is None:

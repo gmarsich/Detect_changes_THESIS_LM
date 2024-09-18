@@ -100,7 +100,7 @@ class AlignerRegTester(SingleTester):
         
     def eval_step(self, iteration, data_dict, output_dict):
         data_dict = torch_util.release_cuda(data_dict)
-        embedding = output_dict['joint'] if len(self.modules) > 1 else output_dict[self.modules[0]]
+        embedding = output_dict[self.modules[0]] # GAIA modified for my case, where I just have one module ('points')
 
         e1i_start_idx = 0
         e2i_start_idx = 0
@@ -242,10 +242,10 @@ def parse_args(args_list=None): # GAIA modified parse_args
 #     tester = AlignerRegTester(cfg, parser)
 #     tester.run()
 
-def main(): # GAIA modified main, but does not work properly (the snapshot is not carried in the right way in the code). Had to play a trick in a piece of code
+def main(): # GAIA modified main, but does not work properly (the snapshot is not carried in the right way in the code). Had to play a trick in a piece of code (src/engine/base_tester.py)
     args_list = [
         '--config', '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_3RScan/configs/scan3r/scan3r_ground_truth.yaml',
-        '--snapshot', '/local/home/gmarsich/Desktop/weights+files/gat-point-epoch-50.pth.tar',
+        '--snapshot', '/local/home/gmarsich/Desktop/weights+files/point-epoch-50.pth.tar',
         # '--test_epoch', '10',
         # '--test_iter', '1000',
         # '--reg_snapshot', 'path/to/reg_snapshot'

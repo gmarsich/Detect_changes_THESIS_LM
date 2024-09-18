@@ -2,7 +2,7 @@ seed: 42
 num_workers : 4
 
 model_name    : 'sgaligner'
-modules       : ['point', 'gat'] # GAIA originally it was ['point', 'gat', 'rel', 'attr'], but I just need point and gat for my aims
+modules       : ['point'] # GAIA originally it was ['point', 'gat', 'rel', 'attr'], but I just need point and gat for my aims
 use_predicted : False
 registration  : False
 scan_type     : 'subscan'

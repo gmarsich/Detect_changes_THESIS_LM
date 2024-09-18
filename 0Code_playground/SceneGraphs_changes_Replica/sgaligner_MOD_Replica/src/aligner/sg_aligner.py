@@ -38,7 +38,7 @@ class MultiModalEncoder(nn.Module):
     def __init__(self, modules, rel_dim, attr_dim, hidden_units=[3, 128, 128], heads = [2, 2], emb_dim = 100, pt_out_dim = 256,
                        dropout = 0.0, attn_dropout = 0.0, instance_norm = False): # GAIA some things here are taken from the scan3r_ground_truth.yaml file
         super(MultiModalEncoder, self).__init__()
-        self.modules = modules
+        self.modules = ['point'] # GAIA modified! #self.modules = modules   self.modules = ['point']
         self.pt_out_dim = pt_out_dim
         self.rel_dim = rel_dim
         self.emb_dim = emb_dim
@@ -63,63 +63,62 @@ class MultiModalEncoder(nn.Module):
         
         self.object_embedding = nn.Linear(self.pt_out_dim, self.emb_dim)
         
-        self.structure_encoder = MultiGAT(n_units=self.hidden_units, n_heads=self.heads, dropout=self.dropout)
-        self.structure_embedding = nn.Linear(256, self.emb_dim)
+        #self.structure_encoder = MultiGAT(n_units=self.hidden_units, n_heads=self.heads, dropout=self.dropout)
+        #self.structure_embedding = nn.Linear(256, self.emb_dim)
         
         self.fusion = MultiModalFusion(modal_num=self.inner_view_num, with_weight=1)
         
     def forward(self, data_dict):
         tot_object_points = data_dict['tot_obj_pts'].permute(0, 2, 1)
-        tot_bow_vec_object_attr_feats = data_dict['tot_bow_vec_object_attr_feats'].float() 
-        tot_bow_vec_object_edge_feats = data_dict['tot_bow_vec_object_edge_feats'].float()
-        tot_rel_pose = data_dict['tot_rel_pose'].float()
+        # tot_bow_vec_object_attr_feats = data_dict['tot_bow_vec_object_attr_feats'].float() 
+        # tot_bow_vec_object_edge_feats = data_dict['tot_bow_vec_object_edge_feats'].float()
+        # tot_rel_pose = data_dict['tot_rel_pose'].float()
         
-        start_object_idx = 0
-        start_edge_idx = 0
-        batch_size = data_dict['batch_size']
+        # start_object_idx = 0
+        # start_edge_idx = 0
+        # batch_size = data_dict['batch_size']
         
         embs = {}
-
         for module in self.modules:
-            if module == 'gat':
-                structure_embed = None
-                for idx in range(batch_size):
-                    src_object_count = data_dict['graph_per_obj_count'][idx][0]
-                    ref_object_count = data_dict['graph_per_obj_count'][idx][1]
+            # if module == 'gat':
+            #     structure_embed = None
+            #     for idx in range(batch_size):
+            #         src_object_count = data_dict['graph_per_obj_count'][idx][0]
+            #         ref_object_count = data_dict['graph_per_obj_count'][idx][1]
 
-                    src_edges_count = data_dict['graph_per_edge_count'][idx][0]
-                    ref_edges_count = data_dict['graph_per_edge_count'][idx][1]
+            #         src_edges_count = data_dict['graph_per_edge_count'][idx][0]
+            #         ref_edges_count = data_dict['graph_per_edge_count'][idx][1]
                     
-                    src_objects_rel_pose = tot_rel_pose[start_object_idx : start_object_idx + src_object_count]
-                    start_object_idx += src_object_count
+            #         src_objects_rel_pose = tot_rel_pose[start_object_idx : start_object_idx + src_object_count]
+            #         start_object_idx += src_object_count
 
-                    ref_objects_rel_pose = tot_rel_pose[start_object_idx : start_object_idx + ref_object_count]
-                    start_object_idx += ref_object_count
+            #         ref_objects_rel_pose = tot_rel_pose[start_object_idx : start_object_idx + ref_object_count]
+            #         start_object_idx += ref_object_count
 
                     
-                    src_edges = torch.transpose(data_dict['edges'][start_edge_idx : start_edge_idx + src_edges_count], 0, 1).to(torch.int32)
-                    start_edge_idx += src_edges_count
+            #         src_edges = torch.transpose(data_dict['edges'][start_edge_idx : start_edge_idx + src_edges_count], 0, 1).to(torch.int32)
+            #         start_edge_idx += src_edges_count
 
-                    ref_edges = torch.transpose(data_dict['edges'][start_edge_idx : start_edge_idx + ref_edges_count], 0, 1).to(torch.int32)
-                    start_edge_idx += ref_edges_count
+            #         ref_edges = torch.transpose(data_dict['edges'][start_edge_idx : start_edge_idx + ref_edges_count], 0, 1).to(torch.int32)
+            #         start_edge_idx += ref_edges_count
 
-                    src_structure_embedding = self.structure_encoder(src_objects_rel_pose, src_edges)
-                    ref_structure_embedding = self.structure_encoder(ref_objects_rel_pose, ref_edges)
+            #         src_structure_embedding = self.structure_encoder(src_objects_rel_pose, src_edges)
+            #         ref_structure_embedding = self.structure_encoder(ref_objects_rel_pose, ref_edges)
                     
-                    structure_embed = torch.cat([src_structure_embedding, ref_structure_embedding]) if structure_embed is None else \
-                                   torch.cat([structure_embed, src_structure_embedding, ref_structure_embedding]) 
+            #         structure_embed = torch.cat([src_structure_embedding, ref_structure_embedding]) if structure_embed is None else \
+            #                        torch.cat([structure_embed, src_structure_embedding, ref_structure_embedding]) 
 
-                emb = self.structure_embedding(structure_embed)
+            #     emb = self.structure_embedding(structure_embed)
             
             if module in ['point', 'pct']: # elif module in ['point', 'pct']:
                 emb = self.object_encoder(tot_object_points)
                 emb = self.object_embedding(emb)
 
-            elif module == 'rel':
-                emb = self.meta_embedding_rel(tot_bow_vec_object_edge_feats)
+            # elif module == 'rel':
+            #     emb = self.meta_embedding_rel(tot_bow_vec_object_edge_feats)
             
-            elif module == 'attr':
-                emb = self.meta_embedding_attr(tot_bow_vec_object_attr_feats)
+            # elif module == 'attr':
+            #     emb = self.meta_embedding_attr(tot_bow_vec_object_attr_feats)
             
             else:
                 raise NotImplementedError
