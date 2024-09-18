@@ -3,5 +3,7 @@ The file I modified compared to the original repository (https://github.com/Shun
 
 
 ADDED:
+some files in: /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/3DSSG_MOD/files
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/3DSSG_MOD/data
 
 

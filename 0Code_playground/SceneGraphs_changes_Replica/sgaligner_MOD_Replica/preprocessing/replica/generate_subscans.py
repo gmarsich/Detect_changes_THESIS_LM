@@ -40,7 +40,7 @@ if __name__ == '__main__':
         sub_gen_scan3r = SubGenScan3R(cfg, split=args.split)
         sub_gen_scan3r.logger.info('[INFO] Running Subscan Generation for {} scans...'.format(args.split))
 
-        for idx in tqdm(range(len(sub_gen_scan3r))):
+        for idx in tqdm(range(len(sub_gen_scan3r))): # for idx in tqdm(range(1, 2)): # GAIA: with this it works!
             sub_gen_scan3r[idx, False]
         
         sub_gen_scan3r.calculate_overlap()

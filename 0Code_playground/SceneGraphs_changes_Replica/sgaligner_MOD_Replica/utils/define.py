@@ -1,6 +1,6 @@
 import os.path as osp
 
-DATASET_DIR = '/local/home/gmarsich/Desktop/EXPERIMENTS/3RScan'
+DATASET_DIR = '/local/home/gmarsich/Desktop/tmp/pipelinePreprocess'
 SCAN3R_ORIG_DIR = osp.join(DATASET_DIR, '3RScan')
 SCAN3R_SUBSCENES_DIR = osp.join(SCAN3R_ORIG_DIR, 'out')
 

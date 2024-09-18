@@ -15,7 +15,7 @@ from engine.single_tester import SingleTester
 from utils import torch_util, scan3r
 from aligner.sg_aligner import *
 from datasets.loaders import get_val_dataloader
-# from datasets.loaders import get_val_dataloader_Replica
+from datasets.loaders import get_val_dataloader_Replica
 from configs import config, update_config
 from utils import alignment, common, point_cloud
 # from GeoTransformer.config import make_cfg as make_cfg_reg # GAIA seems not to be useful in this code
@@ -47,7 +47,7 @@ class AlignerRegTester(SingleTester):
         # dataloader
         start_time = time.time()
         dataset, data_loader = get_val_dataloader(cfg) # GAIA data_loader will become test_loader
-        # dataset, data_loader = get_val_dataloader_Replica(cfg) # GAIA TODO data_loader will become test_loader
+        #dataset, data_loader = get_val_dataloader_Replica(cfg) # GAIA TODO data_loader will become test_loader
         loading_time = time.time() - start_time
         message = f'Data loader created: {loading_time:.3f}s collapsed.'
         self.logger.info(message)
@@ -259,3 +259,5 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
 
 if __name__ == '__main__':
     main()
+
+    #[(0, 8), (1, 9), (3, 10), (4, 11), (5, 12), (6, 13), (7, 8)]

@@ -9,7 +9,7 @@ scan_type     : 'subscan'
 
 data :
   name            : Scan3R
-  root_dir        : /local/home/gmarsich/Desktop/EXPERIMENTS/3RScan
+  root_dir        : /local/home/gmarsich/Desktop/3RScan
   label_file_name : labels.instances.align.annotated.v2.ply
   pred_subfix     : inseg.ply
 
