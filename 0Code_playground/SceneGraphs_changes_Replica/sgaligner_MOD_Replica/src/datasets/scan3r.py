@@ -119,20 +119,20 @@ class Scan3RDataset(data.Dataset):
 
         data_dict = {} 
         data_dict['obj_ids'] = np.concatenate([src_object_ids, ref_object_ids]) # GAIA IDs are given by objects_subscenes_val.json
-        data_dict['tot_obj_pts'] = tot_object_points
-        data_dict['graph_per_obj_count'] = np.array([src_object_points.shape[0], ref_object_points.shape[0]])
+        data_dict['tot_obj_pts'] = tot_object_points # USEFUL (for 'points')
+        data_dict['graph_per_obj_count'] = np.array([src_object_points.shape[0], ref_object_points.shape[0]]) # USEFUL
         data_dict['graph_per_edge_count'] = np.array([src_edges.shape[0], ref_edges.shape[0]])
         
-        data_dict['e1i'] = e1i_idxs
-        data_dict['e1i_count'] = e1i_idxs.shape[0]
-        data_dict['e2i'] = e2i_idxs
-        data_dict['e2i_count'] = e2i_idxs.shape[0]
+        data_dict['e1i'] = e1i_idxs # USEFUL
+        data_dict['e1i_count'] = e1i_idxs.shape[0] # USEFUL, but depends on something else
+        data_dict['e2i'] = e2i_idxs # USEFUL
+        data_dict['e2i_count'] = e2i_idxs.shape[0] # USEFUL, but depends on something else
         data_dict['e1j'] = e1j_idxs
         data_dict['e1j_count'] = e1j_idxs.shape[0]
         data_dict['e2j'] = e2j_idxs
         data_dict['e2j_count'] = e2j_idxs.shape[0]
         
-        data_dict['tot_obj_count'] = tot_object_points.shape[0]
+        data_dict['tot_obj_count'] = tot_object_points.shape[0] # USEFUL, but depends on something else
         data_dict['tot_bow_vec_object_attr_feats'] = tot_bow_vec_obj_attr_feats
         data_dict['tot_bow_vec_object_edge_feats'] = tot_bow_vec_obj_edge_feats
         data_dict['tot_rel_pose'] = tot_rel_pose

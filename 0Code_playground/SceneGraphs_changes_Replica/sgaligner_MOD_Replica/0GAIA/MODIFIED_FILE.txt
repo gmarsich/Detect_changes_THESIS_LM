@@ -14,6 +14,7 @@ The file I modified compared to the original repository (https://github.com/saya
 /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/inference/sgaligner/inference_align_reg.py
 /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/engine/single_tester.py
 /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/datasets/loaders.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/aligner/sg_aligner.py
 
 ADDED:
 /local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/pointnet2_ops

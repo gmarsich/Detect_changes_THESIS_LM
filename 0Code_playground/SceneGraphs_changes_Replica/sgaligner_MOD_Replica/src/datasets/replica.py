@@ -1,3 +1,7 @@
+# DA RISISTEMARE COMPLETAMENTE. C'è SOLO QUALCHE COMMENTO E SCHIOCCHEZZA SIMILE IN GIRO
+
+
+
 import os
 import os.path as osp
 import numpy as np
