@@ -1,7 +1,8 @@
 import numpy as np
 import torch
+import pickle
 
-
+# side function
 def load_plydata_npy(file_path, obj_ids = None, return_ply_data = False):
     ply_data = np.load(file_path)
     points =  np.stack([ply_data['x'], ply_data['y'], ply_data['z']]).transpose((1, 0))
@@ -19,9 +20,29 @@ def load_plydata_npy(file_path, obj_ids = None, return_ply_data = False):
     else: return points
 
 
-def get_new_dictionary(src_data_dict, ref_data_dict, path_to_npy_src, pc_resolution):
+# side function
+def load_pkl_data(filename):
+    with open(filename, 'rb') as handle:
+        data_dict = pickle.load(handle)
+    return data_dict
+
+
+# main function
+def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution):
+    '''Get, for the new dictionary:
+        'tot_obj_pts'
+        'graph_per_obj_count' '''
+    
+    new_data_dict = {}
+
+    #
+    # tot_obj_pts
+    #
 
     src_points = load_plydata_npy(path_to_npy_src, obj_ids = None)
+    src_data_dict = load_pkl_data(path_to_pkl_src)
+    ref_data_dict = load_pkl_data(path_to_pkl_ref)
+
     pcl_center = np.mean(src_points, axis=0)
 
     src_object_points = src_data_dict['obj_points'][pc_resolution] - pcl_center
@@ -29,7 +50,17 @@ def get_new_dictionary(src_data_dict, ref_data_dict, path_to_npy_src, pc_resolut
     
     tot_object_points = torch.cat([torch.from_numpy(src_object_points), torch.from_numpy(ref_object_points)]).type(torch.FloatTensor)
 
-    new_data_dict = {}
+
     new_data_dict['tot_obj_pts'] = tot_object_points
+
+
+
+    #
+    # graph_per_obj_count
+    #
+
+    new_data_dict['graph_per_obj_count'] = np.array([src_object_points.shape[0], ref_object_points.shape[0]])
+
+
 
     return new_data_dict

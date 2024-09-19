@@ -1,3 +1,5 @@
+'''preprocess.py but for Replica'''
+
 import numpy as np
 import os.path as osp
 from utils import point_cloud
@@ -30,7 +32,9 @@ def parse_args():
     return parser, args
 
 
-def process_scan(path_to_npy, obj_data, args, cfg):
+def get_data_dict(path_to_npy, obj_data, args, cfg):
+    '''Get, for the dictionary:
+        'obj_points' '''
 
     # Load the point cloud data from file (assumes ply_data contains 'x', 'y', 'z', 'objectId')
     ply_data = np.load(path_to_npy) # instead of osp.join(data_dir, 'scenes', scan_id, 'data.npy') I put path_to_npy
@@ -44,33 +48,33 @@ def process_scan(path_to_npy, obj_data, args, cfg):
     # Extract object data from obj_data
     object_data = obj_data['objects'] 
 
-    # Optionally remove some objects based on args
-    if args.remove_node:
-        num_obj_to_keep = int(((100 - np.random.randint(15, 41)) / 100.0) * len(object_data))
-        keep_obj_indices = np.random.choice(len(object_data), num_obj_to_keep, replace=False)
-        object_data = [object_data[idx] for idx in keep_obj_indices]
+    # # Optionally remove some objects based on args
+    # if args.remove_node:
+    #     num_obj_to_keep = int(((100 - np.random.randint(15, 41)) / 100.0) * len(object_data))
+    #     keep_obj_indices = np.random.choice(len(object_data), num_obj_to_keep, replace=False)
+    #     object_data = [object_data[idx] for idx in keep_obj_indices]
     
-    # Optionally change some object semantics
-    if args.change_node_semantic:
-        num_obj_to_change = int((np.random.randint(15, 41) / 100.0) * len(object_data))
-        change_obj_indices = np.random.choice(len(object_data), num_obj_to_change, replace=False)
-        orig_objects_ids = []
+    # # Optionally change some object semantics
+    # if args.change_node_semantic:
+    #     num_obj_to_change = int((np.random.randint(15, 41) / 100.0) * len(object_data))
+    #     change_obj_indices = np.random.choice(len(object_data), num_obj_to_change, replace=False)
+    #     orig_objects_ids = []
 
-        for idx, object in enumerate(object_data):
-            orig_objects_ids.append(int(object['id'])) 
+    #     for idx, object in enumerate(object_data):
+    #         orig_objects_ids.append(int(object['id'])) 
 
     # Iterate through each object to collect point cloud data
     for idx, object in enumerate(object_data):
-        if not cfg.use_predicted : attribute = [item for sublist in object['attributes'].values() for item in sublist]
+        # if not cfg.use_predicted : attribute = [item for sublist in object['attributes'].values() for item in sublist]
 
         object_id = int(object['id'])
-        object_id_for_pcl = int(object['id'])
+        # object_id_for_pcl = int(object['id'])
         
-        # Change object semantic if required
-        if args.change_node_semantic and idx in change_obj_indices:
-            object_id_for_pcl = np.random.choice(orig_objects_ids)
-            while object_id_for_pcl == int(object['id']):
-                object_id_for_pcl = np.random.choice(orig_objects_ids)
+        # # Change object semantic if required
+        # if args.change_node_semantic and idx in change_obj_indices:
+        #     object_id_for_pcl = np.random.choice(orig_objects_ids)
+        #     while object_id_for_pcl == int(object['id']):
+        #         object_id_for_pcl = np.random.choice(orig_objects_ids)
 
         # Get the points belonging to the current object
         obj_pt_idx = np.where(ply_data['objectId'] == object_id)
@@ -91,9 +95,11 @@ def process_scan(path_to_npy, obj_data, args, cfg):
     # Return only the obj_points in a data_dict
     data_dict = {}
     data_dict['obj_points'] = object_points
+
     return data_dict
 
-# Example usage of the refactored function
+
+
 if __name__ == '__main__':
 
     _, args = parse_args()
@@ -101,4 +107,4 @@ if __name__ == '__main__':
     random.seed(cfg.seed)
 
     path_to_npy = '' # TODO
-    data_dict = process_scan(path_to_npy, obj_data, args, cfg)
+    data_dict = get_data_dict(path_to_npy, obj_data, args, cfg)
