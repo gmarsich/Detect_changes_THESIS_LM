@@ -22,10 +22,28 @@ end_header
 -1.16147065162658691 -1.0307769775390625 1.1398322582244873 197 176 213 9 388 38 0 0
 
 
-and I want something similar for a scene from Replica.
+and I want something similar for a scene from Replica. For Replica, I will have something like:
+
+ply
+format ascii 1.0
+element vertex 1796927
+property float x
+property float y
+property float z
+property uchar red
+property uchar green
+property uchar blue
+property int objectId
+end_header
+6.026266 -5.158844 -1.588580 68 32 130 0
+6.016451 -5.158467 -1.589023 68 32 130 0
+
+
 Additionally, this script applies the transformation matrix so that there is an alignment between two Replica scenes.
 
 '''
+
+# TODO: as far as I remember there are things in the scenes that did not have a label. You may retrieve them and add them to the point clouds
 
 import os
 import random
