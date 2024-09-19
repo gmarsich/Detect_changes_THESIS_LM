@@ -65,8 +65,3 @@ if isinstance(data, np.ndarray) and data.dtype == 'object':
     print("First element:", data[0])
 
 
-
-
-
-
-

@@ -1,4 +1,5 @@
-'''Get the file colored_mesh_with_IDs.ply, i.e., the point cloud with a visible segmentation (given by the ground truth) of a scene from the Replica dataset.
+'''Get the file colored_mesh_with_IDs.ply, i.e., the point cloud with a visible segmentation (given by the ground truth) of a scene from the Replica dataset
+and create the file objects.json.
 The header of a labels.instances.align.annotated.v2.ply from 3RScan appears like this:
 
 ply
@@ -22,7 +23,7 @@ end_header
 -1.16147065162658691 -1.0307769775390625 1.1398322582244873 197 176 213 9 388 38 0 0
 
 
-and I want something similar for a scene from Replica. For Replica, I will have something like:
+and I want something similar for a .ply scene from Replica. For Replica, I will have something like:
 
 ply
 format ascii 1.0
@@ -38,7 +39,6 @@ end_header
 6.026266 -5.158844 -1.588580 68 32 130 0
 6.016451 -5.158467 -1.589023 68 32 130 0
 
-
 Additionally, this script applies the transformation matrix so that there is an alignment between two Replica scenes.
 
 '''
@@ -49,14 +49,17 @@ import os
 import random
 import open3d as o3d
 import numpy as np
+import json
 
 #
 # Variables to change
 #
 
-path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-usingTarget = False # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt"
+path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/objects.json"
+usingTarget = True # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
 
 
 #
@@ -99,7 +102,8 @@ random_dict = create_colors_dict(list_numbers)
 
 
 #
-# Put all the colored objects in a point cloud; the alignment has to be performed on the single instances
+# Put all the colored objects in a point cloud; the alignment has to be performed on the single instances.
+# Save colored_mesh_with_IDs.ply 
 #
 
 # def load_and_color_point_clouds_segmentationOnly(path_meshSemantics, random_dict):
@@ -182,4 +186,37 @@ with open(output_ply, 'w') as f:
 
 colored_point_cloud = o3d.io.read_point_cloud(output_ply)
 o3d.visualization.draw_geometries([colored_point_cloud])
+
+
+
+#
+# Create a dictionary containing id, label and ply_color.
+# Save objects.json
+#
+
+obj_data = {"objects": []}
+
+with open(path_listInstances, 'r') as file:
+    for line in file:
+        parts = line.split()
+
+        obj_id = parts[0]
+        label = parts[1]
+
+        ply_color = random_dict.get(obj_id, [0, 0, 0]) # default to [0, 0, 0] if the ID is not found
+        ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
+
+        obj_data["objects"].append({
+            "id": obj_id,
+            "label": label,
+            "ply_color": ply_color_hex
+        })
+
+# Save the dictionary to a JSON file
+with open(path_save_objectsJSON, 'w') as json_file:
+    json.dump(obj_data, json_file, indent=2)
+
+
+
+
 

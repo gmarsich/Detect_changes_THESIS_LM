@@ -11,9 +11,9 @@ import os
 # Variables
 #
 
-base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/"
-ply_file_path = os.path.join(base_path, "colored_mesh_with_IDs.ply")
-npy_file_path = os.path.join(base_path, "data.npy")  # where to save the .npy file
+base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/"
+ply_file_path = os.path.join(base_path, "Segmentation/colored_mesh_with_IDs.ply")
+npy_file_path = os.path.join(base_path, "SGAligner/data.npy")  # where to save the .npy file
 
 
 #
