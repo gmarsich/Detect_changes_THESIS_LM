@@ -53,19 +53,19 @@ import pickle
 #     print("Sample of the data:", data)
 
 
+data = np.load("/local/home/gmarsich/Desktop/3RScan/out/scenes/754e884c-ea24-2175-8b34-cead19d4198d_5/data.npy", allow_pickle=True)
+data = np.load("/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data.npy", allow_pickle=True)
+
+if isinstance(data, np.ndarray):
+    print("Array shape:", data.shape)
+    print("Array dtype:", data.dtype)
+
+# If it's an object array (e.g., list or dict), inspect the first few elements
+if isinstance(data, np.ndarray) and data.dtype == 'object':
+    print("First element:", data[0])
 
 
-
-# data = np.load("/local/home/gmarsich/Desktop/3RScan/out/scenes/754e884c-ea24-2175-8b34-cead19d4198d_5/data.npy", allow_pickle=True)
-
-# if isinstance(data, np.ndarray):
-#     print("Array shape:", data.shape)
-#     print("Array dtype:", data.dtype)
-
-# # If it's an object array (e.g., list or dict), inspect the first few elements
-# if isinstance(data, np.ndarray) and data.dtype == 'object':
-#     print("First element:", data[0])
-
+print(data['y'][:5])
 
 
 

@@ -34,12 +34,13 @@ def read_ply_and_convert_to_npy(ply_file_path, npy_file_path):
             red, green, blue = int(parts[3]), int(parts[4]), int(parts[5])
             object_id = int(parts[6])
 
-            data.append([x, y, z, red, green, blue, object_id])
-    
+            data.append((x, y, z, red, green, blue, object_id))
+
     data_array = np.array(data, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
                                        ('red', 'u1'), ('green', 'u1'), ('blue', 'u1'), 
                                        ('objectId', 'i4')])
     
     np.save(npy_file_path, data_array)
+
 
 read_ply_and_convert_to_npy(ply_file_path, npy_file_path)

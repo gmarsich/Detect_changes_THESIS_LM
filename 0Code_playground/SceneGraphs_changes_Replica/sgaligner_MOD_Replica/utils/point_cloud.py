@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import open3d.ml.torch as ml3d
+# import open3d.ml.torch as ml3d # GAIA: I don't need it
 import torch
 from scipy.spatial.transform import Rotation
 from typing import Optional

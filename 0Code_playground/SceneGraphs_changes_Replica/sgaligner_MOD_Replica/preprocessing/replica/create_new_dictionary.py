@@ -33,7 +33,7 @@ def load_pkl_data(filename):
 # main function
 def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution):
     '''Get, for the new dictionary:
-        'tot_obj_pts'
+        'tot_obj_pts' # for test_step
         'graph_per_obj_count' '''
     
     new_data_dict = {}
