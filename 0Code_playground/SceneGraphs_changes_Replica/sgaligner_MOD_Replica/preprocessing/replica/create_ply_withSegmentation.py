@@ -55,11 +55,11 @@ import json
 # Variables to change
 #
 
-path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt"
-path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/objects.json"
-usingTarget = True # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/list_instances.txt"
+path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/objects.json"
+usingTarget = False # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
 
 
 #
@@ -197,19 +197,23 @@ o3d.visualization.draw_geometries([colored_point_cloud])
 obj_data = {"objects": []}
 
 with open(path_listInstances, 'r') as file:
+    i = 0
     for line in file:
         parts = line.split()
 
-        obj_id = int(parts[0])
+        obj_id = parts[0]
         label = parts[1]
-        ply_color = random_dict[obj_id]
+        ply_color = random_dict[int(obj_id)]
         ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
 
         obj_data["objects"].append({
+            "count": i,
             "id": obj_id,
             "label": label,
             "ply_color": ply_color_hex
         })
+
+        i+=1
 
 # Save the dictionary to a JSON file
 with open(path_save_objectsJSON, 'w') as json_file:

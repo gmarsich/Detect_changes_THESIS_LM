@@ -2,6 +2,9 @@
 Given a scene, the .pkl file will be created.'''
 
 import numpy as np
+import os
+import json
+import pickle
 
 import sys
 sys.path.append('.')
@@ -16,13 +19,15 @@ from configs import config, update_config
 # Variables
 #
 
-path_to_npy = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data.npy'
-obj_data = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/objects.json'
+base_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner'
+path_to_npy = os.path.join(base_path, 'data.npy')
+path_objData = os.path.join(base_path, 'objects.json')
 path_config = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_3RScan/configs/scan3r/scan3r_ground_truth.yaml'
+path_save_pkl_file = os.path.join(base_path, 'data_dict.pkl')
 
 
 #
-# Get the .pkl file
+# Build the dictionary data_dict
 #
 
 def get_data_dict(path_to_npy, obj_data, cfg):
@@ -73,8 +78,21 @@ def get_data_dict(path_to_npy, obj_data, cfg):
     return data_dict
 
 
-
 cfg = update_config(config, path_config, ensure_dir=False)
 random.seed(cfg.seed)
 
+with open(path_objData, 'r') as f:
+    obj_data = json.load(f)
+
 data_dict = get_data_dict(path_to_npy, obj_data, cfg)
+
+
+
+#
+# Save the .pkl file
+#
+
+with open(path_save_pkl_file, 'wb') as f:  # 'wb' is write binary mode
+    pickle.dump(data_dict, f)
+
+
