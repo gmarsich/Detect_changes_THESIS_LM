@@ -1,7 +1,5 @@
 '''generate_subscans.py but for Replica.
-This scripts takes in input a point cloud in a certain format and creates the .npy file that will be used by SGAligner.'''
-
-# TODO: bisogna generare il file objects.json per preprocess.py
+This scripts takes in input a point cloud containing some information and creates the .npy file that will be used by SGAligner.'''
 
 import numpy as np
 import os

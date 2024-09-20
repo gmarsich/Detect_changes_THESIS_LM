@@ -200,10 +200,9 @@ with open(path_listInstances, 'r') as file:
     for line in file:
         parts = line.split()
 
-        obj_id = parts[0]
+        obj_id = int(parts[0])
         label = parts[1]
-
-        ply_color = random_dict.get(obj_id, [0, 0, 0]) # default to [0, 0, 0] if the ID is not found
+        ply_color = random_dict[obj_id]
         ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
 
         obj_data["objects"].append({
@@ -215,8 +214,4 @@ with open(path_listInstances, 'r') as file:
 # Save the dictionary to a JSON file
 with open(path_save_objectsJSON, 'w') as json_file:
     json.dump(obj_data, json_file, indent=2)
-
-
-
-
 
