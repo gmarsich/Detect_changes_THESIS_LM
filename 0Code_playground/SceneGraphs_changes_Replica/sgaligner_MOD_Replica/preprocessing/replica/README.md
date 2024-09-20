@@ -2,8 +2,8 @@ STEPS:
 
 - use get_transformationMatrix.py to get the transformation matrix
 - use create_ply_withSegmentation.py to get colored_mesh_with_IDs.ply (that is aligned with a target scene) and objects.json MOSTRARE IMMAGINE SOVRAPPOSIZIONE CON SEGMENTAZIONE NEL PPT
-- use create_npy_files.py to get the .npy files
-- 
+- use create_npy_files.py to get the .npy files (each .npy file basically contains a point cloud)
+- use create_pkl_files.py to get the .pkl files (each .pkl file contains a dictionary)
 
 
 PPT:

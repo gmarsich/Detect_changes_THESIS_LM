@@ -135,25 +135,6 @@ class AlignerRegTester(SingleTester):
             assert np.max(e1i_idxs) <= rank_list.shape[0]
 
 
-            # GAIA: the following is not useful for me
-            # # Compute Mean Reciprocal Rank
-            # self.alignment_metrics_meter['mrr'] = alignment.compute_mean_reciprocal_rank(rank_list, e1i_idxs, e2i_idxs, self.alignment_metrics_meter['mrr'] )
-
-            # # Compute Hits@k = {1, 2, 3, 4, 5}
-            # for k in self.all_k:
-            #     correct, total = alignment.compute_hits_k(rank_list, e1i_idxs, e2i_idxs, k)
-            #     self.alignment_metrics_meter[k]['correct'] += correct
-            #     self.alignment_metrics_meter[k]['total'] += total
-            
-            # # Compute SGAR
-            # sgar_vals = alignment.compute_sgar(sim, rank_list, e1i_idxs, e2i_idxs, self.recall_modes)
-            # for recall_mode in self.recall_modes:
-            #     self.alignment_metrics_meter['sgar'][recall_mode].append(sgar_vals[recall_mode])
-
-            # self.anchors.append(len(e1i_idxs))
-            
-            # GAIA: end of unuseful things
-
             # BEGINNING OF if
             node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
             print("\n\nASSOCIATIONS BETWEEN NODES")
@@ -161,50 +142,6 @@ class AlignerRegTester(SingleTester):
             print("\n")
             # node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count) # GAIA: "global IDs"
         
-            
-            
-            # Load subscene points
-            # src_scan_id = data_dict['scene_ids'][batch_idx][0]
-            # ref_scan_id = data_dict['scene_ids'][batch_idx][1]
-            # overlap = data_dict['overlap'][batch_idx]
-            # scan_id = src_scan_id[:src_scan_id.index('_')]
-
-            # src_points, src_plydata = scan3r.load_plydata_npy(osp.join(self.test_dataset.scans_scenes_dir, src_scan_id, 'data.npy'), obj_ids=None, return_ply_data=True)
-            # ref_points, ref_plydata = scan3r.load_plydata_npy(osp.join(self.test_dataset.scans_scenes_dir, ref_scan_id, 'data.npy'), obj_ids=None, return_ply_data=True)
-            # raw_points = scan3r.load_plydata_npy(osp.join(self.test_dataset.data_root_dir, 'scenes', scan_id, 'data.npy'))
-            
-            # reg_data_dict = dict()
-            # reg_data_dict['node_corrs'] = node_corrs
-            # reg_data_dict['src_points'] = src_points - pcl_center
-            # reg_data_dict['ref_points'] = ref_points - pcl_center
-            # reg_data_dict['src_plydata'] = src_plydata
-            # reg_data_dict['ref_plydata'] = ref_plydata 
-            # reg_data_dict['raw_points'] = raw_points - pcl_center
-            # reg_data_dict['gt_transform'] = np.eye(4)
-
-            # _, gt_src_corr_idxs = point_cloud.compute_pcl_overlap(reg_data_dict['src_points'], reg_data_dict['ref_points'] )
-            # _, gt_ref_corr_idxs = point_cloud.compute_pcl_overlap(reg_data_dict['ref_points'] , reg_data_dict['src_points'])
-
-            # reg_data_dict['gt_src_corr_points'] = reg_data_dict['src_points'][gt_src_corr_idxs]
-            # reg_data_dict['gt_ref_corr_points'] = reg_data_dict['ref_points'] [gt_ref_corr_idxs]
-
-            # all_reg_results_dict = self.registration_evaluator.run_registration(reg_data_dict)
-            # normal_reg_results_dict = all_reg_results_dict[0]
-            # aligner_reg_results_dict = all_reg_results_dict[1]
-
-            # if normal_reg_results_dict is not None and aligner_reg_results_dict is not None:
-            #     self.aligner_registration_metrics_meter = common.update_dict(self.aligner_registration_metrics_meter, aligner_reg_results_dict)
-            #     self.normal_registration_metrics_meter = common.update_dict(self.normal_registration_metrics_meter, normal_reg_results_dict)
-
-            # END OF if
-
-
-        # obj_cnt_start_idx = obj_cnt_end_idx
-        # curr_total_objects_count += data_dict['tot_obj_count'][batch_idx]
-        # e1i_start_idx, e2i_start_idx = e1i_end_idx, e2i_end_idx
-
-            
-            
         return 
         # GAIA: the return was: { 'alignment_metrics' : self.alignment_metrics_meter, 'normal_registration_metrics' : self.normal_registration_metrics_meter, 'aligner_registration_metrics' : self.aligner_registration_metrics_meter }
         

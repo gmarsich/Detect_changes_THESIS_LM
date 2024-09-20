@@ -1,3 +1,6 @@
+'''The new_data_dict that I want to get from this script is a replacement for the dataloader. This new_data_dict contains
+information that are given from both the two scenes that are being compared.'''
+
 import numpy as np
 import torch
 import pickle
