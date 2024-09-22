@@ -11,13 +11,15 @@ import json
 # Variables
 #
 
+# IMPORTANT: ref is the target, src is the source
+
 path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
 path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
 path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
 pc_resolution = 256
 objectIDs_ref = [77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
 objectIDs_src = [34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
-path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/index_changes.json'
+path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
 
 
 #
@@ -78,7 +80,7 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     src_object_points = src_data_dict['obj_points'][pc_resolution] - pcl_center
     ref_object_points = ref_data_dict['obj_points'][pc_resolution] - pcl_center
 
-    new_src_object_points = get_newObjectPoints(src_object_points, src_data_dict, objectIDs_src)
+    new_src_object_points = get_newObjectPoints(src_object_points, src_data_dict, objectIDs_src) # new_src_object_points[i] contains the point cloud of ID objectIDs_src[i]
     new_ref_object_points = get_newObjectPoints(ref_object_points, ref_data_dict, objectIDs_ref)
     
     tot_object_points = torch.cat([torch.from_numpy(new_src_object_points), torch.from_numpy(new_ref_object_points)]).type(torch.FloatTensor)
@@ -97,15 +99,12 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     #
 
     new_data_dict['e1i'] = np.array([x for x in range(len(new_src_object_points))])
-    print(new_data_dict['e1i'])
     new_data_dict['e2i'] = np.array([x for x in range(len(new_ref_object_points))]) + new_src_object_points.shape[0]
-    print(new_data_dict['e2i'])
 
     index_changes = {
     'src': [],
     'ref': []
     }
-
 
     for index, value in enumerate(objectIDs_src):
         index_changes['src'].append({
@@ -128,12 +127,10 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     # e1i_count and e2i_count
     #
 
-    new_data_dict['e1i_count'] = src_data_dict['ei'].shape[0]
-    new_data_dict['e2i_count'] = ref_data_dict['ei'].shape[0]
-
+    new_data_dict['e1i_count'] = len(new_src_object_points)
+    new_data_dict['e2i_count'] = len(new_ref_object_points)
 
     return new_data_dict
-
 
 
 new_data_dict = get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref)
