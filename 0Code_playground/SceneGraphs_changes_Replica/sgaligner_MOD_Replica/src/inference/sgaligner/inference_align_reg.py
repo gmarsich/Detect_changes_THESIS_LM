@@ -105,25 +105,17 @@ class AlignerRegTester(SingleTester):
         e1i_start_idx = 0
         e2i_start_idx = 0
         obj_cnt_start_idx = 0
-        #curr_total_objects_count = 0 
 
         batch_idx = 0 # GAIA: I removed the for loop  
 
-        # GAIA: modified (no for loop: for batch_idx in range(self.test_loader.batch_size)) because we just have one iteration
-
         src_objects_count = data_dict['graph_per_obj_count'][batch_idx][0]
-        # ref_objects_count = data_dict['graph_per_obj_count'][batch_idx][1]
-        # pcl_center = data_dict['pcl_center'][batch_idx]
-        
-        #all_objects_ids = data_dict['obj_ids']
-        e1i_end_idx = e1i_start_idx + data_dict['e1i_count'][batch_idx]
-        e2i_end_idx = e2i_start_idx + data_dict['e2i_count'][batch_idx]
-        obj_cnt_end_idx = obj_cnt_start_idx + data_dict['tot_obj_count'][batch_idx]
+
+        e1i_end_idx = data_dict['e1i_count'][batch_idx]
+        e2i_end_idx = data_dict['e2i_count'][batch_idx]
+        obj_cnt_end_idx = data_dict['tot_obj_count'][batch_idx]
 
         e1i_idxs = data_dict['e1i'][e1i_start_idx : e1i_end_idx]
         e2i_idxs = data_dict['e2i'][e2i_start_idx : e2i_end_idx]
-        # e1i_idxs -= curr_total_objects_count
-        # e2i_idxs -= curr_total_objects_count
 
         if e1i_idxs.shape[0] != 0 and e2i_idxs.shape[0] != 0:
             #assert e1i_idxs.shape == e2i_idxs.shape
@@ -134,8 +126,6 @@ class AlignerRegTester(SingleTester):
             rank_list = torch.argsort(sim, dim = 1)
             assert np.max(e1i_idxs) <= rank_list.shape[0]
 
-
-            # BEGINNING OF if
             node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
             print("\n\nASSOCIATIONS BETWEEN NODES")
             print(node_corrs)
@@ -143,56 +133,7 @@ class AlignerRegTester(SingleTester):
             # node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count) # GAIA: "global IDs"
         
         return 
-        # GAIA: the return was: { 'alignment_metrics' : self.alignment_metrics_meter, 'normal_registration_metrics' : self.normal_registration_metrics_meter, 'aligner_registration_metrics' : self.aligner_registration_metrics_meter }
-        
-
-
-
-    def eval_step_Replica(self, data_dict, output_dict):
-        data_dict = torch_util.release_cuda(data_dict)
-        embedding = output_dict[self.modules[0]] # GAIA modified for my case, where I just have one module ('points')
-
-        e1i_start_idx = 0
-        e2i_start_idx = 0
-        obj_cnt_start_idx = 0
-        #curr_total_objects_count = 0 
-
-        batch_idx = 0 # GAIA: I removed the for loop  
-
-        # GAIA: modified (no for loop: for batch_idx in range(self.test_loader.batch_size)) because we just have one iteration
-
-        src_objects_count = data_dict['graph_per_obj_count'][batch_idx][0]
-        # ref_objects_count = data_dict['graph_per_obj_count'][batch_idx][1]
-        # pcl_center = data_dict['pcl_center'][batch_idx]
-        
-        #all_objects_ids = data_dict['obj_ids']
-        e1i_end_idx = e1i_start_idx + data_dict['e1i_count'][batch_idx]
-        e2i_end_idx = e2i_start_idx + data_dict['e2i_count'][batch_idx]
-        obj_cnt_end_idx = obj_cnt_start_idx + data_dict['tot_obj_count'][batch_idx]
-
-        e1i_idxs = data_dict['e1i'][e1i_start_idx : e1i_end_idx]
-        e2i_idxs = data_dict['e2i'][e2i_start_idx : e2i_end_idx]
-        # e1i_idxs -= curr_total_objects_count
-        # e2i_idxs -= curr_total_objects_count
-
-        if e1i_idxs.shape[0] != 0 and e2i_idxs.shape[0] != 0:
-            #assert e1i_idxs.shape == e2i_idxs.shape
-            
-            emb = embedding[obj_cnt_start_idx : obj_cnt_end_idx]
-            emb = emb / emb.norm(dim=1)[:, None]
-            sim = 1 - torch.mm(emb, emb.transpose(0,1))
-            rank_list = torch.argsort(sim, dim = 1)
-            assert np.max(e1i_idxs) <= rank_list.shape[0]
-
-
-            # BEGINNING OF if
-            node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
-            print("\n\nASSOCIATIONS BETWEEN NODES")
-            print(node_corrs)
-            print("\n")
-            # node_corrs = alignment.get_node_corrs_objects_ids(node_corrs, all_objects_ids, curr_total_objects_count) # GAIA: "global IDs"
-        
-        return 
+    
 
 
 

@@ -43,23 +43,23 @@ Additionally, this script applies the transformation matrix so that there is an 
 
 '''
 
-# TODO: as far as I remember there are things in the scenes that did not have a label. You may retrieve them and add them to the point clouds
 
 import os
 import random
 import open3d as o3d
 import numpy as np
 import json
+import ast
 
 #
 # Variables to change
 #
 
-path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/list_instances.txt"
-path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/objects.json"
-usingTarget = False # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt"
+path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/objects.json"
+usingTarget = True # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
 
 
 #
@@ -199,10 +199,13 @@ obj_data = {"objects": []}
 with open(path_listInstances, 'r') as file:
     i = 0
     for line in file:
-        parts = line.split()
+        parts = line.split('\t')
 
         obj_id = parts[0]
         label = parts[1]
+        centroid_str = parts[2]
+        centroid_ast = ast.literal_eval(centroid_str)
+        centroid = list(centroid_ast)
         ply_color = random_dict[int(obj_id)]
         ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
 
@@ -210,6 +213,7 @@ with open(path_listInstances, 'r') as file:
             "count": i,
             "id": obj_id,
             "label": label,
+            "centroid": centroid, # be aware that some of the precision is lost from the .txt file
             "ply_color": ply_color_hex
         })
 

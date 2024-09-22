@@ -27,7 +27,7 @@ _C.data.pred_subfix = ''
 
 # preprocess params
 _C.preprocess = CN()
-_C.preprocess.pc_resolutions = [512] # [32, 64, 128, 256, 512]
+_C.preprocess.pc_resolutions = [32, 64, 128, 256, 512]
 _C.preprocess.subscenes_per_scene = 2 # GAIA modified from 7 to 2
 _C.preprocess.min_obj_points = 50
 _C.preprocess.anchor_type_name = ''

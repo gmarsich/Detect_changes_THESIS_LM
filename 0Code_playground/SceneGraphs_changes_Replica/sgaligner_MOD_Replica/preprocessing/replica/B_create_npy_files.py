@@ -9,7 +9,7 @@ import os
 # Variables
 #
 
-base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/"
+base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/"
 ply_file_path = os.path.join(base_path, "Segmentation/colored_mesh_with_IDs.ply")
 npy_file_path = os.path.join(base_path, "SGAligner/data.npy")  # where to save the .npy file
 
@@ -37,7 +37,7 @@ def read_ply_and_convert_to_npy(ply_file_path, npy_file_path):
             data.append((x, y, z, red, green, blue, object_id))
 
     data_array = np.array(data, dtype=[('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
-                                       ('red', 'u1'), ('green', 'u1'), ('blue', 'u1'), 
+                                       ('red', 'i4'), ('green', 'i4'), ('blue', 'i4'), 
                                        ('objectId', 'i4')])
     
     np.save(npy_file_path, data_array)

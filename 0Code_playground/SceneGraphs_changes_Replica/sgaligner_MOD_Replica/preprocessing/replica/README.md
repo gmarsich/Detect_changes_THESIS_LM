@@ -4,6 +4,7 @@ STEPS:
 - use create_ply_withSegmentation.py to get colored_mesh_with_IDs.ply (that is aligned with a target scene) and objects.json MOSTRARE IMMAGINE SOVRAPPOSIZIONE CON SEGMENTAZIONE NEL PPT
 - use create_npy_files.py to get the .npy files (each .npy file basically contains a point cloud)
 - use create_pkl_files.py to get the .pkl files (each .pkl file contains a dictionary)
+- use create_new_dictionary.py to get the new_dict_that will be used as input for SGAligner
 
 
 PPT:
