@@ -19,11 +19,14 @@ from datasets.loaders import get_val_dataloader
 from configs import config, update_config
 from utils import alignment, common, point_cloud
 # from GeoTransformer.config import make_cfg as make_cfg_reg # GAIA seems not to be useful in this code
+import preprocessing.replica.D_create_new_dictionary
 
 class AlignerRegTester(SingleTester):
-    def __init__(self, cfg, parser):
+    def __init__(self, cfg, parser, new_data_dict):
         super().__init__(cfg, parser=parser)
         
+        self.new_data_dict = new_data_dict
+
         self.run_reg = cfg.registration
 
         # Model Specific params
@@ -46,13 +49,13 @@ class AlignerRegTester(SingleTester):
 
         # dataloader
         start_time = time.time()
-        dataset, data_loader = get_val_dataloader(cfg) # GAIA data_loader will become test_loader
+        #dataset, data_loader = get_val_dataloader(cfg) # GAIA data_loader will become test_loader
         #dataset, data_loader = get_val_dataloader_Replica(cfg) # GAIA TODO data_loader will become test_loader
         loading_time = time.time() - start_time
         message = f'Data loader created: {loading_time:.3f}s collapsed.'
         self.logger.info(message)
 
-        self.register_loader(data_loader) # GAIA to change. It sets test_loader
+        #self.register_loader(data_loader) # GAIA to change. It sets test_loader
         #self.register_dataset(dataset) # GAIA: it seems that we don't need this
 
         # model 
@@ -74,7 +77,7 @@ class AlignerRegTester(SingleTester):
         self.logger.info(message)
         return model
     
-    def test_step(self, iteration, data_dict):
+    def test_step(self, data_dict):
         output_dict = self.model(data_dict)
         return output_dict
     
@@ -98,24 +101,18 @@ class AlignerRegTester(SingleTester):
 
         return metrics_dict
         
-    def eval_step(self, iteration, data_dict, output_dict):
+    def eval_step(self, data_dict, output_dict):
         data_dict = torch_util.release_cuda(data_dict)
         embedding = output_dict[self.modules[0]] # GAIA modified for my case, where I just have one module ('points')
 
-        e1i_start_idx = 0
-        e2i_start_idx = 0
         obj_cnt_start_idx = 0
 
-        batch_idx = 0 # GAIA: I removed the for loop  
+        src_objects_count = data_dict['graph_per_obj_count'][0]
 
-        src_objects_count = data_dict['graph_per_obj_count'][batch_idx][0]
+        obj_cnt_end_idx = data_dict['tot_obj_count']
 
-        e1i_end_idx = data_dict['e1i_count'][batch_idx]
-        e2i_end_idx = data_dict['e2i_count'][batch_idx]
-        obj_cnt_end_idx = data_dict['tot_obj_count'][batch_idx]
-
-        e1i_idxs = data_dict['e1i'][e1i_start_idx : e1i_end_idx]
-        e2i_idxs = data_dict['e2i'][e2i_start_idx : e2i_end_idx]
+        e1i_idxs = data_dict['e1i']
+        e2i_idxs = data_dict['e2i']
 
         if e1i_idxs.shape[0] != 0 and e2i_idxs.shape[0] != 0:
             #assert e1i_idxs.shape == e2i_idxs.shape
@@ -183,7 +180,19 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
     parser, args = parse_args(args_list)
     cfg = update_config(config, args.config) # GAIA a variable containing the configs, basically
 
-    tester = AlignerRegTester(cfg, parser)
+
+
+
+    path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
+    path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
+    path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
+    pc_resolution = 256
+    objectIDs_ref = [77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
+    objectIDs_src = [34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
+    path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
+
+    new_data_dict = preprocessing.replica.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
+    tester = AlignerRegTester(cfg, parser, new_data_dict)
     tester.run()
 
 if __name__ == '__main__':

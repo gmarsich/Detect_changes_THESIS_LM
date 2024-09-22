@@ -63,7 +63,7 @@ def get_newObjectPoints(object_points, data_dict, objectIDs):
 
 
 # main function
-def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref):
+def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges):
     
     new_data_dict = {}
 
@@ -133,5 +133,4 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     return new_data_dict
 
 
-new_data_dict = get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref)
-
+#new_data_dict = get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref)
