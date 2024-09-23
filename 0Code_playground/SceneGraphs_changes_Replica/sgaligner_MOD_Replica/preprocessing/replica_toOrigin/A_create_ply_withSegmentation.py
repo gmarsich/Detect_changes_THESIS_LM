@@ -1,5 +1,7 @@
-'''Get the file colored_mesh_with_IDs.ply, i.e., the point cloud with a visible segmentation (given by the ground truth) of a scene from the Replica dataset
-and create the file objects.json.
+'''MODIFIED TO GET ALL THE INSTANCE POINT CLOUDS (ONE POINT CLOUD FOR EACH INSTANCE) WITH THE CENTROID IN THE ORIGIN'''
+
+'''Get the file colored_mesh_with_IDs_toOrigin.ply, i.e., the point cloud with a visible segmentation (given by the ground truth) of a scene from the Replica dataset
+and create the file objects_toOrigin.json.
 The header of a labels.instances.align.annotated.v2.ply from 3RScan appears like this:
 
 ply
@@ -55,11 +57,12 @@ import ast
 # Variables to change
 #
 
-path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt"
-path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/objects.json"
-usingTarget = True # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/list_instances.txt"
+path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/objects_toOrigin.json"
+usingTarget = False # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+
 
 
 #
@@ -89,21 +92,74 @@ list_numbers = extract_numbers_from_filenames(path_meshSemantics)
 # Create the dictionary that associates a color to an object
 def create_colors_dict(list_numbers):
     random_dict = {}
+    used_colors = set()
     random.seed(1) # set the random colors
     
     for number in list_numbers:
-        random_array = [random.randint(0, 255) for _ in range(3)]
-        random_dict[number] = random_array
+        while True:
+            random_array = tuple([random.randint(0, 255) for _ in range(3)])
+            if random_array not in used_colors:
+                used_colors.add(random_array)
+                random_dict[number] = list(random_array)
+                break
     
     return random_dict
 
 random_dict = create_colors_dict(list_numbers)
 
 
+# # OLD VERSION OF PREVIOUS CODE:
+# def create_colors_dict(list_numbers):
+#     random_dict = {}
+#     random.seed(1) # set the random colors
+    
+#     for number in list_numbers:
+#         random_array = [random.randint(0, 255) for _ in range(3)]
+#         random_dict[number] = random_array
+    
+#     return random_dict
+
+
 
 #
-# Put all the colored objects in a point cloud; the alignment has to be performed on the single instances.
-# Save colored_mesh_with_IDs.ply 
+# Create a dictionary containing id, label and ply_color.
+# Save objects_toOrigin.json
+#
+
+obj_data = {"objects": []}
+
+with open(path_listInstances, 'r') as file:
+    i = 0
+    for line in file:
+        parts = line.split('\t')
+
+        obj_id = parts[0]
+        label = parts[1]
+        centroid_str = parts[2]
+        centroid_ast = ast.literal_eval(centroid_str)
+        centroid = list(centroid_ast)
+        ply_color = random_dict[int(obj_id)]
+        ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
+
+        obj_data["objects"].append({
+            "count": i,
+            "id": obj_id,
+            "label": label,
+            "original centroid": centroid, # be aware that some of the precision is lost from the .txt file
+            "ply_color": ply_color_hex
+        })
+
+        i+=1
+
+# Save the dictionary to a JSON file
+with open(path_save_objectsJSON, 'w') as json_file:
+    json.dump(obj_data, json_file, indent=2)
+
+
+
+#
+# Put all the colored objects in a point cloud, and each instance has its centroid in the origin; the alignment has to be performed on the single instances.
+# Save colored_mesh_with_IDs_toOrigin.ply 
 #
 
 # def load_and_color_point_clouds_segmentationOnly(path_meshSemantics, random_dict):
@@ -130,6 +186,20 @@ random_dict = create_colors_dict(list_numbers)
     
 transformation_matrix = np.loadtxt(path_transformationMatrix)
 
+
+def apply_transformation_to_points(point, transformation_matrix):   
+    # Convert the point to homogeneous coordinates (add 1 to make it [x, y, z, 1])
+    point_homogeneous = np.append(point, 1)
+    
+    # Apply the transformation matrix (4x4) to the point
+    transformed_point_homogeneous = np.dot(transformation_matrix, point_homogeneous)
+    
+    # Convert back to 3D coordinates by taking only the x, y, z components
+    transformed_point = transformed_point_homogeneous[:3]
+    
+    return transformed_point
+
+
 def get_data_for_pointCloud(path_meshSemantics, random_dict):
     all_points = []
     all_colors = []
@@ -141,8 +211,15 @@ def get_data_for_pointCloud(path_meshSemantics, random_dict):
         
         if os.path.exists(filepath):
             pcd = o3d.io.read_point_cloud(filepath)
+            object_centroid = pcd.get_center()
             if not usingTarget:
                 pcd.transform(transformation_matrix)
+                object_centroid = pcd.get_center()
+
+            transformation_matrix_toOrigin = np.identity(4)
+            transformation_matrix_toOrigin[:3, 3] = -np.array(object_centroid)
+            pcd.transform(transformation_matrix_toOrigin)
+
             points = np.asarray(pcd.points)
 
             color = np.array(random_dict[i])
@@ -165,7 +242,7 @@ points, colors, object_ids = get_data_for_pointCloud(path_meshSemantics, random_
 combined_data = np.hstack((points, colors, object_ids))
 
 # Write the PLY file manually
-output_ply = os.path.join(path_meshSemantics, "colored_mesh_with_IDs.ply")
+output_ply = os.path.join(path_meshSemantics, "colored_mesh_with_IDs_toOrigin.ply")
 with open(output_ply, 'w') as f:
     # Write PLY header
     f.write("ply\n")
@@ -188,38 +265,4 @@ colored_point_cloud = o3d.io.read_point_cloud(output_ply)
 o3d.visualization.draw_geometries([colored_point_cloud])
 
 
-
-#
-# Create a dictionary containing id, label and ply_color.
-# Save objects.json
-#
-
-obj_data = {"objects": []}
-
-with open(path_listInstances, 'r') as file:
-    i = 0
-    for line in file:
-        parts = line.split('\t')
-
-        obj_id = parts[0]
-        label = parts[1]
-        centroid_str = parts[2]
-        centroid_ast = ast.literal_eval(centroid_str)
-        centroid = list(centroid_ast)
-        ply_color = random_dict[int(obj_id)]
-        ply_color_hex = '#{:02x}{:02x}{:02x}'.format(*ply_color) # format the ply_color as a hexadecimal string
-
-        obj_data["objects"].append({
-            "count": i,
-            "id": obj_id,
-            "label": label,
-            "centroid": centroid, # be aware that some of the precision is lost from the .txt file
-            "ply_color": ply_color_hex
-        })
-
-        i+=1
-
-# Save the dictionary to a JSON file
-with open(path_save_objectsJSON, 'w') as json_file:
-    json.dump(obj_data, json_file, indent=2)
 

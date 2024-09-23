@@ -87,7 +87,7 @@ list_numbers = extract_numbers_from_filenames(path_meshSemantics)
 
 
 # Create the dictionary that associates a color to an object
-def create_colors_dict(list_numbers):
+def create_colors_dict(list_numbers): # TODO: should add a check that no color is repeated. See replica_toOrigin
     random_dict = {}
     random.seed(1) # set the random colors
     

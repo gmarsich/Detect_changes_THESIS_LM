@@ -1,3 +1,5 @@
+'''MODIFIED TO GET ALL THE INSTANCE POINT CLOUDS (ONE POINT CLOUD FOR EACH INSTANCE) WITH THE CENTROID IN THE ORIGIN'''
+
 '''generate_subscans.py but for Replica.
 This scripts takes in input a point cloud containing some information and creates the .npy file that will be used by SGAligner.'''
 
@@ -10,8 +12,8 @@ import os
 #
 
 base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/"
-ply_file_path = os.path.join(base_path, "Segmentation/colored_mesh_with_IDs.ply")
-npy_file_path = os.path.join(base_path, "SGAligner/data.npy")  # where to save the .npy file
+ply_file_path = os.path.join(base_path, "Segmentation/colored_mesh_with_IDs_toOrigin.ply")
+npy_file_path = os.path.join(base_path, "SGAligner_toOrigin/data.npy")  # where to save the .npy file
 
 
 #

@@ -137,8 +137,8 @@ import pickle
 path_meshSemantics_ref = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_meshSemantics_src = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation"
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-objectIDs_src = [27, 89, 130, 13] # 1: ceiling, stair, tv-screen 130, 13
-objectIDs_ref = [10, 120, 231, 45, 32] # 0: ceiling, stair, tv-screen 231, 45, table
+objectIDs_src = [25, 62, 160] # 1: chair (round), chair (tall), chair
+objectIDs_ref = [48, 52] # 0: chair (round), chair (tall)
 
 # Doing the important stuff
 transformation_matrix = np.loadtxt(path_transformationMatrix)
@@ -160,16 +160,16 @@ def load_and_color_point_clouds(path_meshSemantics, objectIDs, transformation_ma
         full_point_cloud = combined_point_clouds[0]
         for pcd in combined_point_clouds[1:]:
             full_point_cloud += pcd
-
+            
     if color is not None:
         full_point_cloud.paint_uniform_color(color)
         
-        return full_point_cloud
-    else:
-        return None
+    return full_point_cloud
 
-pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None, color = [1, 0, 0])
-pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix, color = [0, 1, 0])
 
-o3d.visualization.draw_geometries([pcd_src, pcd_ref])
+#pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None)
+pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix)
 
+#o3d.visualization.draw_geometries([pcd_src, pcd_ref])
+
+o3d.visualization.draw_geometries([pcd_src])
