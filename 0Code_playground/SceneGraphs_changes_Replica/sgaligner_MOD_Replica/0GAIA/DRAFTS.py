@@ -12,7 +12,8 @@ import pickle
 # point_cloud_b = o3d.io.read_point_cloud("/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/colored_mesh_with_IDs.ply")
 
 # o3d.visualization.draw_geometries([point_cloud_a, point_cloud_b])
-# o3d.visualization.draw_geometries([point_cloud_b])
+#o3d.visualization.draw_geometries([point_cloud_a.paint_uniform_color([1, 0.706, 0]), point_cloud_b.paint_uniform_color([0, 0.651, 0.929])])
+#o3d.visualization.draw_geometries([point_cloud_b])
 
 # color = '#02c442'
 # fig, ax = plt.subplots()
@@ -115,4 +116,60 @@ import pickle
 
 
 
+
+
+# #
+# # Number of points in a point cloud
+# #
+
+# point_clouddd = o3d.io.read_point_cloud("/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply")
+# print(len(point_clouddd.points))
+
+
+
+
+
+#
+# Visualise the set of instances that are taken into account
+#
+
+# Variables
+path_meshSemantics_ref = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics_src = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation"
+path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
+objectIDs_src = [27, 89, 130, 13] # 1: ceiling, stair, tv-screen 130, 13
+objectIDs_ref = [10, 120, 231, 45, 32] # 0: ceiling, stair, tv-screen 231, 45, table
+
+# Doing the important stuff
+transformation_matrix = np.loadtxt(path_transformationMatrix)
+
+def load_and_color_point_clouds(path_meshSemantics, objectIDs, transformation_matrix = None, color = None):
+    combined_point_clouds = []
+
+    for value in objectIDs:
+        filename = f'mesh_semantic.ply_{value}.ply'
+        filepath = os.path.join(path_meshSemantics, filename)
+        
+        if os.path.exists(filepath):
+            pcd = o3d.io.read_point_cloud(filepath)
+            if transformation_matrix is not None:
+                pcd.transform(transformation_matrix)
+            combined_point_clouds.append(pcd)
+
+    if combined_point_clouds:
+        full_point_cloud = combined_point_clouds[0]
+        for pcd in combined_point_clouds[1:]:
+            full_point_cloud += pcd
+
+    if color is not None:
+        full_point_cloud.paint_uniform_color(color)
+        
+        return full_point_cloud
+    else:
+        return None
+
+pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None, color = [1, 0, 0])
+pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix, color = [0, 1, 0])
+
+o3d.visualization.draw_geometries([pcd_src, pcd_ref])
 

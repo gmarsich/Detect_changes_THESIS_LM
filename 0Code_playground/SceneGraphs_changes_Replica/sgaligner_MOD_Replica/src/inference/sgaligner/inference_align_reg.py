@@ -106,11 +106,10 @@ class AlignerRegTester(SingleTester):
         embedding = output_dict[self.modules[0]] # GAIA modified for my case, where I just have one module ('points')
 
         obj_cnt_start_idx = 0
-
         src_objects_count = data_dict['graph_per_obj_count'][0]
-
+        
         obj_cnt_end_idx = data_dict['tot_obj_count']
-
+        
         e1i_idxs = data_dict['e1i']
         e2i_idxs = data_dict['e2i']
 
@@ -118,9 +117,15 @@ class AlignerRegTester(SingleTester):
             #assert e1i_idxs.shape == e2i_idxs.shape
             
             emb = embedding[obj_cnt_start_idx : obj_cnt_end_idx]
+
             emb = emb / emb.norm(dim=1)[:, None]
             sim = 1 - torch.mm(emb, emb.transpose(0,1))
+            print(sim)
+            print('\n')
             rank_list = torch.argsort(sim, dim = 1)
+            print(rank_list)
+            sorted_sim = torch.gather(sim, 1, rank_list)
+            print(sorted_sim)
             assert np.max(e1i_idxs) <= rank_list.shape[0]
 
             node_corrs = alignment.compute_node_corrs(rank_list, src_objects_count, self.reg_k)
@@ -186,9 +191,10 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
     path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
     path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
     path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
-    pc_resolution = 256
-    objectIDs_ref = [77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
-    objectIDs_src = [34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
+    pc_resolution = 4000
+    objectIDs_src = [27, 89, 130, 13] #[34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
+    objectIDs_ref = [10, 120, 231, 45, 32]  #[77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
+    
     path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
 
     new_data_dict = preprocessing.replica.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
