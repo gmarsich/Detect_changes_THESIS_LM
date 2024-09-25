@@ -1,0 +1,27 @@
+The file I modified compared to the original repository (https://github.com/sayands/sgaligner/tree/main) are:
+
+# /local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/utils/define.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/req.yml
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/configs/scan3r/scan3r_ground_truth.yaml
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/utils/define.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/engine/single_tester.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/engine/base_tester.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/aligner/sg_aligner.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/engine/base_tester.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/configs/default.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/utils/alignment.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/datasets/scan3r.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/inference/sgaligner/inference_align_reg.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/engine/single_tester.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/datasets/loaders.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/aligner/sg_aligner.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/utils/point_cloud.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/utils/open3d_SAYAN.py # conflict with the package open3d
+
+ADDED:
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/pointnet2_ops
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/inference/sgaligner/GAIA_modify_ckp.py
+/local/home/gmarsich/Desktop/sgaligner_MOD_3RScan/src/datasets/replica.py
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/preprocessing/replica
+/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/inference/sgaligner/GAIA_modify_ckp_POINTS.py
+

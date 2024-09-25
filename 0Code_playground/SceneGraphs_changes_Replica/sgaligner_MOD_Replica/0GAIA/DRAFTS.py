@@ -32,7 +32,7 @@ import pickle
 
 # # Load the .npy file
 # file_path = '/local/home/gmarsich/Desktop/3RScan/out/scenes/754e884c-ea24-2175-8b34-cead19d4198d_5/data.npy'
-# file_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
+# #file_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
 # data = np.load(file_path, allow_pickle=True)
 
 # print(f"Data type: {type(data)}")
@@ -129,47 +129,70 @@ import pickle
 
 
 
-#
-# Visualise the set of instances that are taken into account
-#
+# #
+# # Visualise the set of instances that are taken into account
+# #
 
-# Variables
-path_meshSemantics_ref = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
-path_meshSemantics_src = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation"
-path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-objectIDs_src = [27, 89, 130, 13, 2] # 1: ceiling, stair, tv-screen 130, 13, floor
-objectIDs_ref = [10, 120, 231, 45, 32, 8] # 0: ceiling, stair, tv-screen 231, 45, table, floor
+# # Variables
+# path_meshSemantics_ref = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+# path_meshSemantics_src = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation"
+# path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
+# objectIDs_src = [27, 89, 130, 13, 2] # 1: ceiling, stair, tv-screen 130, 13, floor
+# objectIDs_ref = [10, 120, 231, 45, 32, 8] # 0: ceiling, stair, tv-screen 231, 45, table, floor
 
-# Doing the important stuff
-transformation_matrix = np.loadtxt(path_transformationMatrix)
+# # Doing the important stuff
+# transformation_matrix = np.loadtxt(path_transformationMatrix)
 
-def load_and_color_point_clouds(path_meshSemantics, objectIDs, transformation_matrix = None, color = None):
-    combined_point_clouds = []
+# def load_and_color_point_clouds(path_meshSemantics, objectIDs, transformation_matrix = None, color = None):
+#     combined_point_clouds = []
 
-    for value in objectIDs:
-        filename = f'mesh_semantic.ply_{value}.ply'
-        filepath = os.path.join(path_meshSemantics, filename)
+#     for value in objectIDs:
+#         filename = f'mesh_semantic.ply_{value}.ply'
+#         filepath = os.path.join(path_meshSemantics, filename)
         
-        if os.path.exists(filepath):
-            pcd = o3d.io.read_point_cloud(filepath)
-            if transformation_matrix is not None:
-                pcd.transform(transformation_matrix)
-            combined_point_clouds.append(pcd)
+#         if os.path.exists(filepath):
+#             pcd = o3d.io.read_point_cloud(filepath)
+#             if transformation_matrix is not None:
+#                 pcd.transform(transformation_matrix)
+#             combined_point_clouds.append(pcd)
 
-    if combined_point_clouds:
-        full_point_cloud = combined_point_clouds[0]
-        for pcd in combined_point_clouds[1:]:
-            full_point_cloud += pcd
+#     if combined_point_clouds:
+#         full_point_cloud = combined_point_clouds[0]
+#         for pcd in combined_point_clouds[1:]:
+#             full_point_cloud += pcd
             
-    if color is not None:
-        full_point_cloud.paint_uniform_color(color)
+#     if color is not None:
+#         full_point_cloud.paint_uniform_color(color)
         
-    return full_point_cloud
+#     return full_point_cloud
 
 
-pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None)
-pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix)
+# pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None)
+# pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix)
 
-o3d.visualization.draw_geometries([pcd_src, pcd_ref])
+# o3d.visualization.draw_geometries([pcd_src, pcd_ref])
 
-o3d.visualization.draw_geometries([pcd_src])
+# o3d.visualization.draw_geometries([pcd_src])
+
+
+
+
+
+
+#
+# Render the point cloud in the npy file. OBSERVATION: the colors are not the natural ones, it is the segmentation
+#
+
+# Load the .npy file
+file_path = '/local/home/gmarsich/Desktop/3RScan/out/scenes/754e884c-ea24-2175-8b34-cead19d4198d_6/data.npy'
+data = np.load(file_path, allow_pickle=True)
+# Extract the XYZ coordinates and RGB colors
+points = np.vstack((data['x'], data['y'], data['z'])).T  # Shape (N, 3)
+colors = np.vstack((data['red'], data['green'], data['blue'])).T / 255.0  # Shape (N, 3), normalized to [0, 1]
+# Create an Open3D PointCloud object
+pcd = o3d.geometry.PointCloud()
+# Set the points and colors
+pcd.points = o3d.utility.Vector3dVector(points)
+pcd.colors = o3d.utility.Vector3dVector(colors)
+# Visualize the point cloud
+o3d.visualization.draw_geometries([pcd], window_name="Point Cloud Visualization", width=800, height=600)

@@ -1,0 +1,133 @@
+[2024-09-18 20:29:06] [INFO] Command executed: /local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/src/inference/sgaligner/inference_align_reg.py
+[2024-09-18 20:29:06] [INFO] Configs:
+{
+    "seed": 42,
+    "num_workers": 4,
+    "model_name": "sgaligner",
+    "modules": [
+        "point",
+        "gat"
+    ],
+    "registration": false,
+    "modality": "",
+    "use_predicted": false,
+    "scan_type": "subscan",
+    "data": {
+        "name": "Scan3R",
+        "root_dir": "/local/home/gmarsich/Desktop/3RScan",
+        "label_file_name": "labels.instances.align.annotated.v2.ply",
+        "ply_subfix": "",
+        "seg_subfix": "",
+        "aggre_subfix": "",
+        "pred_subfix": "inseg.ply"
+    },
+    "preprocess": {
+        "pc_resolutions": [
+            64,
+            128,
+            256,
+            512
+        ],
+        "subscenes_per_scene": 2,
+        "min_obj_points": 200,
+        "anchor_type_name": "",
+        "label_type": "Scannet20",
+        "search_method": "BBOX",
+        "radius_receptive": 0.5,
+        "max_distance": 0.1,
+        "filter_segment_size": 512,
+        "filter_corr_thres": 0.5,
+        "filter_occ_ratio": 0.75,
+        "name_same_segment": "same part"
+    },
+    "train": {
+        "batch_size": 2,
+        "pc_res": 512,
+        "use_augmentation": true,
+        "rot_factor": 1.0,
+        "augmentation_noise": 0.005
+    },
+    "val": {
+        "data_mode": "orig",
+        "batch_size": 1,
+        "pc_res": 512,
+        "overlap_low": 0.0,
+        "overlap_high": 0.0
+    },
+    "model": {
+        "rel_dim": 9,
+        "attr_dim": 164,
+        "alignment_thresh": 0.4
+    },
+    "optim": {
+        "lr": 0.001,
+        "lr_decay": 0.95,
+        "lr_decay_steps": 1,
+        "weight_decay": 1e-06,
+        "max_epoch": 50,
+        "grad_acc_steps": 1
+    },
+    "loss": {
+        "alignment_loss_weight": 1.0,
+        "constrastive_loss_weight": 1.0,
+        "zoom": 0.1
+    },
+    "reg_model": {
+        "K": 1,
+        "neighbor_limits": [
+            38,
+            36,
+            36,
+            38
+        ],
+        "num_p2p_corrs": 20000,
+        "corr_score_thresh": 0.1,
+        "rmse_thresh": 0.2,
+        "inlier_ratio_thresh": 0.05,
+        "ransac_threshold": 0.03,
+        "ransac_min_iters": 5000,
+        "ransac_max_iters": 5000,
+        "ransac_use_sprt": true
+    },
+    "metrics": {
+        "all_k": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ]
+    },
+    "working_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/configs",
+    "root_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica",
+    "exp_name": "point_gat",
+    "output_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/output/Scan3R/sgaligner/point_gat",
+    "snapshot_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/output/Scan3R/sgaligner/point_gat/snapshots",
+    "log_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/output/Scan3R/sgaligner/point_gat/logs",
+    "event_dir": "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/output/Scan3R/sgaligner/point_gat/events"
+}
+[2024-09-18 20:29:06] [INFO] Data loader created: 0.000s collapsed.
+[2024-09-18 20:29:07] [INFO] Model created
+[2024-09-18 20:29:07] [INFO] Model description:
+MultiModalEncoder(
+  (object_encoder): PointNetfeat(
+    (relu): ReLU()
+    (conv1): Conv1d(3, 64, kernel_size=(1,), stride=(1,))
+    (conv2): Conv1d(64, 128, kernel_size=(1,), stride=(1,))
+    (conv3): Conv1d(128, 256, kernel_size=(1,), stride=(1,))
+    (bn1): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (bn2): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (bn3): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (object_embedding): Linear(in_features=256, out_features=100, bias=True)
+  (structure_encoder): MultiGAT(
+    (layer_stack): ModuleList(
+      (0): GATConv(3, 128, heads=2)
+      (1): GATConv(256, 128, heads=2)
+    )
+  )
+  (structure_embedding): Linear(in_features=256, out_features=100, bias=True)
+  (fusion): MultiModalFusion()
+)
+[2024-09-18 20:29:07] [INFO] Loading from "/local/home/gmarsich/Desktop/weights+files/gat-point-epoch-50.pth.tar".
+[2024-09-18 20:29:07] [INFO] Model has been loaded.
