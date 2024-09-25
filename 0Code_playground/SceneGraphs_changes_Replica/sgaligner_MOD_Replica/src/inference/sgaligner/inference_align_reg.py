@@ -192,8 +192,8 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
     path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
     path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data.npy' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
     pc_resolution = 4000
-    objectIDs_src = [25, 62, 160] # 1: chair (round), chair (tall), chair
-    objectIDs_ref = [48, 52] # 0: chair (round), chair (tall)
+    objectIDs_src = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
+    objectIDs_ref = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
     
     path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes_toOrigin.json'
 

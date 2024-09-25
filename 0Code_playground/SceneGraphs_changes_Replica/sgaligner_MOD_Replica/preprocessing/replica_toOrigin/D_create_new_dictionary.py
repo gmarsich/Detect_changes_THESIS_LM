@@ -13,13 +13,13 @@ import json
 
 # IMPORTANT: ref is the target, src is the source
 
-path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
-path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
-path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
+path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner_toOrigin/data_dict.pkl'
+path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data_dict.pkl'
+path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data.npy'
 pc_resolution = 4000
 objectIDs_ref = [77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
 objectIDs_src = [34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
-path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
+path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes_toOrigin.json'
 
 
 #

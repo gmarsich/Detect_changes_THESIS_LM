@@ -4,16 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
-# #
-# # Verify that two scenes overlap and that colors in object.json are the colors of the instances
-# #
+#
+# Verify that two scenes overlap and that colors in object.json are the colors of the instances
+#
 
 # point_cloud_a = o3d.io.read_point_cloud("/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/colored_mesh_with_IDs.ply")
 # point_cloud_b = o3d.io.read_point_cloud("/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/colored_mesh_with_IDs.ply")
 
 # o3d.visualization.draw_geometries([point_cloud_a, point_cloud_b])
-#o3d.visualization.draw_geometries([point_cloud_a.paint_uniform_color([1, 0.706, 0]), point_cloud_b.paint_uniform_color([0, 0.651, 0.929])])
-#o3d.visualization.draw_geometries([point_cloud_b])
+# o3d.visualization.draw_geometries([point_cloud_a.paint_uniform_color([1, 0.706, 0]), point_cloud_b.paint_uniform_color([0, 0.651, 0.929])])
+# o3d.visualization.draw_geometries([point_cloud_a])
 
 # color = '#02c442'
 # fig, ax = plt.subplots()
@@ -42,7 +42,7 @@ import pickle
 # print(f"Data shape: {data.shape}")
 
 # print("Sample of the data:")
-# print(data[-1])
+# print(data[:4])
 
 
 
@@ -137,8 +137,8 @@ import pickle
 path_meshSemantics_ref = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_meshSemantics_src = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation"
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-objectIDs_src = [25, 62, 160] # 1: chair (round), chair (tall), chair
-objectIDs_ref = [48, 52] # 0: chair (round), chair (tall)
+objectIDs_src = [27, 89, 130, 13, 2] # 1: ceiling, stair, tv-screen 130, 13, floor
+objectIDs_ref = [10, 120, 231, 45, 32, 8] # 0: ceiling, stair, tv-screen 231, 45, table, floor
 
 # Doing the important stuff
 transformation_matrix = np.loadtxt(path_transformationMatrix)
@@ -167,9 +167,9 @@ def load_and_color_point_clouds(path_meshSemantics, objectIDs, transformation_ma
     return full_point_cloud
 
 
-#pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None)
+pcd_ref = load_and_color_point_clouds(path_meshSemantics_ref, objectIDs_ref, transformation_matrix = None)
 pcd_src = load_and_color_point_clouds(path_meshSemantics_src, objectIDs_src, transformation_matrix)
 
-#o3d.visualization.draw_geometries([pcd_src, pcd_ref])
+o3d.visualization.draw_geometries([pcd_src, pcd_ref])
 
 o3d.visualization.draw_geometries([pcd_src])
