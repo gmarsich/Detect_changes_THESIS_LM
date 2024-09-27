@@ -57,11 +57,11 @@ import ast
 # Variables to change
 #
 
-path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation" # folder containing the mesh_semantic.ply_i.ply
+path_meshSemantics = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation" # folder containing the mesh_semantic.ply_i.ply
 path_transformationMatrix = "/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt"
-path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/list_instances.txt"
-path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/objects_toOrigin.json"
-usingTarget = False # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
+path_listInstances = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt"
+path_save_objectsJSON = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner_toOrigin/objects_toOrigin.json"
+usingTarget = True # False: the transformation will be applied, you are dealing with the source; True: you must not apply the transformation
 
 
 

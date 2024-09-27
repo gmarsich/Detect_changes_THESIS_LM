@@ -19,7 +19,7 @@ from datasets.loaders import get_val_dataloader
 from configs import config, update_config
 from utils import alignment, common, point_cloud
 # from GeoTransformer.config import make_cfg as make_cfg_reg # GAIA seems not to be useful in this code
-import preprocessing.replica.D_create_new_dictionary
+import preprocessing.replica_toOrigin.D_create_new_dictionary
 
 class AlignerRegTester(SingleTester):
     def __init__(self, cfg, parser, new_data_dict):
@@ -197,7 +197,7 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
     
     path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes_toOrigin.json'
 
-    new_data_dict = preprocessing.replica.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
+    new_data_dict = preprocessing.replica_toOrigin.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
     tester = AlignerRegTester(cfg, parser, new_data_dict)
     tester.run()
 

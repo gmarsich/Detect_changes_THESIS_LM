@@ -180,19 +180,83 @@ import pickle
 
 
 #
-# Render the point cloud in the npy file. OBSERVATION: the colors are not the natural ones, it is the segmentation
+# Render the set of the subscans (npy files) in the same rendering
 #
 
-# Load the .npy file
-file_path = '/local/home/gmarsich/Desktop/3RScan/out/scenes/754e884c-ea24-2175-8b34-cead19d4198d_6/data.npy'
-data = np.load(file_path, allow_pickle=True)
-# Extract the XYZ coordinates and RGB colors
-points = np.vstack((data['x'], data['y'], data['z'])).T  # Shape (N, 3)
-colors = np.vstack((data['red'], data['green'], data['blue'])).T / 255.0  # Shape (N, 3), normalized to [0, 1]
-# Create an Open3D PointCloud object
-pcd = o3d.geometry.PointCloud()
-# Set the points and colors
-pcd.points = o3d.utility.Vector3dVector(points)
-pcd.colors = o3d.utility.Vector3dVector(colors)
-# Visualize the point cloud
-o3d.visualization.draw_geometries([pcd], window_name="Point Cloud Visualization", width=800, height=600)
+base_path = '/local/home/gmarsich/Desktop/steps_3RScan/3RScan_original_allScenes/out/scenes'
+
+list_path_subscans = [os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_0/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_1/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_2/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_3/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_4/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_5/data.npy'),
+                      os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_6/data.npy'),
+                      ]
+
+combined_pcd = o3d.geometry.PointCloud()
+
+for path_subscan in list_path_subscans:
+    data = np.load(path_subscan, allow_pickle=True)
+    
+    points = np.vstack((data['x'], data['y'], data['z'])).T  # Shape (N, 3)
+    colors = np.vstack((data['red'], data['green'], data['blue'])).T / 255.0  # Shape (N, 3), normalized to [0, 1]
+
+    pcd = o3d.geometry.PointCloud()
+
+    pcd.points = o3d.utility.Vector3dVector(points)
+    pcd.colors = o3d.utility.Vector3dVector(colors)
+
+    combined_pcd += pcd
+
+o3d.visualization.draw_geometries([combined_pcd])
+
+
+
+
+
+
+# #
+# # Render the set of the subscans (in pkl files) in the same rendering
+# #
+
+# base_path = '/local/home/gmarsich/Desktop/steps_3RScan/3RScan_original_allScenes/out/files/orig/data'
+
+# list_path_subscans = [os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_0.pkl'),
+#                       os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_1.pkl'),
+#                       os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_2.pkl'),
+#                       os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_3.pkl'),
+#                       os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_4.pkl'),
+#                       os.path.join(base_path, '754e884c-ea24-2175-8b34-cead19d4198d_5.pkl'),
+#                       ]
+
+# complete_pcd = o3d.geometry.PointCloud()
+
+# for path_subscan in list_path_subscans:
+#     with open(path_subscan, 'rb') as handle:
+#         data_dict = pickle.load(handle)
+
+#     obj_points = data_dict['obj_points'][128]
+
+#     combined_pcd = o3d.geometry.PointCloud()
+
+#     for obj in obj_points:
+#         points = obj  # Shape (128, 3)
+#         random_color = np.random.rand(3)  # Random RGB color (values between 0 and 1)
+
+#         colors = np.tile(random_color, (points.shape[0], 1))  # Shape (128, 3)
+
+#         pcd = o3d.geometry.PointCloud()
+#         pcd.points = o3d.utility.Vector3dVector(points)
+#         pcd.colors = o3d.utility.Vector3dVector(colors)
+        
+#         # Add this object's point cloud to the combined point cloud
+#         combined_pcd += pcd
+
+#     complete_pcd += combined_pcd
+
+# o3d.visualization.draw_geometries([complete_pcd])
+
+
+
+

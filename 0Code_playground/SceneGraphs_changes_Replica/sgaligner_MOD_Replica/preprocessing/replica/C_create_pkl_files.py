@@ -19,7 +19,7 @@ from configs import config, update_config
 # Variables
 #
 
-base_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner'
+base_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner'
 path_to_npy = os.path.join(base_path, 'data.npy')
 path_objData = os.path.join(base_path, 'objects.json')
 path_config = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/configs/scan3r/scan3r_ground_truth.yaml'
