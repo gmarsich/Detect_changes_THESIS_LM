@@ -1,13 +1,16 @@
 ''' Class sceneGraph: given as input a .ply with this header:
 ply
 format ascii 1.0
-element vertex 1796927
+element vertex 1820201
 property float x
 property float y
 property float z
 property uchar red
 property uchar green
 property uchar blue
+property float nx
+property float ny
+property float nz
 property int objectId
 end_header
 
@@ -60,17 +63,20 @@ class sceneGraph():
 
             x, y, z = map(float, components[:3])
             red, green, blue = map(int, components[3:6])
-            objectId = int(components[6])
+            nx, ny, nz = map(float, components[6:9])
+            objectId = int(components[9])
 
             if objectId not in self.nodes.keys():
                 self.nodes[objectId] = {
                     'points_geometric': [],
                     'points_color': [],
+                    'points_normals': [],
                     'centroid': None
                     }
             
             self.nodes[objectId]['points_geometric'].append([x, y, z])
             self.nodes[objectId]['points_color'].append([red, green, blue])
+            self.nodes[objectId]['points_normals'].append([nx, ny, nz])
         
         for objectId, data in self.nodes.items():
             points_geometric = np.array(data['points_geometric'])
@@ -81,6 +87,7 @@ class sceneGraph():
         for objectId, data in self.nodes.items():
             self.nodes[objectId]['points_geometric'] = np.array(data['points_geometric'])
             self.nodes[objectId]['points_color'] = np.array(data['points_color'])
+            self.nodes[objectId]['points_normals'] = np.array(data['points_normals'])
 
 
         # Add a color for the segmentation
@@ -122,7 +129,8 @@ class sceneGraph():
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(self.nodes[objectId]['points_geometric'])
         pcd.colors = o3d.utility.Vector3dVector(self.nodes[objectId]['points_color'] / 255) # normalise from range 0-255 to range 0-1
-
+        pcd.normals = o3d.utility.Vector3dVector(self.nodes[objectId]['points_normals'])
+        
         if wantVisualisation:
             o3d.visualization.draw_geometries([pcd])
 
@@ -134,7 +142,7 @@ if __name__ == '__main__':
     path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
 
     graph = sceneGraph(path_plyFile, path_listInstances)
-    graph.print_info_node(130)
-    _ = graph.get_pointCloud(130)
+    graph.print_info_node(4)
+    _ = graph.get_pointCloud(4, True)
 
 

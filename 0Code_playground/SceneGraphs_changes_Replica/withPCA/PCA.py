@@ -5,7 +5,8 @@ from sceneGraph import sceneGraph # local file
 from alignPCD import get_transformationMatrix # local file
 import numpy as np
 from sklearn.decomposition import PCA
-from scipy.spatial import procrustes
+import open3d as o3d
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 #
@@ -40,6 +41,32 @@ def pca_embedding(pcd, n_components=3):
     return embedding
 
 
+def farthest_point_sampling(pcd, n_samples):
+
+    points = np.asarray(pcd.points)
+    n_points = points.shape[0]
+    
+    sampled_indices = np.zeros(n_samples, dtype=int)
+    sampled_indices[0] = np.random.randint(n_points) # randomly select the first point
+
+    distances = np.full(n_points, np.inf)
+
+    for i in range(0, n_samples):
+        # Update distances for the current selected point
+        current_point = points[sampled_indices[i]]
+        distances = np.minimum(distances, np.linalg.norm(points - current_point, axis=1))
+        
+        # Select the farthest point
+        sampled_indices[i] = np.argmax(distances)
+
+    # Create a new point cloud from the sampled points
+    sampled_points = points[sampled_indices]
+    sampled_pcd = o3d.geometry.PointCloud()
+    sampled_pcd.points = o3d.utility.Vector3dVector(sampled_points)
+
+    return sampled_pcd
+
+
 
 #
 # Performing PCA and comparing the results
@@ -49,12 +76,39 @@ scene_graph_0 = sceneGraph(path_plyFile_0, path_listInstances_0)
 scene_graph_1 = sceneGraph(path_plyFile_1, path_listInstances_1)
 
 pcd_0 = scene_graph_0.get_pointCloud(4)
-pcd_1 = scene_graph_1.get_pointCloud(103)
+pcd_1 = scene_graph_1.get_pointCloud(121)
 
-transformationMatrix = get_transformationMatrix(pcd_0, pcd_1, seeRenderings = True) # a downsampling is performed internally to compute the matrix
+transformationMatrix = get_transformationMatrix(pcd_0, pcd_1, seeRenderings = False) # a downsampling is performed internally to compute the matrix
 pcd_1.transform(transformationMatrix)
+o3d.visualization.draw_geometries([pcd_0, pcd_1])
 
-emb = pca_embedding(pcd_0)
+emb_0 = pca_embedding(pcd_0)
+emb_1 = pca_embedding(pcd_1)
+
+
+pcd = o3d.geometry.PointCloud()
+pcd.points = o3d.utility.Vector3dVector(emb_1)
+o3d.visualization.draw_geometries([pcd])
+
+
+
+
+
+
+
+
+mean_emb_0 = np.mean(emb_0, axis=0)
+mean_emb_1 = np.mean(emb_1, axis=0)
+distance = np.linalg.norm(mean_emb_0 - mean_emb_1)
+print(distance)
+
+
+# Euclidean distance
+
+# Cosine similarity
+
+# Chamfer distance
+
 
 # TODO: downsampling
 

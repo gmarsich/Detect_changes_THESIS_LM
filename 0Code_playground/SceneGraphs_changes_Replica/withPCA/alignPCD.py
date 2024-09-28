@@ -92,31 +92,34 @@ def get_transformationMatrix(point_cloud_target, point_cloud_source, seeRenderin
 
 
 
-#
-#
-# Tests
-#
-#
 
-#
-# Variables to set
-#
+if __name__ == '__main__':
 
-path_target_pcd = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply" # its reference system will be used as world reference system; scene 0
-path_source_pcd = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/mesh_semantic.ply_103.ply" # to be moved according to the world reference system; scene 1
+    #
+    #
+    # Tests
+    #
+    #
 
-point_cloud_target = o3d.io.read_point_cloud(path_target_pcd)
-point_cloud_source = o3d.io.read_point_cloud(path_source_pcd)
+    #
+    # Variables to set
+    #
 
-seeRenderings = True # do you want to see the renderings step by step?
+    path_target_pcd = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply" # its reference system will be used as world reference system; scene 0
+    path_source_pcd = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/mesh_semantic.ply_103.ply" # to be moved according to the world reference system; scene 1
 
-# o3d.visualization.draw_geometries([point_cloud_target])
-# o3d.visualization.draw_geometries([point_cloud_source])
+    point_cloud_target = o3d.io.read_point_cloud(path_target_pcd)
+    point_cloud_source = o3d.io.read_point_cloud(path_source_pcd)
 
-o3d.visualization.draw_geometries([point_cloud_target, point_cloud_source])
+    seeRenderings = True # do you want to see the renderings step by step?
 
-matrix = get_transformationMatrix(point_cloud_target, point_cloud_source, seeRenderings)
+    # o3d.visualization.draw_geometries([point_cloud_target])
+    # o3d.visualization.draw_geometries([point_cloud_source])
 
-o3d.visualization.draw_geometries([point_cloud_source, point_cloud_target])
-o3d.visualization.draw_geometries([point_cloud_source.transform(matrix), point_cloud_target])
+    o3d.visualization.draw_geometries([point_cloud_target, point_cloud_source])
+
+    matrix = get_transformationMatrix(point_cloud_target, point_cloud_source, seeRenderings)
+
+    o3d.visualization.draw_geometries([point_cloud_source, point_cloud_target])
+    o3d.visualization.draw_geometries([point_cloud_source.transform(matrix), point_cloud_target])
 
