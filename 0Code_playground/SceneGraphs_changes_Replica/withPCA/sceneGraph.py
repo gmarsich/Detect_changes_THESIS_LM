@@ -15,6 +15,7 @@ builds the sceneGraph object.
 
 '''
 #TODO: insert edges
+#TODO: add a function to color a set of nodes in a specific color (eg I may want to color in red all the nodes that have been removed)
 
 import numpy as np
 import open3d as o3d
@@ -117,11 +118,15 @@ class sceneGraph():
         print(self.nodes[objectId])
 
 
-    def visualise_pointCloud(self, objectId):
+    def get_pointCloud(self, objectId, wantVisualisation = False):
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(self.nodes[objectId]['points_geometric'])
         pcd.colors = o3d.utility.Vector3dVector(self.nodes[objectId]['points_color'] / 255) # normalise from range 0-255 to range 0-1
-        o3d.visualization.draw_geometries([pcd])
+
+        if wantVisualisation:
+            o3d.visualization.draw_geometries([pcd])
+
+        return pcd
 
 
 if __name__ == '__main__':
@@ -129,6 +134,7 @@ if __name__ == '__main__':
     path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
 
     graph = sceneGraph(path_plyFile, path_listInstances)
-    graph.visualise_pointCloud(4)
+    graph.print_info_node(130)
+    _ = graph.get_pointCloud(130)
 
 
