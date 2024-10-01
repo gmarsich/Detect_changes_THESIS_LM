@@ -196,73 +196,6 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         return pcd
     
 
-    def update_changes(self, new_SceneGraph, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still): # be aware that the current SceneGraph will be replaced with the new one (and this will contain some additional information describing the changes)
-        # everything that has not been added, removed or moved stayed still
-        # TODO: with other pieces of code that I had written, I may also easily find the transformation matrix for the objects that have been moved
-
-        # If it exist, clean all the information about a possible previous update
-        # TODO
-
-        # Set the colors
-
-        color_added = '#02c442' # green
-        color_removed = '#8B0000' # red
-        color_moved = '#FF8C00' # orange
-        color_still = '#87CEFA' # light blue
-        color_notChecked = '#606060' # grey
-
-        # Add the information to the current sceneGraph (oldSceneGraph)
-
-        for objectID in self.nodes:
-
-            if objectID in list_oldID_removed:
-                self.nodes[objectID]['color update'] = color_removed
-                break
-
-            if objectID in dict_oldIDnewID_moved:
-                self.nodes[objectID]['color update'] = color_moved
-                self.nodes[objectID]['corresponding ID in the new SceneGraph'] = dict_oldIDnewID_moved[objectID]
-                break
-            
-            if objectID in dict_oldIDnewID_still:
-                self.nodes[objectID]['color update'] = color_still
-                break
-
-            self.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed
-    
-        
-        def get_key(dict, value_to_find):
-            for key, value in dict.items():
-                if value == value_to_find:
-                    return key
-
-
-        for objectID in new_SceneGraph.nodes:
-
-            if objectID in list_newID_added:
-                new_SceneGraph.nodes[objectID]['color update'] = color_added
-                break
-
-            if objectID in dict_oldIDnewID_moved.values():
-                new_SceneGraph.nodes[objectID]['color update'] = color_moved
-                new_SceneGraph.nodes[objectID]['corresponding ID in the new SceneGraph'] = get_key(dict_oldIDnewID_moved, objectID)
-                break
-            
-            if objectID in dict_oldIDnewID_still:
-                new_SceneGraph.nodes[objectID]['color update'] = color_still
-                break
-
-            new_SceneGraph.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed
-
-
-        # Update the current SceneGraph
-
-        old_SceneGraph = copy.deepcopy(self)
-        self = new_SceneGraph
-
-        return old_SceneGraph, new_SceneGraph # be aware that now in the current object of SceneGraph the newSceneGraph is stored!
-    
-
     def save_SceneGraph(self):
         # Create the folder where to store the data
 
@@ -291,18 +224,85 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
 
         return
     
-
+    # TODO
     def get_visualisation_SceneGraph(self, list_IDs, color = 'absoluteColor'):
         # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
         
-
-
-
         return SG
     
-
+    # TODO
     def draw_SceneGraph_PyViz3D(self):
         pass
+
+
+
+
+def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still):
+    # Apart from nodes that have not been analysed, everything that has not been added, removed or moved stayed still
+    # TODO: with other pieces of code that I had written, I may also easily store the transformation matrix for the objects that have been moved
+
+    # Set the colors and create a deepcopy of the two scenegraphs
+
+    color_added = '#02c442' # green
+    color_removed = '#8B0000' # red
+    color_moved = '#FF8C00' # orange
+    color_still = '#87CEFA' # light blue
+    color_notChecked = '#606060' # grey
+
+    deepcopy_old_SceneGraph = copy.deepcopy(old_SceneGraph)
+    deepcopy_new_SceneGraph = copy.deepcopy(new_SceneGraph)
+
+    # Add the information to old_SceneGraph
+
+    for objectID in deepcopy_old_SceneGraph.nodes:
+
+        if objectID in list_oldID_removed:
+            deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_removed
+            break
+
+        if objectID in dict_oldIDnewID_moved:
+            deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_moved
+            deepcopy_old_SceneGraph.nodes[objectID]['ID in the new SceneGraph'] = dict_oldIDnewID_moved[objectID]
+            break
+        
+        if objectID in dict_oldIDnewID_still:
+            deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_still
+            break
+
+        deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed
+
+
+    # Add the information to new_SceneGraph
+
+    def get_key(dict, value_to_find):
+        for key, value in dict.items():
+            if value == value_to_find:
+                return key
+
+
+    for objectID in deepcopy_new_SceneGraph.nodes:
+
+        if objectID in list_newID_added:
+            deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_added
+            break
+
+        if objectID in dict_oldIDnewID_moved.values():
+            deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_moved
+            deepcopy_new_SceneGraph.nodes[objectID]['ID in the old SceneGraph'] = get_key(dict_oldIDnewID_moved, objectID)
+            break
+        
+        if objectID in dict_oldIDnewID_still.values():
+            deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_still
+            break
+
+        deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed
+
+
+    return deepcopy_old_SceneGraph, deepcopy_new_SceneGraph
+
+
+
+
 
 
 if __name__ == '__main__':
