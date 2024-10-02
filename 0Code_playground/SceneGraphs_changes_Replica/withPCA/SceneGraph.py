@@ -48,14 +48,16 @@ def create_colors_dict(list_numbers):
 
 
 class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, self.associations_objectIdIndex
+    # OK
     def __init__(self):
         self.nodes = {}
 
+    # OK
     def populate_SceneGraph(self, path_plyFile, path_distanceMatrix = None, path_associationsObjectIdIndex = None, path_listInstances = None, path_colorDict_frlApartments = None):
-        # if matrixDistances.txt (together with associations_objectIdIndex.json) is provided, the attribute self.matrix_distances (that is the matrix with distances) will be added
-        # if associations_objectIdIndex.json (together with matrixDistances.txt) is provided, the attribute self.associations_objectIdIndex (given an objectID, which is the its index in self.matrix_distances?) is added
-        # if list_instances.txt is provided, the node will also contain the label of the instance
-        # if colorDict_frlApartments.json is provided, the node will also contain the specific color associated to that label
+        # path_distanceMatrix: if matrixDistances.txt (together with associations_objectIdIndex.json) is provided, the attribute self.matrix_distances (that is the matrix with distances) will be added
+        # path_associationsObjectIdIndex: if associations_objectIdIndex.json (together with matrixDistances.txt) is provided, the attribute self.associations_objectIdIndex (given an objectID, which is the its index in self.matrix_distances?) is added
+        # path_listInstances: if list_instances.txt is provided, the node will also contain the label of the instance
+        # path_colorDict_frlApartments: if colorDict_frlApartments.json is provided, the node will also contain the specific color associated to that label
         
         with open(path_plyFile, 'r') as file:
             lines = file.readlines()
@@ -108,19 +110,21 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
             self.nodes[objectId]['ply_color'] = color_dict[objectId]
 
 
+
         # If path_distanceMatrix and path_associationsObjectIdIndex are not None save the distances in a matrix
         
         if path_distanceMatrix and path_associationsObjectIdIndex:
             matrix = []
             with open(path_distanceMatrix, 'r') as file:
+                next(file)  # SKIP THE FIRST LINE OF THE FILE. In my files, the first line is blank
                 for line in file:
                     row = line.strip().split()
                     matrix.append([float(element) for element in row])
 
-        self.matrix_distances = matrix
+            self.matrix_distances = matrix
 
-        with open(path_associationsObjectIdIndex, 'r') as json_file:
-            self.associations_objectIdIndex = json.load(json_file)
+            with open(path_associationsObjectIdIndex, 'r') as json_file:
+                self.associations_objectIdIndex = json.load(json_file)
 
 
 
@@ -143,19 +147,20 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
                 if objectId in labels:
                     data['label'] = labels[objectId]
                 else:
-                    data['label'] = None
+                    data['label'] = 'None'
 
 
         # If path_colorDict_frlApartments is not None, associate the specific color to each label.
-        # Be aware that you also need path_listInstances
+        # Be aware that you also need path_listInstances!
 
         if path_colorDict_frlApartments and path_listInstances:
             with open(path_colorDict_frlApartments, 'r') as json_file:
                 data_dict = json.load(json_file)
 
             for objectId, data in self.nodes.items():
-                label = data[objectId]['label']
-                data[objectId]['absolute color'] = data_dict[label]
+                label = data['label']
+                data['absolute color'] = data_dict[label]
+                self.nodes[objectId]['absolute color'] = np.array(data['absolute color']) # convert to array
     
 
     def load_SceneGraph(self, path_SceneGraph_folder):
@@ -179,11 +184,11 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         
         return
 
-
+    # OK
     def print_info_node(self, objectId):
         print(self.nodes[objectId])
 
-
+    # OK 
     def get_pointCloud(self, objectId, wantVisualisation = False):
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(self.nodes[objectId]['points_geometric'])
@@ -228,7 +233,8 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
     def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
         # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
         
-        return SG
+        #return SG
+        pass
     
     # TODO
     def draw_SceneGraph_PyViz3D(self):
@@ -306,11 +312,19 @@ def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_
 
 
 if __name__ == '__main__':
-    path_plyFile = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_0_withIDs.ply'
-    path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
+    path_plyFile = '/local/home/gmarsich/Desktop/results/frl_apartment_0_withIDs.ply'
+    path_colorDict_frlApartments = '/local/home/gmarsich/Desktop/Thesis/code_thesis/Replica_code/colorDict_frlApartments.json'
 
-    graph = SceneGraph(path_plyFile, path_listInstances)
-    graph.print_info_node(4)
-    _ = graph.get_pointCloud(4, True)
+    path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
+    path_distanceMatrix = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/matrix_distances_file<function distance_Euclidean_closest_points at 0x7f0170ba6830>.txt'
+    path_associationsObjectIdIndex = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/associations_objectIdIndex.json'
+
+    
+    graph = SceneGraph()
+    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex)
+    #graph.print_info_node(12)
+    print(len(graph.matrix_distances))
+    print(len(graph.matrix_distances[0]))
+    _ = graph.get_pointCloud(12, True)
 
 

@@ -32,7 +32,7 @@ path_output = os.path.join(current_dir, 'colorDict_frlApartments.json')
 
 def generate_unique_color(used_colors):
     while True:
-        color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         if color not in used_colors:
             used_colors.add(color)
             return color
@@ -54,6 +54,7 @@ for path in list_paths:
         continue
 
     for line in lines:
+        line = line.strip() # removes the \n or any other leading/trailing whitespace
         parts = line.split('\t')
         label = parts[1]
         if label not in data_dict:
