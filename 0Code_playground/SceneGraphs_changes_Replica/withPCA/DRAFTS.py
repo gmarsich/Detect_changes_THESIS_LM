@@ -7,22 +7,11 @@ from scipy.spatial import KDTree
 # colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_1_withIDs.ply')
 # o3d.visualization.draw_geometries([colored_point_cloud, colored_point_cloud_2])
 
-def distance_Euclidean_closest_points(list_points_1, list_points_2):
-    tree = KDTree(list_points_2)
-    min_distance = np.inf
-    for point1 in list_points_1:
-        dist, _ = tree.query(point1)
-        if dist < min_distance:
-            min_distance = dist
-    return min_distance
+aaaa = np.array([[1, 2], [2, 3]])
+if isinstance(aaaa, np.ndarray):
+    forse = aaaa.tolist()
 
-list_points_1 = [[0, 0], [1, 1]]
-list_points_2 = [[1, 1.5], [5, 5]]
-min_distance = distance_Euclidean_closest_points(list_points_1, list_points_2)
-
-print(min_distance)
-
-
+    print(type(forse))
 
 
 

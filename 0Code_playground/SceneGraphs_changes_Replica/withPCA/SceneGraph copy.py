@@ -40,7 +40,7 @@ def create_colors_dict(list_numbers):
             random_array = tuple([random.randint(0, 255) for _ in range(3)])
             if random_array not in used_colors:
                 used_colors.add(random_array)
-                random_dict[str(number)] = list(random_array)
+                random_dict[number] = np.array(random_array)
                 break
     
     return random_dict
@@ -75,7 +75,7 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
             x, y, z = map(float, components[:3])
             red, green, blue = map(int, components[3:6])
             nx, ny, nz = map(float, components[6:9])
-            objectId = components[9]
+            objectId = int(components[9])
 
             if objectId not in self.nodes.keys():
                 self.nodes[objectId] = {
@@ -91,14 +91,14 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         
         for objectId, data in self.nodes.items():
             points_geometric = np.array(data['points_geometric'])
-            centroid = list(np.mean(points_geometric, axis=0))
+            centroid = np.mean(points_geometric, axis=0)
             self.nodes[objectId]['centroid'] = centroid
 
-        # # Convert lists to numpy arrays
-        # for objectId, data in self.nodes.items():
-        #     self.nodes[objectId]['points_geometric'] = np.array(data['points_geometric'])
-        #     self.nodes[objectId]['points_color'] = np.array(data['points_color'])
-        #     self.nodes[objectId]['points_normals'] = np.array(data['points_normals'])
+        # Convert lists to numpy arrays
+        for objectId, data in self.nodes.items():
+            self.nodes[objectId]['points_geometric'] = np.array(data['points_geometric'])
+            self.nodes[objectId]['points_color'] = np.array(data['points_color'])
+            self.nodes[objectId]['points_normals'] = np.array(data['points_normals'])
 
 
         # Add a color for the segmentation
@@ -138,7 +138,7 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
                 for line in file:
                     parts = line.strip().split() # split the line by tab or whitespace
 
-                    objectId = parts[0]
+                    objectId = int(parts[0])
                     label = parts[1]
 
                     labels[objectId] = label
@@ -160,13 +160,29 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
             for objectId, data in self.nodes.items():
                 label = data['label']
                 data['absolute color'] = data_dict[label]
-                self.nodes[objectId]['absolute color'] = data['absolute color']
+                self.nodes[objectId]['absolute color'] = np.array(data['absolute color']) # convert to array
     
-    # OK
+
     def load_SceneGraph(self, path_SceneGraph_folder):
         path_nodes = os.path.join(path_SceneGraph_folder, 'nodes.json')
-        with open(path_nodes, 'r') as json_file: # populate self.nodes
-            self.nodes = json.load(json_file)
+        with open(path_nodes, 'r') as json_file: 
+            data_nodes = json.load(json_file)
+
+        self.nodes = {}
+        
+        for key, value in data_nodes.items(): # populate self.nodes
+            
+            if isinstance(value, list):
+                self.nodes[key] = np.array(value)
+            elif isinstance(value, dict):
+                self.nodes[key] = {}
+                for nested_key, nested_value in value.items():
+                    if isinstance(nested_value, list):
+                        self.nodes[key][nested_key] = np.array(nested_value)
+                    else:
+                        self.nodes[key][nested_key] = nested_value
+            else:
+                self.nodes[key] = value
 
 
         path_matrixDistances = os.path.join(path_SceneGraph_folder, 'matrix_distances.txt')
@@ -190,19 +206,19 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
     def print_info_node(self, objectId):
         print(self.nodes[objectId])
 
-    # OK
+    # OK 
     def get_pointCloud(self, objectId, wantVisualisation = False):
         pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(np.array(self.nodes[objectId]['points_geometric']))
-        pcd.colors = o3d.utility.Vector3dVector(np.array(self.nodes[objectId]['points_color']) / 255) # normalise from range 0-255 to range 0-1
-        pcd.normals = o3d.utility.Vector3dVector(np.array(self.nodes[objectId]['points_normals']))
+        pcd.points = o3d.utility.Vector3dVector(self.nodes[objectId]['points_geometric'])
+        pcd.colors = o3d.utility.Vector3dVector(self.nodes[objectId]['points_color'] / 255) # normalise from range 0-255 to range 0-1
+        pcd.normals = o3d.utility.Vector3dVector(self.nodes[objectId]['points_normals'])
         
         if wantVisualisation:
             o3d.visualization.draw_geometries([pcd])
 
         return pcd
     
-    # OK
+    # OK, spero
     def save_SceneGraph(self):
         # Create the folder where to store the data. Same folder of where this very same script is
 
@@ -212,10 +228,30 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         folder_path = os.path.join(current_dir, folder_name)
         os.makedirs(folder_path)
 
+        # Transform np.ndarray into lists
+
+        nodes_serializable = {}
+
+        for key, value in self.nodes.items():
+            if isinstance(value, np.ndarray):
+                tmp = value.tolist()
+                nodes_serializable[key] = tmp
+            elif isinstance(value, dict):  # check if the value is a dictionary
+                nested_serializable = {}
+                for nested_key, nested_value in value.items():
+                    if isinstance(nested_value, np.ndarray):
+                        tmp = nested_value.tolist()
+                        nested_serializable[nested_key] = tmp
+                    else:
+                        nested_serializable[nested_key] = nested_value
+                nodes_serializable[key] = nested_serializable
+            else:
+                nodes_serializable[key] = value
+
         # Save the data in the folder
         
         with open(os.path.join(folder_path, 'nodes.json'), 'w') as json_file: # save self.nodes
-            json.dump(self.nodes, json_file, indent=4)
+            json.dump(nodes_serializable, json_file, indent=4)
 
         if self.matrix_distances:
             with open(os.path.join(folder_path, 'matrix_distances.txt'), 'w') as text_file: # save self.matrix_distances if it exists
@@ -325,13 +361,12 @@ if __name__ == '__main__':
 
     
     graph = SceneGraph()
-    # graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances, )
-    # graph.print_info_node('12')
-    # _ = graph.get_pointCloud('4', True)
+    #graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances, )
+    #graph.print_info_node(12)
+    #_ = graph.get_pointCloud(12, True)
     #graph.save_SceneGraph()
-    graph.load_SceneGraph('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/sceneGraph_20241002_214521')
-    graph.print_info_node('12')
-    _ = graph.get_pointCloud('4', True)
+    graph.load_SceneGraph('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/sceneGraph_20241002_204907')
+    #graph.print_info_node(12)
+    _ = graph.get_pointCloud(12, True)
 
-    
 
