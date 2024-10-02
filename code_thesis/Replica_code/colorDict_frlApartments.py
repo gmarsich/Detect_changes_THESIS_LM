@@ -1,5 +1,5 @@
 '''With this script I want to get a file colorDict_frlApartments.json that is a dictionary containing all the possible labels that appear
-in the frl apartments from Replica, and for each label assigns a unique color.'''
+in the frl apartments from Replica, and for each label assigns a unique color. The file is saved in the same folder of where this same script is saved.'''
 
 import random
 import json

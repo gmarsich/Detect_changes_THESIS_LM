@@ -96,6 +96,7 @@ def compute_distance_matrix(list_instances_complete, path_save_files, compute_di
             
             matrix_distances[j][i] = matrix_distances[i][j]
 
+
     # Save matrix_distances in a file
     with open(os.path.join(path_save_files, "matrix_distances_file" + str(compute_distance) + ".txt"), 'w') as file_matrix: #TODO: the name can be improved, due to str(compute_distance)
         file_matrix.write("\n")
