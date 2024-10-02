@@ -51,7 +51,7 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
     def __init__(self):
         self.nodes = {}
 
-    def populate_SceneGraph(self, path_plyFile, path_distanceMatrix = None, path_associationsIndexObjectID = None, path_listInstances = None, path_colorDict_frlApartments = None):
+    def populate_SceneGraph(self, path_plyFile, path_distanceMatrix = None, path_associationsObjectIdIndex = None, path_listInstances = None, path_colorDict_frlApartments = None):
         # if matrixDistances.txt (together with associations_objectIdIndex.json) is provided, the attribute self.matrix_distances (that is the matrix with distances) will be added
         # if associations_objectIdIndex.json (together with matrixDistances.txt) is provided, the attribute self.associations_objectIdIndex (given an objectID, which is the its index in self.matrix_distances?) is added
         # if list_instances.txt is provided, the node will also contain the label of the instance
@@ -108,9 +108,9 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
             self.nodes[objectId]['ply_color'] = color_dict[objectId]
 
 
-        # If path_distanceMatrix and path_associationsIndexObjectID are not None save the distances in a matrix
+        # If path_distanceMatrix and path_associationsObjectIdIndex are not None save the distances in a matrix
         
-        if path_distanceMatrix and path_associationsIndexObjectID:
+        if path_distanceMatrix and path_associationsObjectIdIndex:
             matrix = []
             with open(path_distanceMatrix, 'r') as file:
                 for line in file:
@@ -119,7 +119,7 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
 
         self.matrix_distances = matrix
 
-        with open(path_associationsIndexObjectID, 'r') as json_file:
+        with open(path_associationsObjectIdIndex, 'r') as json_file:
             self.associations_objectIdIndex = json.load(json_file)
 
 
@@ -173,8 +173,8 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
 
             self.matrix_distances = matrix
 
-            path_associationsIndexObjectID = os.path.join(path_SceneGraph_folder, 'associations_objectIdIndex.json')
-            with open(path_associationsIndexObjectID, 'r') as json_file: # populate self.associations_objectIdIndex
+            path_associationsObjectIdIndex = os.path.join(path_SceneGraph_folder, 'associations_objectIdIndex.json')
+            with open(path_associationsObjectIdIndex, 'r') as json_file: # populate self.associations_objectIdIndex
                 self.associations_objectIdIndex = json.load(json_file)
         
         return
