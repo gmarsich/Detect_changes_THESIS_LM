@@ -225,7 +225,7 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         return
     
     # TODO
-    def get_visualisation_SceneGraph(self, list_IDs, color = 'absoluteColor'):
+    def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
         # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
         
         return SG

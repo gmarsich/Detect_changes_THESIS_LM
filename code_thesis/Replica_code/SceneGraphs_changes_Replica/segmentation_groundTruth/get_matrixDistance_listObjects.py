@@ -11,9 +11,11 @@ import numpy as np
 import os
 import open3d as o3d
 import json
+import time
 
 from side_code.side_code import * # local file
 
+start_time = time.time()
 
 #
 # Variables to set
@@ -162,3 +164,7 @@ for obj in objects:
 
 list_instances_complete = get_list_instances_complete(list_labels, list_points) # list with elements in the form [obj_id, class_name, centroid, points]
 matrix_distances = compute_distance_matrix(list_instances_complete, path_save_files, compute_distance = chosen_distance) # saves matrix_distances_file.txt, associations_objectIdIndex.json and list_instances.txt
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")

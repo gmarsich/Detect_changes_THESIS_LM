@@ -82,7 +82,7 @@ def get_list_instances_complete(list_labels, list_points):
 
 
 def compute_distance_matrix(list_instances_complete, path_save_files, compute_distance):
-    matrix_distances = np.full((len(list_instances_complete), len(list_instances_complete)), 0)
+    matrix_distances = np.full((len(list_instances_complete), len(list_instances_complete)), np.inf) # putting 0 instead of np.inf will lead to an approximation to integers...
     associations = {}
 
     for i in range(len(matrix_distances)):
