@@ -86,8 +86,8 @@ def compute_distance_matrix(list_instances_complete, path_save_files, compute_di
     associations = {}
 
     for i in range(len(matrix_distances)):
+        associations[list_instances_complete[i][0]] = str(i)
         for j in range(i + 1, len(matrix_distances[0])): # the matrix is symmetric
-            associations[list_instances_complete[i][0]] = str(i)
 
             if compute_distance == distance_Euclidean_centroids: # CAVEAT: the centroid that is used is an approximation, since we have downsampled the point clouds
                 matrix_distances[i][j] = compute_distance(list_instances_complete[i][2], list_instances_complete[j][2])

@@ -329,7 +329,7 @@ if __name__ == '__main__':
     # graph.print_info_node('12')
     # _ = graph.get_pointCloud('4', True)
     #graph.save_SceneGraph()
-    graph.load_SceneGraph('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/sceneGraph_20241002_214521')
+    graph.load_SceneGraph('/local/home/gmarsich/Desktop/sceneGraph_20241002_214521')
     graph.print_info_node('12')
     _ = graph.get_pointCloud('4', True)
 
