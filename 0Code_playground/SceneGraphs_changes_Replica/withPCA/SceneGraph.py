@@ -237,6 +237,21 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
     def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
         # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
         
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         #return SG
         pass
     
@@ -253,11 +268,11 @@ def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_
 
     # Set the colors and create a deepcopy of the two scenegraphs
 
-    color_added = '#02c442' # green
-    color_removed = '#8B0000' # red
-    color_moved = '#FF8C00' # orange
-    color_still = '#87CEFA' # light blue
-    color_notChecked = '#606060' # grey
+    color_added = [2, 196, 66] #'#02c442' # green
+    color_removed = [139, 0, 0] #'#8B0000' # red
+    color_moved = [255, 140, 0] #'#FF8C00' # orange
+    color_still = [135, 206, 250] #'#87CEFA' # light blue
+    color_notChecked = [96, 96, 96]  #'#606060' # grey
 
     deepcopy_old_SceneGraph = copy.deepcopy(old_SceneGraph)
     deepcopy_new_SceneGraph = copy.deepcopy(new_SceneGraph)
@@ -320,18 +335,13 @@ if __name__ == '__main__':
     path_colorDict_frlApartments = '/local/home/gmarsich/Desktop/Thesis/code_thesis/Replica_code/colorDict_frlApartments.json'
 
     path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
-    path_distanceMatrix = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/matrix_distances_file<function distance_Euclidean_closest_points at 0x7f0170ba6830>.txt'
+    path_distanceMatrix = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/matrix_distances_file<function distance_Euclidean_closest_points at 0x7f6b701ae830>.txt'
     path_associationsObjectIdIndex = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/associations_objectIdIndex.json'
 
     
     graph = SceneGraph()
-    # graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances, )
-    # graph.print_info_node('12')
-    # _ = graph.get_pointCloud('4', True)
-    #graph.save_SceneGraph()
-    graph.load_SceneGraph('/local/home/gmarsich/Desktop/sceneGraph_20241002_214521')
-    graph.print_info_node('12')
-    _ = graph.get_pointCloud('4', True)
+    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances, )
+
 
     
 

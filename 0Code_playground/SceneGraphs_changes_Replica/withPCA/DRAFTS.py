@@ -14,11 +14,6 @@ if isinstance(aaaa, np.ndarray):
     print(type(forse))
 
 
-
-
-
-
-
 # distances = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 # distances = np.delete(distances, 1, axis=1)
 # print(distances)
@@ -46,3 +41,21 @@ if isinstance(aaaa, np.ndarray):
 # # Print the RGB values
 # print(f'R: {r}, G: {g}, B: {b}')
 
+
+
+def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
+        # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
+        
+        vertices = []
+        colors = []
+        for objectId in list_IDs:
+            vertices.append(self.nodes[objectId]['centroid']) # the vertices are the centroids of the instances
+            if color == 'absoluteColor':
+                colors.append(self.nodes[objectId]['absolute color'])
+            if color == 'withUpdates':
+                colors.append(self.nodes[objectId]['color update'])
+            if color == 'randomColor':
+                colors.append(self.nodes[objectId]['ply_color'])
+
+        
+            
