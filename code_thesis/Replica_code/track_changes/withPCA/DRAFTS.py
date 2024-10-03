@@ -37,4 +37,6 @@ from scipy.spatial import KDTree
 # print(f'R: {r}, G: {g}, B: {b}')
 
 
+colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply')
+o3d.visualization.draw_geometries([colored_point_cloud])
 
