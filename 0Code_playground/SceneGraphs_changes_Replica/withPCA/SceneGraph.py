@@ -480,10 +480,7 @@ if __name__ == '__main__':
 
     
     graph = SceneGraph()
-    # graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
+    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
     # graph.print_info_node('4')
-    graph.load_SceneGraph('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/sceneGraph_20241003_173522')
-    list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = graph.get_visualisation_SceneGraph(list_IDs = [4, 5, 32, 12], threshold = 7, color = 'absoluteColor')
-
-    graph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs)
+    
 
