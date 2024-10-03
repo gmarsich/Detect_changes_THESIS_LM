@@ -1,4 +1,4 @@
-# environment: sceneGraphs_groundTruth_Replica
+# environment: sceneGraphs_groundTruth_Replica DONE
 
 '''To retrieve the ground truth on the segmentation in a scene from the Replica dataset.
 This code creates three files:
