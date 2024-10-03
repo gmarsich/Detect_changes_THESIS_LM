@@ -27,6 +27,7 @@ import json
 from datetime import datetime
 import os
 import copy
+import pyviz3d.visualizer as Visualiser
 
 
 # side function
@@ -88,7 +89,7 @@ def create_sphere_at_point(point, color, radius = 0.1):
 
 
 
-class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, self.associations_objectIdIndex
+class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes, self.matrix_distances, self.associations_objectIdIndex
     # OK
     def __init__(self):
         self.nodes = {}
@@ -100,6 +101,8 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         # path_listInstances: if list_instances.txt is provided, the node will also contain the label of the instance
         # path_colorDict_frlApartments: if colorDict_frlApartments.json is provided, the node will also contain the specific color associated to that label
         
+        self.complete_pointCloud = o3d.io.read_point_cloud(path_plyFile)
+
         with open(path_plyFile, 'r') as file:
             lines = file.readlines()
 
@@ -204,7 +207,11 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
                 self.nodes[objectId]['absolute color'] = data['absolute color']
     
     # OK
-    def load_SceneGraph(self, path_SceneGraph_folder):
+    def load_SceneGraph(self, path_SceneGraph_folder): # CAVEAT: the complete point cloud is saved differently from the one that is loaded with populate_SceneGraph
+
+        path_pcd_complete = os.path.join(path_SceneGraph_folder, 'pcd.ply')
+        self.complete_pointCloud = o3d.io.read_point_cloud(path_pcd_complete)
+
         path_nodes = os.path.join(path_SceneGraph_folder, 'nodes.json')
         with open(path_nodes, 'r') as json_file: # populate self.nodes
             self.nodes = json.load(json_file)
@@ -254,6 +261,8 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
         os.makedirs(folder_path)
 
         # Save the data in the folder
+
+        o3d.io.write_point_cloud(os.path.join(folder_path, 'pcd.ply'), self.complete_pointCloud)
         
         with open(os.path.join(folder_path, 'nodes.json'), 'w') as json_file: # save self.nodes
             json.dump(self.nodes, json_file, indent=4)
@@ -280,11 +289,15 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
 
         # Get the vertices and the point clouds
 
-        vertex_meshes = []
-        PCDs = o3d.geometry.PointCloud()
+        list_vertices = []
+        list_centroids = []
+        list_colors_vertices = []
+        list_labels = []
+        PCDs = []
         for objectId in list_IDs:
 
             positions_vertex = self.nodes[str(objectId)]['centroid'] # the vertices are the centroids of the instances
+            list_labels.append(str(objectId) + " (" + self.nodes[str(objectId)]['label'] + ")")
             
             if color == 'absoluteColor':
                 color_vertex = np.array(self.nodes[str(objectId)]['absolute color']) / 255
@@ -294,22 +307,21 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
                 color_vertex = np.array(self.nodes[str(objectId)]['ply_color']) / 255
             
             sphere = create_sphere_at_point(positions_vertex, color_vertex)
-            vertex_meshes.append(sphere)
+            list_centroids.append(positions_vertex)
+            list_colors_vertices.append(color_vertex)
+            list_vertices.append(sphere)
 
             pcd_instance = o3d.geometry.PointCloud()
             pcd_instance.points = o3d.utility.Vector3dVector(np.array(self.nodes[str(objectId)]['points_geometric']))
             list_colors = [color_vertex for index in range(len(pcd_instance.points))]
             pcd_instance.colors = o3d.utility.Vector3dVector(np.array(list_colors))
-            PCDs += pcd_instance
-        
-        vertices = o3d.geometry.TriangleMesh()
-        for mesh in vertex_meshes:
-            vertices += mesh
+            PCDs.append(pcd_instance)
 
 
         # Get the edges
-        
-        edges = o3d.geometry.TriangleMesh()
+
+        list_edges = []
+        list_pairs_edges = []
         for i in range(len(list_IDs)):
             for j in range(i + 1, len(list_IDs)):
                 objectID_to_index_i = int(self.associations_objectIdIndex[str(list_IDs[i])])
@@ -318,16 +330,74 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
                 if self.matrix_distances[objectID_to_index_i][objectID_to_index_j] <= threshold:
                     centroid_i = self.nodes[str(list_IDs[i])]['centroid']
                     centroid_j = self.nodes[str(list_IDs[j])]['centroid']
-                    current_edge = create_cylinder_between_points(centroid_i, centroid_j, color = np.array([255, 0, 255]) / 255) # if you want, you can set a different color for the edges. fucsia: [255, 0, 255]
-                    edges += current_edge
+                    list_pairs_edges.append([centroid_i, centroid_j])
+                    current_edge = create_cylinder_between_points(centroid_i, centroid_j, color = np.array([0, 0, 0]) / 255) # TOSET you can set a different color for the edges
+                    list_edges.append(current_edge)
 
 
-        return vertices, PCDs, edges
+        return list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges
+
+    # OK
+    def draw_SceneGraph_PyViz3D(self, list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True):
+
+        # Functions to adjust the origin of the axis
+
+        def centering_axes(points): # by Joana
+            point_cloud_centroid = np.mean(points, axis=0)
+            points = points - point_cloud_centroid
+            return points, point_cloud_centroid
+        
+        def transform_points(points, point_cloud_centroid): # by Joana
+            return points - point_cloud_centroid
+        
+        
+        # Folder to save the results
+
+        current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+        folder_name = f'sceneGraph_PyViz3D_{current_time}'
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        folder_path = os.path.join(current_dir, folder_name)
 
 
-    # TODO
-    def draw_SceneGraph_PyViz3D(self):
-        pass
+        # Build the rendering of the points
+
+        v = Visualiser.Visualizer()
+
+        point_positions, centroid = centering_axes(np.asarray(self.complete_pointCloud.points))
+        point_colors = (np.asarray(self.complete_pointCloud.colors) * 255).astype(np.uint8)
+
+        positions_vertices = np.array(list_centroids)
+        color_vertices = (np.array(list_colors_vertices)* 255).astype(np.uint8)
+
+        pcd_segmentation = o3d.geometry.PointCloud()
+        for pcd in PCDs:
+            pcd_segmentation += pcd
+
+        pcd_segmentation_positions = np.asarray(pcd_segmentation.points)
+        pcd_segmentation_colors = (np.asarray(pcd_segmentation.colors) * 255).astype(np.uint8)
+
+        v.add_points('Original point cloud', point_positions, point_colors, point_size=15, visible=False) # TOSET you can change the size of the points
+        v.add_points('Nodes', transform_points(positions_vertices, centroid), color_vertices, point_size=500, visible=False) # TOSET you can change the size of the points
+        v.add_points('Segmentation', transform_points(pcd_segmentation_positions, centroid), pcd_segmentation_colors, point_size=15, visible=False) # TOSET you can change the size of the points
+
+        # Add the edges
+
+        list_colors_edges = [[1, 0, 1] for index in range(len(list_pairs_edges))] # TOSET you can change the color of the edges
+        lines_start = np.array(list(map(lambda x: x[0], list_pairs_edges)))
+        lines_end = np.array(list(map(lambda x: x[1], list_pairs_edges)))
+        v.add_lines(name='Edges', lines_start=transform_points(lines_start, centroid), lines_end=transform_points(lines_end, centroid), colors=np.array(list_colors_edges), visible=True)
+
+
+        # Add the labels
+
+        if wantLabels:
+            v.add_labels(name ='Labels',
+                            labels = [label.lower() for label in list_labels], # TOSET: if you want in capital letters or not
+                            positions = transform_points(positions_vertices, centroid),
+                            colors = color_vertices,
+                            visible=False)
+
+        v.save(folder_path)
 
 
 
@@ -410,13 +480,10 @@ if __name__ == '__main__':
 
     
     graph = SceneGraph()
-    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
-    graph.print_info_node('4')
+    # graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
+    # graph.print_info_node('4')
+    graph.load_SceneGraph('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/sceneGraph_20241003_173522')
+    list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = graph.get_visualisation_SceneGraph(list_IDs = [4, 5, 32, 12], threshold = 7, color = 'absoluteColor')
 
-    colored_point_cloud = o3d.io.read_point_cloud(path_plyFile)
-
-    vertices, PCDs, edges = graph.get_visualisation_SceneGraph([4, 5, 32, 12], threshold = 2, color='randomColor')
-    geometries = [PCDs, vertices, edges]
-
-    o3d.visualization.draw_geometries(geometries)
+    graph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs)
 

@@ -38,13 +38,3 @@ from scipy.spatial import KDTree
 
 
 
-
-
-        
-
-        
-            
-
-
-
-o3d.visualization.draw_geometries([create_cylinder_between_points([0, 0, 0], [1, 1, 1], 0.1, [255, 0, 0])])
