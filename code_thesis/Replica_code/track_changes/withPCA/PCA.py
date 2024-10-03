@@ -1,8 +1,8 @@
 '''I input it takes 2 sceneGraph objects and for each one a list of IDs of instances that one wants to compare.
 PCA is applied to TODO'''
 
-from sceneGraph import sceneGraph # local file
-from alignPCD import get_transformationMatrix # local file
+from code_thesis.Replica_code.SceneGraph import sceneGraph # local file
+from align_instancePCD import get_transformationMatrix # local file
 import numpy as np
 from sklearn.decomposition import PCA
 import open3d as o3d

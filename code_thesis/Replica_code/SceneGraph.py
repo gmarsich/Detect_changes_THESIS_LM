@@ -16,7 +16,14 @@ end_header
 
 builds the SceneGraph object.
 
-Since I specifically deal with Replica dataset, and in particular with the frl apartments. Some preprocessing was performed to get the things in a way I liked.
+Since I specifically deal with Replica dataset, and in particular with the frl apartments some preprocessing was performed to get the things in a way I liked.
+
+Other things that can be used to enrich the scene graph:
+
+- path_distanceMatrix
+- path_associationsObjectIdIndex
+- path_listInstances
+- path_colorDict_frlApartments
 
 '''
 
