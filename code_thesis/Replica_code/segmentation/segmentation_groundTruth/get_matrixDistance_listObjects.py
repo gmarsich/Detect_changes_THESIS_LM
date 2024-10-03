@@ -1,8 +1,10 @@
 # environment: sceneGraphs_groundTruth_Replica
 
 '''To retrieve the ground truth on the segmentation in a scene from the Replica dataset.
-This code creates three files, matrix_distances_file.txt (in the filename the distance that has been used is specified), associations_objectIdIndex.json (keys are
-objectIDs, values are the indexes in the distance matrix) and list_instances.txt.'''
+This code creates three files:
+- matrix_distances_file.txt (in the filename the distance that has been used is specified)
+- associations_objectIdIndex.json (keys are objectIDs, values are the indexes in the distance matrix)
+- list_instances.txt.'''
 
 # Had to use in the terminal: export PYTHONNOUSERSITE=True
 
