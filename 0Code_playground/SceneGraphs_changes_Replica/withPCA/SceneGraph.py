@@ -46,6 +46,47 @@ def create_colors_dict(list_numbers):
     return random_dict
 
 
+# side function
+def create_cylinder_between_points(point1, point2, color, radius=0.02):
+
+    point1 = np.array(point1)
+    point2 = np.array(point2)
+    
+    # Create cylinder geometry
+    height = np.linalg.norm(point2 - point1)
+    cylinder = o3d.geometry.TriangleMesh.create_cylinder(radius=radius, height=height)
+    
+    mid_point = (point1 + point2) / 2
+
+    direction = (point2 - point1) / height  # compute the direction from point1 to point2
+    
+    # Create a rotation matrix that aligns the cylinder's z-axis to the direction vector
+    z_axis = np.array([0, 0, 1])  # default axis of the cylinder
+    axis = np.cross(z_axis, direction)  # axis of rotation
+    angle = np.arccos(np.dot(z_axis, direction))  # angle of rotation
+    
+    # Handle cases where the direction is aligned with the z-axis
+    if np.linalg.norm(axis) > 1e-6:  # if the axis is non-zero
+        axis = axis / np.linalg.norm(axis)  # normalize the rotation axis
+        rotation_matrix = o3d.geometry.TriangleMesh.get_rotation_matrix_from_axis_angle(axis * angle)
+        cylinder.rotate(rotation_matrix)
+    
+    cylinder.translate(mid_point) # translate the cylinder to the mid-point between the two points
+
+    cylinder.paint_uniform_color(color) # set the color of the cylinder
+    
+    return cylinder
+
+
+# side function
+def create_sphere_at_point(point, color, radius = 0.1):
+    sphere = o3d.geometry.TriangleMesh.create_sphere(radius)
+    sphere.translate(point)  # move the sphere to the specified point
+    sphere.paint_uniform_color(color)
+    return sphere
+
+
+
 
 class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, self.associations_objectIdIndex
     # OK
@@ -233,28 +274,57 @@ class SceneGraph(): # possible attributes: self.nodes, self.matrix_distances, se
 
         return
     
-    # TODO
+    # OK (maybe check withUpdates)
     def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
         # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
+
+        # Get the vertices and the point clouds
+
+        vertex_meshes = []
+        PCDs = o3d.geometry.PointCloud()
+        for objectId in list_IDs:
+
+            positions_vertex = self.nodes[str(objectId)]['centroid'] # the vertices are the centroids of the instances
+            
+            if color == 'absoluteColor':
+                color_vertex = np.array(self.nodes[str(objectId)]['absolute color']) / 255
+            if color == 'withUpdates':
+                color_vertex = np.array(self.nodes[str(objectId)]['color update']) / 255
+            if color == 'randomColor':
+                color_vertex = np.array(self.nodes[str(objectId)]['ply_color']) / 255
+            
+            sphere = create_sphere_at_point(positions_vertex, color_vertex)
+            vertex_meshes.append(sphere)
+
+            pcd_instance = o3d.geometry.PointCloud()
+            pcd_instance.points = o3d.utility.Vector3dVector(np.array(self.nodes[str(objectId)]['points_geometric']))
+            list_colors = [color_vertex for index in range(len(pcd_instance.points))]
+            pcd_instance.colors = o3d.utility.Vector3dVector(np.array(list_colors))
+            PCDs += pcd_instance
         
+        vertices = o3d.geometry.TriangleMesh()
+        for mesh in vertex_meshes:
+            vertices += mesh
+
+
+        # Get the edges
         
+        edges = o3d.geometry.TriangleMesh()
+        for i in range(len(list_IDs)):
+            for j in range(i + 1, len(list_IDs)):
+                objectID_to_index_i = int(self.associations_objectIdIndex[str(list_IDs[i])])
+                objectID_to_index_j = int(self.associations_objectIdIndex[str(list_IDs[j])])
+
+                if self.matrix_distances[objectID_to_index_i][objectID_to_index_j] <= threshold:
+                    centroid_i = self.nodes[str(list_IDs[i])]['centroid']
+                    centroid_j = self.nodes[str(list_IDs[j])]['centroid']
+                    current_edge = create_cylinder_between_points(centroid_i, centroid_j, color = np.array([255, 0, 255]) / 255) # if you want, you can set a different color for the edges. fucsia: [255, 0, 255]
+                    edges += current_edge
 
 
+        return vertices, PCDs, edges
 
 
-
-
-
-
-
-
-
-
-
-
-        #return SG
-        pass
-    
     # TODO
     def draw_SceneGraph_PyViz3D(self):
         pass
@@ -340,8 +410,13 @@ if __name__ == '__main__':
 
     
     graph = SceneGraph()
-    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances, )
+    graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
+    graph.print_info_node('4')
 
+    colored_point_cloud = o3d.io.read_point_cloud(path_plyFile)
 
-    
+    vertices, PCDs, edges = graph.get_visualisation_SceneGraph([4, 5, 32, 12], threshold = 2, color='randomColor')
+    geometries = [PCDs, vertices, edges]
+
+    o3d.visualization.draw_geometries(geometries)
 

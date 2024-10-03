@@ -7,11 +7,6 @@ from scipy.spatial import KDTree
 # colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_1_withIDs.ply')
 # o3d.visualization.draw_geometries([colored_point_cloud, colored_point_cloud_2])
 
-aaaa = np.array([[1, 2], [2, 3]])
-if isinstance(aaaa, np.ndarray):
-    forse = aaaa.tolist()
-
-    print(type(forse))
 
 
 # distances = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
@@ -43,19 +38,13 @@ if isinstance(aaaa, np.ndarray):
 
 
 
-def get_visualisation_SceneGraph(self, list_IDs, threshold, color = 'absoluteColor'):
-        # color: 'withUpdates' (show how the objects changed), 'randomColor' (given by self.nodes[objectId]['ply_color']), 'absoluteColor' (given by self.nodes[objectId]['absolute color'])
+
+
         
-        vertices = []
-        colors = []
-        for objectId in list_IDs:
-            vertices.append(self.nodes[objectId]['centroid']) # the vertices are the centroids of the instances
-            if color == 'absoluteColor':
-                colors.append(self.nodes[objectId]['absolute color'])
-            if color == 'withUpdates':
-                colors.append(self.nodes[objectId]['color update'])
-            if color == 'randomColor':
-                colors.append(self.nodes[objectId]['ply_color'])
 
         
             
+
+
+
+o3d.visualization.draw_geometries([create_cylinder_between_points([0, 0, 0], [1, 1, 1], 0.1, [255, 0, 0])])
