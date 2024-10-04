@@ -5,7 +5,7 @@ This code creates three files:
 - matrix_distances_file_LabelMaker.txt (in the filename the distance that has been used is specified)
 - associations_objectIdIndex_LabelMaker.json (keys are objectIDs, values are the indexes in the distance matrix)
 - list_instances_LabelMaker.txt
-- colorDict_frlApartments_LabelMaker.json
+- colorDict_frlApartments_LabelMaker.json, directly from scannet
 
 Also saves the point cloud with an header similar to this one:
 
