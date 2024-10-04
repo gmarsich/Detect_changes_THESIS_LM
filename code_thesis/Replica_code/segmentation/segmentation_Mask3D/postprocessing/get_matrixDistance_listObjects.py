@@ -4,7 +4,8 @@
 This code creates three files:
 - matrix_distances_file_LabelMaker.txt (in the filename the distance that has been used is specified)
 - associations_objectIdIndex_LabelMaker.json (keys are objectIDs, values are the indexes in the distance matrix)
-- list_instances_LabelMaker.txt.
+- list_instances_LabelMaker.txt
+- colorDict_frlApartments_LabelMaker.json
 
 Also saves the point cloud with an header similar to this one:
 
@@ -21,7 +22,7 @@ import json
 import time
 import copy
 
-from scannet200_constants import VALID_CLASS_IDS_200, CLASS_LABELS_200 # local file
+from scannet200_constants import VALID_CLASS_IDS_200, CLASS_LABELS_200, SCANNET_COLOR_MAP_200 # local file
 from side_code.side_code import * # local file
 
 
@@ -50,13 +51,15 @@ path_pred_mask = os.path.join(path_mask3d_folder, 'pred_mask')
 path_predictions = os.path.join(path_mask3d_folder, 'predictions.txt')
 path_mesh = os.path.join(path_mask3d_folder, 'mesh_labelled.ply')
 
+path_save_colorDict = os.path.join(path_folderResults, 'colorDict_frlApartments_LabelMaker.json')
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 scannet_file = os.path.join(current_dir, 'scannet200_constants.py')
 
 
 
 #
-# Create dict_info, where keys are IDscene and the values are lists like [IDscannet, pcd, (sampled_pcd,) label]
+# Create dict_info, where keys are IDscene and the values are lists like [IDscannet, pcd, (sampled_pcd,) label]. Save colorDict_frlApartments_LabelMaker.json 
 #
 
 # TODO: to revise the part of building dict_info
@@ -111,7 +114,6 @@ for key, value in dict_paths_predMask.items():
         dict_info[key].append(sampled_pcd)
 
 
-
 valid_class_ids = VALID_CLASS_IDS_200
 class_labels = CLASS_LABELS_200
 
@@ -119,6 +121,18 @@ dict_scannet = dict(zip(valid_class_ids, class_labels))
 
 for key, value in dict_info.items():
     dict_info[key].append(dict_scannet[value[0]])
+
+
+dict_colorMap_IDs = SCANNET_COLOR_MAP_200
+
+dict_colorMap = {}
+
+for key, value in dict_colorMap_IDs.items():
+    dict_colorMap[dict_scannet[key]] = list(dict_colorMap_IDs[key])
+
+
+with open(path_save_colorDict, 'w') as json_file:
+    json.dump(dict_colorMap, json_file, indent=4)
 
 
 # o3d.visualization.draw_geometries([dict_info[34][1]])
