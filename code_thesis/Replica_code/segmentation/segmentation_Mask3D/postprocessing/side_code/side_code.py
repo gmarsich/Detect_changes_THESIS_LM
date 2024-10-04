@@ -8,6 +8,7 @@ import open3d as o3d
 import json
 import os
 import random
+import copy
 
 
 #
@@ -65,51 +66,44 @@ def farthest_point_sampling(pcd, n_samples):
     return sampled_pcd
 
 
-def get_list_instances_complete(list_labels, list_points):
-    info_dict = {info[0]: info[1] for info in list_labels}
-    list_instances_complete = []
-    
-    for obj_id, points in list_points:
-        if obj_id in info_dict:
-            class_name = info_dict[obj_id]
-        else:
-            class_name = 'None'
-
-        centroid = np.mean(points, axis=0)
-        list_instances_complete.append([obj_id, class_name, centroid, points])  
-
-    return list_instances_complete
-
-
-def compute_distance_matrix(list_instances_complete, path_save_files, compute_distance):
-    matrix_distances = np.full((len(list_instances_complete), len(list_instances_complete)), np.inf) # putting 0 instead of np.inf will lead to an approximation to integers...
+def compute_distance_matrix(dict_info, path_save_files, compute_distance):
+    matrix_distances = np.full((len(dict_info), len(dict_info)), np.inf) # putting 0 instead of np.inf will lead to an approximation to integers...
     associations = {}
 
+    list_index_objID = []
+    for index, key in enumerate(dict_info):
+        list_index_objID.append([key])
+
+
     for i in range(len(matrix_distances)):
-        associations[list_instances_complete[i][0]] = str(i)
+        associations[list_index_objID[i]] = str(i)
         for j in range(i + 1, len(matrix_distances[0])): # the matrix is symmetric
 
             if compute_distance == distance_Euclidean_centroids: # CAVEAT: the centroid that is used is an approximation, since we have downsampled the point clouds
-                matrix_distances[i][j] = compute_distance(list_instances_complete[i][2], list_instances_complete[j][2])
+                matrix_distances[i][j] = compute_distance(dict_info[list_index_objID[i]][1].get_center(), dict_info[list_index_objID[j]][1].get_center())
             else:
-                matrix_distances[i][j] = compute_distance(list_instances_complete[i][3], list_instances_complete[j][3])
+                list_1 = list(copy.deepcopy(dict_info[list_index_objID[i]][1].points))
+                list_2 = list(copy.deepcopy(dict_info[list_index_objID[j]][1].points))
+                matrix_distances[i][j] = compute_distance(list_1, list_2)
             
             matrix_distances[j][i] = matrix_distances[i][j]
 
 
     # Save matrix_distances in a file
-    with open(os.path.join(path_save_files, "matrix_distances_file" + str(compute_distance) + ".txt"), 'w') as file_matrix: #TODO: the name can be improved, due to str(compute_distance)
+    with open(os.path.join(path_save_files, "matrix_distances_file_LabelMaker" + str(compute_distance) + ".txt"), 'w') as file_matrix: #TODO: the name can be improved, due to str(compute_distance)
         file_matrix.write("\n")
         np.savetxt(file_matrix, matrix_distances, fmt='%.18e')
 
     # Save associations_objectIdIndex
-    with open(os.path.join(path_save_files, 'associations_objectIdIndex.json'), 'w') as json_file:
+    with open(os.path.join(path_save_files, 'associations_objectIdIndex_LabelMaker.json'), 'w') as json_file:
         json.dump(associations, json_file, indent=4)
 
     # Save list_instances
-    with open(os.path.join(path_save_files, "list_instances.txt"), 'w') as file_objects:
-        for sublist in list_instances_complete:
-            obj_id, class_name, _, _ = sublist
-            file_objects.write(f"{obj_id}\t{class_name}\n")
+    with open(os.path.join(path_save_files, "list_instances_LabelMaker.txt"), 'w') as file_objects:
+        for key, value in dict_info.items():
+            if compute_distance != 'distance_Euclidean_centroids':
+                file_objects.write(f"{key}\t{value[2]}\n")
+            else:
+                file_objects.write(f"{key}\t{value[3]}\n")
     
     return matrix_distances

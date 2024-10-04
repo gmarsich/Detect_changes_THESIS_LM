@@ -19,7 +19,9 @@ import os
 import open3d as o3d
 import json
 import time
+import copy
 
+from scannet200_constants import VALID_CLASS_IDS_200, CLASS_LABELS_200 # local file
 from side_code.side_code import * # local file
 
 
@@ -54,15 +56,12 @@ scannet_file = os.path.join(current_dir, 'scannet200_constants.py')
 
 
 #
-# Create list_idScene_pcd
+# Create dict_info, where keys are IDscene and the values are lists like [IDscannet, pcd, (sampled_pcd,) label]
 #
 
-dict_paths_predMask = {int(os.path.splitext(file)[0]): os.path.join(path_pred_mask, file) 
-                       for file in sorted(os.listdir(path_pred_mask)) 
-                       if os.path.isfile(os.path.join(path_pred_mask, file))}
+# TODO: to revise the part of building dict_info
 
-
-dict_IDscene_IDscannet = {}
+dict_info = {}
 
 with open(path_predictions, 'r') as file:
     for line in file:
@@ -72,28 +71,75 @@ with open(path_predictions, 'r') as file:
         IDscene = int(os.path.splitext(os.path.basename(filename))[0])  # extract IDscene from filename
         IDscannet = int(parts[1])  # the integer that follows the filename
 
-        dict_IDscene_IDscannet[IDscene] = IDscannet
+        dict_info[IDscene] = [IDscannet]
+
+
+dict_paths_predMask = {int(os.path.splitext(file)[0]): os.path.join(path_pred_mask, file) 
+                       for file in sorted(os.listdir(path_pred_mask)) 
+                       if os.path.isfile(os.path.join(path_pred_mask, file))}
 
 
 mesh = o3d.io.read_point_cloud(path_mesh)
 points = np.asarray(mesh.points)
 colors = np.asarray(mesh.colors)
 
-for key, value in dict_paths_predMask:
-    
+for key, value in dict_paths_predMask.items():
+    selected_points = []
+    with open(value, 'r') as mask_file:
+        mask_lines = mask_file.readlines()
+
+    if len(mask_lines) != len(points):
+        print(f"Warning: Mask has {len(mask_lines)} lines but mesh has {len(points)} points. Skipping this mask.")
+    else:
+        mask = np.array([int(line.strip()) for line in mask_lines])
+
+        selected_points = points[mask == 1]
+        selected_colors = colors[mask == 1] # OBS.: it seems that one may have some points with a color different from the color associated to the instance
+
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(selected_points)
+    pcd.colors = o3d.utility.Vector3dVector(selected_colors)
+
+    dict_info[key].append(pcd)
+
+    if chosen_distance != 'distance_Euclidean_centroids':
+        sampled_pcd = copy.deepcopy(pcd)
+        if len(pcd.points) > scaling_factor*10: # 10 has been chosen empirically, randomly
+            num_points = round(len(pcd.points) / scaling_factor)
+            sampled_pcd = farthest_point_sampling(pcd, num_points)
+
+        dict_info[key].append(sampled_pcd)
 
 
 
+valid_class_ids = VALID_CLASS_IDS_200
+class_labels = CLASS_LABELS_200
+
+dict_scannet = dict(zip(valid_class_ids, class_labels))
+
+for key, value in dict_info.items():
+    dict_info[key].append(dict_scannet[value[0]])
+
+
+# o3d.visualization.draw_geometries([dict_info[34][1]])
+# print(dict_info[34][2])
+
+# o3d.visualization.draw_geometries([dict_info[8][1]])
+# print(dict_info[8][2])
+
+# o3d.visualization.draw_geometries([dict_info[9][1]])
+# print(dict_info[9][2])
 
 
 
 #
-# Create a list list_info where each element id in the form [obj_id_scene, object_id_scannet, label, pcd]
+# Compute and save the files that are required
 #
-
-
-
     
+matrix = compute_distance_matrix(dict_info, path_save_files, compute_distance = chosen_distance)
+
+
+
 
 
 
