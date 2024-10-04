@@ -1,4 +1,4 @@
-Execute `get_matrixDistance_listObjects.py` changing the variables at the beginning to get some useful files concerning the frl apartments in the Replica dataset. The environment that should be used is `sceneGraphs_groundTruth_Replica`.
-Same applies for `colorDict_frlApartments.py`.
+The environment that should be used is `sceneGraphs_groundTruth_Replica`.
 
-The files that one gets from here are all the files one needs fro the scene graph, except for the point cloud with tth IDs that is generated somewhere else.
+Execute `A_get_matrixDistance_listObjects.py` changing the variables at the beginning and then execute `colorDict_frlApartments.py`.
+Then, enter the folder `alignment_and_postprocessing` and execute, changing the variables, firstly `A_get_transformationMatrix` and then `B_postprocessing_get_plyRightFormat.py`.

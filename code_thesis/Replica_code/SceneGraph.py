@@ -478,16 +478,19 @@ def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_
 
 
 if __name__ == '__main__':
-    path_plyFile = '/local/home/gmarsich/Desktop/results/frl_apartment_0_withIDs.ply'
-    path_colorDict_frlApartments = '/local/home/gmarsich/Desktop/Thesis/code_thesis/Replica_code/colorDict_frlApartments.json'
+    path_plyFile = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/frl_apartment_0_withIDs.ply'
+    path_colorDict_frlApartments = '/local/home/gmarsich/Desktop/data_Replica/colorDict_frlApartments.json'
 
     path_listInstances = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
-    path_distanceMatrix = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/matrix_distances_file<function distance_Euclidean_closest_points at 0x7f6b701ae830>.txt'
+    path_distanceMatrix = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt'
     path_associationsObjectIdIndex = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/associations_objectIdIndex.json'
 
     
     graph = SceneGraph()
     graph.populate_SceneGraph(path_plyFile, path_distanceMatrix = path_distanceMatrix, path_associationsObjectIdIndex = path_associationsObjectIdIndex, path_colorDict_frlApartments = path_colorDict_frlApartments, path_listInstances = path_listInstances)
-    # graph.print_info_node('4')
+    graph.print_info_node('4')
+    list_IDs = [4, 5, 10, 12]
+    list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = graph.get_visualisation_SceneGraph(list_IDs, threshold=5, color = 'absoluteColor')
+    graph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True)
     
 

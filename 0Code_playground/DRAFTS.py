@@ -1,16 +1,8 @@
-import numpy as np
-
-np.random.seed(42)
-list_colors_tmp = (np.random.rand(4, 3) * 255).astype(np.uint8) 
+import open3d as o3d
 
 
+colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/frl_apartment_0_withIDs.ply')
+colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/frl_apartment_5_withIDs.ply')
+o3d.visualization.draw_geometries([colored_point_cloud, colored_point_cloud_2])
 
-list_colors = []
-for i in range(4):
-    list_colors.extend([list_colors_tmp[i]] * 3)
-
-
-list_colors = np.asarray(list_colors).astype(np.uint8) 
-
-print(list_colors)
 
