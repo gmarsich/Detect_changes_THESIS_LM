@@ -1,3 +1,5 @@
+# environment: sceneGraphs_groundTruth_Replica
+
 '''This script takes in input the set of .ply files (each one containing an instance) and generates a unique .ply file such
 that its beginning appears like this:
 
