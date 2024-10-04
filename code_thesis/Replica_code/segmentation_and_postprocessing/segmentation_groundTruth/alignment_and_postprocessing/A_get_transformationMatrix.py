@@ -10,7 +10,9 @@ import open3d as o3d
 import os
 import numpy as np
 import copy
+import time
 
+start_time = time.time()
 
 #
 # Variables to set
@@ -208,3 +210,18 @@ name_results = source_name + "_to_"+ target_name
 path_results = os.path.join(folder_results, "results_alignment", name_results)
 os.makedirs(path_results, exist_ok=True)
 np.savetxt(os.path.join(path_results, name_results + ".txt"), result_refinement.transformation, fmt='%.18e')
+
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+
+
+# TIMINGS:
+
+# frl_apartment_1_to_frl_apartment_0: 20.579102 seconds
+# frl_apartment_2_to_frl_apartment_0: 20.109850 seconds
+# frl_apartment_3_to_frl_apartment_0: 18.529859 seconds
+# frl_apartment_4_to_frl_apartment_0: 19.707634 seconds
+# frl_apartment_5_to_frl_apartment_0: 20.439695 seconds

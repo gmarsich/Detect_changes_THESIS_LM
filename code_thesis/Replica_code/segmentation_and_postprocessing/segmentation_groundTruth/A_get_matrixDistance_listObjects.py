@@ -170,3 +170,15 @@ matrix_distances = compute_distance_matrix(list_instances_complete, path_save_fi
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+
+
+
+# TIMINGS:
+
+# frl_apartment_0: 231.857703 seconds
+# frl_apartment_1: 235.111941 seconds
+# frl_apartment_2: 269.474407 seconds
+# frl_apartment_3: 277.031114 seconds
+# frl_apartment_4: 227.201315 seconds
+# frl_apartment_5: 266.978303 seconds

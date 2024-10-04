@@ -1,5 +1,4 @@
-# environment: sceneGraphs_groundTruth_Replica
-# environment: sceneGraphs_Gaia
+# environment: sceneGraphs_groundTruth_Replica DONE
 
 '''This script takes in input the set of .ply files (each one containing an instance) and generates a unique .ply file such
 that its beginning appears like this:
@@ -27,24 +26,27 @@ import numpy as np
 import os
 import open3d as o3d
 import glob
+import time
 
+start_time = time.time()
 
 #
 # Variables
 #
 
+frl_apartment = 'frl_apartment_0'
+basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-
-base_path_instancePCDs = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation'
-path_save_newPCD = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_0_withIDs.ply'
-
-path_transformationMatrix = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/0GAIA/alignment_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt'
+path_transformationMatrix = '/local/home/gmarsich/Desktop/data_Replica/results_alignment/frl_apartment_1_to_frl_apartment_0/frl_apartment_1_to_frl_apartment_0.txt'
 usingTarget = True # True: the .ply is the target: don't apply the transformation; False: the transformation has to be performed
 
 
 #
 # Automatic variables: they should be fine like this
 #
+
+base_path_instancePCDs = os.path.join(basePath, frl_apartment, 'Segmentation')
+path_save_newPCD = os.path.join(basePath, frl_apartment, frl_apartment + '_withIDs.ply')
 
 
 #
@@ -128,5 +130,19 @@ with open(path_save_newPCD, 'w') as f:
 colored_point_cloud = o3d.io.read_point_cloud(path_save_newPCD)
 o3d.visualization.draw_geometries([colored_point_cloud])
 
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")
 
+
+
+
+# TIMINGS:
+
+# frl_apartment_0: 8.540876 seconds
+# frl_apartment_1_to_frl_apartment_0: 8.410973 seconds
+# frl_apartment_2_to_frl_apartment_0: 8.879411 seconds
+# frl_apartment_3_to_frl_apartment_0: 8.711987 seconds
+# frl_apartment_4_to_frl_apartment_0: 9.061450 seconds
+# frl_apartment_5_to_frl_apartment_0: 8.596366 seconds
 
