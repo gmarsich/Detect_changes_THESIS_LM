@@ -72,18 +72,18 @@ def compute_distance_matrix(dict_info, path_save_files, compute_distance):
 
     list_index_objID = []
     for index, key in enumerate(dict_info):
-        list_index_objID.append([key])
+        list_index_objID.append(key)
 
 
     for i in range(len(matrix_distances)):
         associations[list_index_objID[i]] = str(i)
         for j in range(i + 1, len(matrix_distances[0])): # the matrix is symmetric
 
-            if compute_distance == distance_Euclidean_centroids: # CAVEAT: the centroid that is used is an approximation, since we have downsampled the point clouds
+            if compute_distance == distance_Euclidean_centroids:
                 matrix_distances[i][j] = compute_distance(dict_info[list_index_objID[i]][1].get_center(), dict_info[list_index_objID[j]][1].get_center())
-            else:
-                list_1 = list(copy.deepcopy(dict_info[list_index_objID[i]][1].points))
-                list_2 = list(copy.deepcopy(dict_info[list_index_objID[j]][1].points))
+            else: # consider the downsampled point cloud
+                list_1 = list(copy.deepcopy(dict_info[list_index_objID[i]][2].points))
+                list_2 = list(copy.deepcopy(dict_info[list_index_objID[j]][2].points))
                 matrix_distances[i][j] = compute_distance(list_1, list_2)
             
             matrix_distances[j][i] = matrix_distances[i][j]
@@ -101,9 +101,6 @@ def compute_distance_matrix(dict_info, path_save_files, compute_distance):
     # Save list_instances
     with open(os.path.join(path_save_files, "list_instances_LabelMaker.txt"), 'w') as file_objects:
         for key, value in dict_info.items():
-            if compute_distance != 'distance_Euclidean_centroids':
-                file_objects.write(f"{key}\t{value[2]}\n")
-            else:
-                file_objects.write(f"{key}\t{value[3]}\n")
+            file_objects.write(f"{key}\t{value[3]}\n")
     
     return matrix_distances

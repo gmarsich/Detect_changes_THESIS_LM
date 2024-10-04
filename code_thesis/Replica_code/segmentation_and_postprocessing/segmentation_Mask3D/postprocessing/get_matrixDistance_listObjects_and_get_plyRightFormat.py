@@ -9,12 +9,27 @@ This code creates three files:
 
 Also saves the point cloud with an header similar to this one:
 
+ply
+format ascii 1.0
+element vertex 1820201
+property float x
+property float y
+property float z
+property uchar red
+property uchar green
+property uchar blue
+property float nx
+property float ny
+property float nz
+property int objectId
+end_header
+4.310055 -9.044144 0.180156 56 55 78 0.093243 -0.983993 -0.151864 13
+4.323123 -9.043898 0.168617 37 33 46 0.108986 -0.992858 0.048523 13
 
 '''
 
 # Had to use in the terminal: export PYTHONNOUSERSITE=True # maybe no
 
-from plyfile import PlyData, PlyElement
 import numpy as np
 import os
 import open3d as o3d
@@ -32,12 +47,12 @@ start_time = time.time()
 # Variables to set
 #
 
-frl_apartment = 'frl_apartment_0'
-path_folderResults = '/local/home/gmarsich/Desktop/data_Replica' # if the folder does not exist, it will be created
+frl_apartment = 'frl_apartment_3'
+path_folderResults = '/local/home/gmarsich/Desktop/data_Replica'
 chosen_distance = distance_Euclidean_closest_points # be aware that with distance_Euclidean_closest_points a downsampling will be performed
 scaling_factor = 50 # for downsampling to perform distance_Euclidean_closest_points
+saveColorDict = False # do you need the dictionary with the absolute colors?
 
-# path_to_output_ply = '/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/habitat/Segmentation/mesh_semantic.ply_47.ply' # instance to visualise as a test
 
 
 #
@@ -59,10 +74,8 @@ scannet_file = os.path.join(current_dir, 'scannet200_constants.py')
 
 
 #
-# Create dict_info, where keys are IDscene and the values are lists like [IDscannet, pcd, (sampled_pcd,) label]. Save colorDict_frlApartments_LabelMaker.json 
+# Create dict_info, where keys are IDscene and the values are lists like [IDscannet, pcd, sampled_pcd, label]. Save colorDict_frlApartments_LabelMaker.json 
 #
-
-# TODO: to revise the part of building dict_info
 
 dict_info = {}
 
@@ -81,6 +94,7 @@ dict_paths_predMask = {int(os.path.splitext(file)[0]): os.path.join(path_pred_ma
                        for file in sorted(os.listdir(path_pred_mask)) 
                        if os.path.isfile(os.path.join(path_pred_mask, file))}
 
+# Add pcd and sampled_pcd
 
 mesh = o3d.io.read_point_cloud(path_mesh)
 points = np.asarray(mesh.points)
@@ -96,53 +110,49 @@ for key, value in dict_paths_predMask.items():
     else:
         mask = np.array([int(line.strip()) for line in mask_lines])
 
-        selected_points = points[mask == 1]
-        selected_colors = colors[mask == 1] # OBS.: it seems that one may have some points with a color different from the color associated to the instance
+        selected_points = points[mask != 0]
+        selected_colors = colors[mask != 0] # OBS.: it seems that one may have some points with a color different from the color associated to the instance
 
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(selected_points)
     pcd.colors = o3d.utility.Vector3dVector(selected_colors)
+    pcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30)) # estimate normals. Useful for PCA afterwards # TOSET: in case, change parameters
 
     dict_info[key].append(pcd)
 
-    if chosen_distance != 'distance_Euclidean_centroids':
-        sampled_pcd = copy.deepcopy(pcd)
-        if len(pcd.points) > scaling_factor*10: # 10 has been chosen empirically, randomly
-            num_points = round(len(pcd.points) / scaling_factor)
-            sampled_pcd = farthest_point_sampling(pcd, num_points)
 
-        dict_info[key].append(sampled_pcd)
+    sampled_pcd = copy.deepcopy(pcd)
+    if len(pcd.points) > scaling_factor*10: # 10 has been chosen empirically, randomly
+        num_points = round(len(pcd.points) / scaling_factor)
+        sampled_pcd = farthest_point_sampling(pcd, num_points)
 
+    dict_info[key].append(sampled_pcd)
+
+
+# Add label and save colorDict_frlApartments_LabelMaker.json
 
 valid_class_ids = VALID_CLASS_IDS_200
 class_labels = CLASS_LABELS_200
 
 dict_scannet = dict(zip(valid_class_ids, class_labels))
 
+
 for key, value in dict_info.items():
     dict_info[key].append(dict_scannet[value[0]])
 
 
-dict_colorMap_IDs = SCANNET_COLOR_MAP_200
 
-dict_colorMap = {}
+if saveColorDict:
 
-for key, value in dict_colorMap_IDs.items():
-    dict_colorMap[dict_scannet[key]] = list(dict_colorMap_IDs[key])
+    dict_colorMap_IDs = SCANNET_COLOR_MAP_200
 
+    dict_colorMap = {}
 
-with open(path_save_colorDict, 'w') as json_file:
-    json.dump(dict_colorMap, json_file, indent=4)
+    for key, value in dict_scannet.items():
+        dict_colorMap[dict_scannet[key]] = list(dict_colorMap_IDs[key])
 
-
-# o3d.visualization.draw_geometries([dict_info[34][1]])
-# print(dict_info[34][2])
-
-# o3d.visualization.draw_geometries([dict_info[8][1]])
-# print(dict_info[8][2])
-
-# o3d.visualization.draw_geometries([dict_info[9][1]])
-# print(dict_info[9][2])
+    with open(path_save_colorDict, 'w') as json_file:
+        json.dump(dict_colorMap, json_file, indent=4)
 
 
 
@@ -154,9 +164,17 @@ matrix = compute_distance_matrix(dict_info, path_save_files, compute_distance = 
 
 
 
+#
+# Get the point cloud with the nice header, and with the alignment! Note that only the things that are recognised as instances by Mask3D / LabelMaker will be included
+#
 
 
 
-# end_time = time.time()
-# elapsed_time = end_time - start_time
-# print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+
+
+
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")

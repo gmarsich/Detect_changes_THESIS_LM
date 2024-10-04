@@ -1,7 +1,8 @@
-# import open3d as o3d
+import open3d as o3d
 
-# colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/scannet200_mask3d_1/mesh_labelled.ply')
-# o3d.visualization.draw_geometries([colored_point_cloud])
+colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/frl_apartment_0_withIDs.ply')
+colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs.ply')
+o3d.visualization.draw_geometries([colored_point_cloud_2, colored_point_cloud])
 
 # # print(f"First point: {colored_point_cloud.points[0]}")
 
@@ -44,8 +45,8 @@ import open3d as o3d
 # Variables to set
 #
 
-frl_apartment = 'frl_apartment_5'
-pcd_mask3D = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/scannet200_mask3d_1/mesh_labelled.ply')
+frl_apartment = 'frl_apartment_3'
+pcd_mask3D = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_3/scannet200_mask3d_1/mesh_labelled.ply')
 path_folderResults = '/local/home/gmarsich/Desktop/data_Replica' # if the folder does not exist, it will be created
 
 #
@@ -81,5 +82,5 @@ def get_instance(path_pred_mask, pcd_mask3D):
     o3d.visualization.draw_geometries([point_cloud])
 
     
-path_pred_mask = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/scannet200_mask3d_1/pred_mask/016.txt'
+path_pred_mask = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_3/scannet200_mask3d_1/pred_mask/020.txt'
 get_instance(path_pred_mask, pcd_mask3D)

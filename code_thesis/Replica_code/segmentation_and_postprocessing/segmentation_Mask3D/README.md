@@ -5,6 +5,6 @@ The environment that has been used is `labelmaker`, installed as explained in `L
 Move the folder `scannet200_mask3d_1` that you will get to the folder `data_Replica/[frl_apartment_i]`.
 
 
-Afterwards, enter the folder `postprocessing`
+Afterwards, enter the folder `postprocessing` and using the environmente `sceneGraphs_groundTruth_Replica` execute `get_matrixDistance_listObjects_and_get_plyRightFormat.py`.
 
 
