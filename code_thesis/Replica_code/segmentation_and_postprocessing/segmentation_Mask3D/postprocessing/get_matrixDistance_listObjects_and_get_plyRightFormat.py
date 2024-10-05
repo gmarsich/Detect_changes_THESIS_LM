@@ -174,6 +174,8 @@ matrix = compute_distance_matrix(dict_info, path_save_files, compute_distance = 
 # do not belong to any pred_mask
 #
 
+# TODO: if you want to test Replica processed with LabelMaker on SGAligner, you can easily work on the following code to get the equivalent of frl_apartment_i_coloredMesh_with_IDs.ply
+
 if path_transformationMatrix:
     transformation_matrix = np.loadtxt(path_transformationMatrix) # it is 4x4
 

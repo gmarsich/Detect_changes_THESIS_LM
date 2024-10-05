@@ -210,7 +210,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
 
             for objectId, data in self.nodes.items():
                 label = data['label']
-                data['absolute color'] = data_dict[label]
+                data['absolute color'] = data_dict.get(label, [0, 0, 0]) # if the label does not exist in the dictionary (in my case, I will have "None", the color will be black)
                 self.nodes[objectId]['absolute color'] = data['absolute color']
     
     # OK
