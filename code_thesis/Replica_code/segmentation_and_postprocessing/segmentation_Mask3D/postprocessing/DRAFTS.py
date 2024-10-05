@@ -1,8 +1,8 @@
 import open3d as o3d
 
-colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/frl_apartment_0_withIDs.ply')
-colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs.ply')
-o3d.visualization.draw_geometries([colored_point_cloud_2, colored_point_cloud])
+colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs_LabelMaker.ply')
+#colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs.ply')
+o3d.visualization.draw_geometries([colored_point_cloud])
 
 # # print(f"First point: {colored_point_cloud.points[0]}")
 

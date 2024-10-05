@@ -128,7 +128,7 @@ with open(path_save_newPCD, 'w') as f:
         f.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f} {int(point[3])} {int(point[4])} {int(point[5])} {point[6]:.6f} {point[7]:.6f} {point[8]:.6f} {int(point[9])}\n")
 
 colored_point_cloud = o3d.io.read_point_cloud(path_save_newPCD)
-o3d.visualization.draw_geometries([colored_point_cloud])
+# o3d.visualization.draw_geometries([colored_point_cloud])
 
 end_time = time.time()
 elapsed_time = end_time - start_time
