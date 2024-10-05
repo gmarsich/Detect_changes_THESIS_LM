@@ -184,12 +184,30 @@ all_colors = []
 all_normals = []
 all_object_ids = []
 
+original_pcd = o3d.io.read_point_cloud(path_original_pcd)
+original_pcd_points = np.asarray(original_pcd.points)
+original_pcd_points_tuples = [tuple(point.tolist()) for point in original_pcd_points]
+original_pcd_colors = (np.asarray(original_pcd.colors) * 255).astype(np.uint8) # the range was [0, 1] for each color, at the beginning
+original_pcd_normals = np.asarray(original_pcd.normals)
+
 for key, value in dict_info.items():
     points = np.asarray(dict_info[key][1].points)
-    colors_normalised = np.asarray(dict_info[key][1].colors)
-    colors = (colors_normalised * 255).astype(np.uint8)
+
+    colors = []
+    all_points_tuples = [tuple(point.tolist()) for point in points]
+    original_pcd_points_dict = {point: idx for idx, point in enumerate(original_pcd_points_tuples)}
+
+    for i in range(len(all_points_tuples)):
+        if all_points_tuples[i] in original_pcd_points_dict:
+            index = original_pcd_points_dict[all_points_tuples[i]]
+            colors.append(original_pcd_colors[index])
+    
+    colors = np.asarray(colors)
+
     normals = np.asarray(dict_info[key][1].normals)
     object_IDs = np.full((points.shape[0], 1), key)
+
+
 
     all_points.append(points)
     all_colors.append(colors)
@@ -197,12 +215,9 @@ for key, value in dict_info.items():
     all_object_ids.append(object_IDs)
 
 
-# Retrieve the missing points
 
-original_pcd = o3d.io.read_point_cloud(path_original_pcd)
-original_pcd_points = np.asarray(original_pcd.points)
-original_pcd_colors = np.asarray(original_pcd.colors) # the range is [0, 1] for each color
-original_pcd_normals = np.asarray(original_pcd.normals)
+
+# Take into account the parts of the point cloud that were not labelled
 
 all_points_tuples = [tuple(point.tolist()) for point in all_points]
 
@@ -210,7 +225,7 @@ for i in range(len(original_pcd_points)):
     point_tuple = tuple(original_pcd_points[i].tolist()) 
     if point_tuple not in all_points_tuples:
         all_points.append(original_pcd_points[i])
-        all_colors.append((original_pcd_colors[i] * 255).astype(np.uint8))
+        all_colors.append(original_pcd_colors[i])
         all_normals.append(original_pcd_normals[i])
         all_object_ids.append(-1)
 
