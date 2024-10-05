@@ -1,9 +1,9 @@
+# environment: sceneGraphs_groundTruth_Replica DONE
+
 '''This script performs an alignment of the frl apartments in the Replica dataset, because frl apartments don't have a common reference system even
 if the six scenes basically represent the same room. It will provide the transformation matrix.'''
 
 '''This script was inspired by this tutorial: https://www.open3d.org/docs/release/tutorial/pipelines/global_registration.html'''
-
-# environment: sceneGraphs_groundTruth_Replica DONE
 
 
 import open3d as o3d
