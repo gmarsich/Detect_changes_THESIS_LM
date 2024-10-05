@@ -13,6 +13,7 @@ from sklearn.decomposition import PCA
 import open3d as o3d
 from sklearn.metrics.pairwise import cosine_similarity
 import time
+import json
 
 
 #
@@ -26,6 +27,9 @@ namePLY_a = frl_apartment_a + '_withIDs.ply' # _withIDs.ply: from the ground tru
 namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground truth; _withIDs_LabelMaker.ply: from labelMaker
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
+
+path_explainedVariance = os.path.join(basePath, 'dict_explainedVariance.json')
+needDictExplainedVariance = False
 
 objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
 objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
@@ -64,7 +68,7 @@ def pca_embedding(pcd, n_components=3):
 
     #print("Explained variance ratio by each PCA component: ", pca.explained_variance_ratio_)
 
-    return embedding
+    return pca, embedding
 
 
 def farthest_point_sampling(pcd, n_samples):
@@ -107,18 +111,68 @@ def downsample_pair_pcd(pcd_a, pcd_b):
     return pcd_a_downsampled, pcd_b_downsampled
 
 
-def compute_and_save_dictExplainedVariance(list_sceneGraphs):
-    for graph in list_sceneGraphs
+def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
+    dict_explainedVariance = {}
+    for index, graph in enumerate(list_sceneGraphs):
+        start_time = time.time()
 
-    start_time = time.time()
+        dict_explainedVariance[index] = {}
+        
+        for objectId in graph.nodes.keys():
+            if graph.nodes[objectId]['label'] != 'None':
+                pcd_object = o3d.geometry.PointCloud()
+                pcd_object.points = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_geometric']))
+                pcd_object.colors = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_color']) / 255)
+                pca, _ = pca_embedding(pcd_object, n_components=6)
+                dict_explainedVariance[index][objectId] = list(pca.explained_variance_ratio_)
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+    
+    with open(path_explainedVariance, 'w') as json_file:
+        json.dump(dict_explainedVariance, json_file, indent=4)
 
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+#
+# Statistics: how much is the variance explained by the components of the PCA?
+#
+if needDictExplainedVariance:
+
+    sceneGraph_a = SceneGraph()
+    sceneGraph_a.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_0/frl_apartment_0_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_0/list_instances.txt'))
+    sceneGraph_b = SceneGraph()
+    sceneGraph_b.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_1/frl_apartment_1_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_1/list_instances.txt'))
+    sceneGraph_c = SceneGraph()
+    sceneGraph_c.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_2/frl_apartment_2_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_2/list_instances.txt'))
+    sceneGraph_d = SceneGraph()
+    sceneGraph_d.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_3/frl_apartment_3_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_3/list_instances.txt'))
+    sceneGraph_e = SceneGraph()
+    sceneGraph_e.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_4/frl_apartment_4_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_4/list_instances.txt'))
+    sceneGraph_f = SceneGraph()
+    sceneGraph_f.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_5/frl_apartment_5_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_5/list_instances.txt'))
+
+    compute_and_save_dictExplainedVariance([sceneGraph_a, sceneGraph_b, sceneGraph_c, sceneGraph_d, sceneGraph_e, sceneGraph_f])
+
+
+    # TIMINGS:
+    # frl_apartment_0: 1.477730 seconds
+    # frl_apartment_1: 1.504907 seconds
+    # frl_apartment_2: 1.444942 seconds
+    # frl_apartment_3: 1.535040 seconds
+    # frl_apartment_4: 1.534008 seconds
+    # frl_apartment_5: 1.371782 seconds
 
 
 
+
+
+
+
+
+'''
 #
 # Performing PCA and comparing the results
 #
@@ -134,7 +188,7 @@ pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=True)
 pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=True)
 
 
-'''
+
 transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False) # a downsampling is performed internally to compute the matrix
 pcd_b.transform(transformationMatrix)
 o3d.visualization.draw_geometries([pcd_a, pcd_b])
