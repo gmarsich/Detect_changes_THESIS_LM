@@ -7,7 +7,7 @@ The point cloud generated starting from depths is in asset units and with the fo
 the positive y-axis points up, and the positive z-axis points away from where the camera is looking."
 (https://github.com/apple/ml-hypersim)
 
-However, in world coordinates the z axis points up (i.e., inverse of gravity)
+However, in world coordinates the z axis points up (i.e., inverse of gravity).
 '''
 
 import numpy as np
