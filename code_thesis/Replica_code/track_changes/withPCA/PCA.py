@@ -1,3 +1,5 @@
+# environment: sceneGraphs_groundTruth_Replica
+
 '''In input it takes 2 SceneGraph objects and for each one a list of IDs of instances that one wants to compare.
 PCA is applied to TODO'''
 import os
@@ -14,6 +16,7 @@ import open3d as o3d
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 import json
+import matplotlib.pyplot as plt
 
 
 #
@@ -28,8 +31,10 @@ namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground tru
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-path_explainedVariance = os.path.join(basePath, 'dict_explainedVariance.json')
+path_explainedVariance = os.path.join(basePath, 'PCA_variance/dict_explainedVariance.json') # be aware that the folder should already exist!
 needDictExplainedVariance = False
+savePlot = False # save the plot of the explained variance
+key_frl_apartment = '0'
 
 objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
 objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
@@ -167,6 +172,53 @@ if needDictExplainedVariance:
 
 
 
+if savePlot:
+
+    with open(path_explainedVariance, 'r') as json_file:
+        dict_explainedVariance = json.load(json_file)
+
+    all_variance_lists = {}
+
+    for key, value in dict_explainedVariance.items():
+        all_variance_lists[key] = []
+
+        for subkey, subvalue in value.items():
+            all_variance_lists[key].append(subvalue)
+
+    key_frl_apartment = '5'
+    data = all_variance_lists[key_frl_apartment]
+
+    data_array = np.array(data)
+
+    mean_values = np.mean(data_array, axis=0)
+    variance_values = np.var(data_array, axis=0)
+
+    indices = np.arange(1, 7)  # 1 to 6
+
+    plt.figure(figsize=(7, 5))
+    plt.bar(indices - 0.2, mean_values, width=0.4, label='Mean', color='skyblue', align='center')
+
+    plt.errorbar(indices, mean_values, yerr=np.sqrt(variance_values), fmt='o', color='orange', label='Standard deviation', capsize=5)
+
+    plt.xlabel('Component of the PCA')
+    plt.ylabel('Explained variance (range [0, 1])')
+    plt.title('Explained variance for frl_apartment_' + key_frl_apartment)
+    plt.xticks(indices)  # set x-ticks to match the indices
+    plt.legend()
+    plt.grid(axis='y')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(basePath, 'PCA_variance/explained_variance_frl_apartment_' + key_frl_apartment + '.png'), dpi=300)
+
+
+
+
+
+
+
+
+
+    
 
 
 

@@ -1,15 +1,16 @@
 import open3d as o3d
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
+import seaborn as sns
 
 
 import open3d as o3d
 
-colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_3/frl_apartment_3_withIDs_LabelMaker.ply')
-# colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs_LabelMaker.ply')
-points = np.asarray(colored_point_cloud.points)
-print(points[0])
+# colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_3/frl_apartment_3_withIDs_LabelMaker.ply')
+# # colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/frl_apartment_1_withIDs_LabelMaker.ply')
+# points = np.asarray(colored_point_cloud.points)
+# print(points[0])
 # o3d.visualization.draw_geometries([colored_point_cloud, colored_point_cloud_2])
 
 
@@ -50,6 +51,6 @@ print(points[0])
 # print(f'R: {r}, G: {g}, B: {b}')
 
 
-colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply')
-o3d.visualization.draw_geometries([colored_point_cloud])
+# colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply')
+# o3d.visualization.draw_geometries([colored_point_cloud])
 
