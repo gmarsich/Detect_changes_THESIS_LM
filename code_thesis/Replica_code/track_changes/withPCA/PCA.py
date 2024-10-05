@@ -1,30 +1,51 @@
-'''I input it takes 2 sceneGraph objects and for each one a list of IDs of instances that one wants to compare.
+'''In input it takes 2 SceneGraph objects and for each one a list of IDs of instances that one wants to compare.
 PCA is applied to TODO'''
+import os
+import sys
 
-from code_thesis.Replica_code.SceneGraph import sceneGraph # local file
+grandparent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, grandparent_dir)
+
+from SceneGraph import SceneGraph # local file
 from align_instancePCD import get_transformationMatrix # local file
 import numpy as np
 from sklearn.decomposition import PCA
 import open3d as o3d
 from sklearn.metrics.pairwise import cosine_similarity
+import time
 
 
 #
 # Variables
 #
 
-path_plyFile_0 = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_0_withIDs.ply'
-path_listInstances_0 = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/list_instances.txt'
-path_plyFile_1 = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/withPCA/preprocessing/results/frl_apartment_1_withIDs.ply'
-path_listInstances_1 = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/list_instances.txt'
+frl_apartment_a = 'frl_apartment_0'
+frl_apartment_b = 'frl_apartment_1'
 
-objectIDs_0 = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
-objectIDs_1 = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
+namePLY_a = frl_apartment_a + '_withIDs.ply' # _withIDs.ply: from the ground truth; _withIDs_LabelMaker.ply: from labelMaker
+namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground truth; _withIDs_LabelMaker.ply: from labelMaker
 
-objectID_0 = 4
-objectID_1 = 121
+basePath = '/local/home/gmarsich/Desktop/data_Replica'
+
+objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
+objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
+
+objectID_a = str(4)
+objectID_b = str(121)
 
 number_components = 2
+
+
+#
+# Automatic variables: they should be fine like this
+#
+
+path_plyFile_a = os.path.join(basePath, frl_apartment_a, namePLY_a)
+path_listInstances_a = os.path.join(basePath, frl_apartment_a, 'list_instances.txt')
+
+
+path_plyFile_b = os.path.join(basePath, frl_apartment_b, namePLY_b)
+path_listInstances_b = os.path.join(basePath, frl_apartment_b, 'list_instances.txt')
 
 
 
@@ -72,18 +93,30 @@ def farthest_point_sampling(pcd, n_samples):
     return sampled_pcd
 
 
-def downsample_pair_pcd(pcd_0, pcd_1):
-    num_points_0 = len(pcd_0.points)
-    num_points_1 = len(pcd_1.points)
+def downsample_pair_pcd(pcd_a, pcd_b):
+    num_points_a = len(pcd_a.points)
+    num_points_b = len(pcd_b.points)
 
-    if num_points_0 > num_points_1:
-        pcd_0_downsampled = farthest_point_sampling(pcd_0, num_points_1)
-        pcd_1_downsampled = pcd_1
+    if num_points_a > num_points_b:
+        pcd_a_downsampled = farthest_point_sampling(pcd_a, num_points_b)
+        pcd_b_downsampled = pcd_b
     else:
-        pcd_1_downsampled = farthest_point_sampling(pcd_1, num_points_0)
-        pcd_0_downsampled = pcd_0
+        pcd_b_downsampled = farthest_point_sampling(pcd_b, num_points_a)
+        pcd_a_downsampled = pcd_a
 
-    return pcd_0_downsampled, pcd_1_downsampled
+    return pcd_a_downsampled, pcd_b_downsampled
+
+
+def compute_and_save_dictExplainedVariance(list_sceneGraphs):
+    for graph in list_sceneGraphs
+
+    start_time = time.time()
+
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
 
 
 #
@@ -92,20 +125,24 @@ def downsample_pair_pcd(pcd_0, pcd_1):
 
 # Load the scene graph and the point clouds. Apply the tranformation to try to align the two point clouds
 
-scene_graph_0 = sceneGraph(path_plyFile_0, path_listInstances_0)
-scene_graph_1 = sceneGraph(path_plyFile_1, path_listInstances_1)
+sceneGraph_a = SceneGraph()
+sceneGraph_a.populate_SceneGraph(path_plyFile_a, path_listInstances=path_listInstances_a)
+sceneGraph_b = SceneGraph()
+sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_listInstances=path_listInstances_b)
 
-pcd_0 = scene_graph_0.get_pointCloud(objectID_0)
-pcd_1 = scene_graph_1.get_pointCloud(objectID_1)
+pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=True)
+pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=True)
 
-transformationMatrix = get_transformationMatrix(pcd_0, pcd_1, seeRenderings = False) # a downsampling is performed internally to compute the matrix
-pcd_1.transform(transformationMatrix)
-o3d.visualization.draw_geometries([pcd_0, pcd_1])
+
+'''
+transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False) # a downsampling is performed internally to compute the matrix
+pcd_b.transform(transformationMatrix)
+o3d.visualization.draw_geometries([pcd_a, pcd_b])
 
 
 # Compute the embeddings; cosine similarity as a metric
 
-pcd_0_downsampled, pcd_1_downsampled = downsample_pair_pcd(pcd_0, pcd_1) # so that the embeddings can be better compared. The new pcds have the same amount of points
+pcd_0_downsampled, pcd_1_downsampled = downsample_pair_pcd(pcd_a, pcd_b) # so that the embeddings can be better compared. The new pcds have the same amount of points
 
 pcd_0_downsampled = farthest_point_sampling(pcd_0_downsampled, n_samples=1000)
 pcd_1_downsampled = farthest_point_sampling(pcd_1_downsampled, n_samples=1000)
@@ -176,3 +213,4 @@ print("Average Cosine Similarity:", average_similarity)
 
 
 
+'''

@@ -1,9 +1,10 @@
+# environment: sgm
+
 '''This script tries to perform an alignment of two objects (coming from different scenes of the Replica dataset).
-"Tries" because it is not granted that two objects are the same. The script will provide the transformation matrix.'''
+"Tries" because it is not granted that two objects are the same. The script will provide the transformation matrix.
+It is used as support for the PCA.'''
 
 '''This script was inspired by this tutorial: https://www.open3d.org/docs/release/tutorial/pipelines/global_registration.html'''
-
-# environment: sgm
 
 
 import open3d as o3d
