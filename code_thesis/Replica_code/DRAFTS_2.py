@@ -17,13 +17,13 @@ graph_1.load_SceneGraph(path_1)
 
 
 
-list_newID_added = [136, 127]
-list_oldID_removed = [71, 45]
-dict_oldIDnewID_moved = {77: 34, 4: 103}
-dict_oldIDnewID_still = {10: 27, 120: 89}
+list_newID_added = ['136', '127']
+list_oldID_removed = ['71', '45']
+dict_oldIDnewID_moved = {'77': '34', '4': '103'}
+dict_oldIDnewID_still = {'10': '27', '120': '89'}
 
-list_IDs_0 = [10, 4, 71, 77, 45, 120]
-list_IDs_1 = [27, 103, 136, 34, 127, 89]
+list_IDs_0 = ['10', '4', '71', '77', '45', '120']
+list_IDs_1 = ['27', '103', '136', '34', '127', '89']
 
 deepcopy_old_SceneGraph, deepcopy_new_SceneGraph = update_changes(graph_0, graph_1, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still)
 
