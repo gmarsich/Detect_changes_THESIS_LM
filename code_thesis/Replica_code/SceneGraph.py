@@ -441,6 +441,7 @@ def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_
         
         if objectID in dict_oldIDnewID_still:
             deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_still
+            deepcopy_old_SceneGraph.nodes[objectID]['ID in the new SceneGraph'] = dict_oldIDnewID_still[objectID]
             break
 
         deepcopy_old_SceneGraph.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed
@@ -467,6 +468,7 @@ def update_changes(old_SceneGraph, new_SceneGraph, list_newID_added, list_oldID_
         
         if objectID in dict_oldIDnewID_still.values():
             deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_still
+            deepcopy_new_SceneGraph.nodes[objectID]['ID in the old SceneGraph'] = get_key(dict_oldIDnewID_still, objectID)
             break
 
         deepcopy_new_SceneGraph.nodes[objectID]['color update'] = color_notChecked # if we arrive here, the node simply was not analysed

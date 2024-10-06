@@ -10,11 +10,11 @@ import os
 # Variables
 #
 
-frl_apartment = 'frl_apartment_0'
+frl_apartment = 'frl_apartment_1'
 basePath = '/local/home/gmarsich/Desktop/data_Replica/'
 
 namePCD = frl_apartment + '_withIDs.ply'
-nameDistanceMatrix = 'matrix_distances_file_LabelMaker<function distance_Euclidean_closest_points at 0x7f3a297976d0>.txt'
+nameDistanceMatrix = 'matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt'
 nameAssociations = 'associations_objectIdIndex.json'
 nameListInstances = 'list_instances.txt'
 nameColorDict = 'colorDict_frlApartments.json'
