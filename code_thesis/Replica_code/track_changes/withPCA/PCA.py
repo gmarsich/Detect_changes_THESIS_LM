@@ -15,7 +15,7 @@ import sys
 grandparent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.insert(0, grandparent_dir)
 
-from SceneGraph import SceneGraph # local file
+from SceneGraph import SceneGraph, update_changes # local file
 from side_code.find_associations import get_distances_and_transformationMatrices, get_associations # local file
 import numpy as np
 import open3d as o3d
@@ -37,8 +37,16 @@ nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker o
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['10', '4', '71', '77']
-objectIDs_b = ['27', '103', '136', '34'] 
+objectIDs_a = ['10', '4', '71', '77'] # to analyse
+objectIDs_b = ['27', '103', '136', '34'] # to analyse
+
+list_IDs_a = ['10', '4', '71', '77', '45'] # to visualise
+list_IDs_b = ['27', '103', '136', '34'] # to visualise
+
+threshold_edges = 2 # in the scene graph, to see the edges
+
+path_save_a = os.path.join(basePath, frl_apartment_a, 'sceneGraphs_changes') # if it does not exist, the folder will be created
+path_save_b = os.path.join(basePath, frl_apartment_b, 'sceneGraphs_changes') # if it does not exist, the folder will be created
 
 
 #
@@ -48,6 +56,8 @@ objectIDs_b = ['27', '103', '136', '34']
 path_a = os.path.join(basePath, frl_apartment_a, 'Scene_Graphs', nameSceneGraph)
 path_b = os.path.join(basePath, frl_apartment_b, 'Scene_Graphs', nameSceneGraph)
 
+os.makedirs(path_save_a, exist_ok=True)
+os.makedirs(path_save_b, exist_ok=True)
 
 #
 # Hardcoded conditions
@@ -55,7 +65,7 @@ path_b = os.path.join(basePath, frl_apartment_b, 'Scene_Graphs', nameSceneGraph)
 
 number_components = 2
 translation_threshold = 0.2 # in meters
-rotation_threshold = 15 # in degrees
+rotation_threshold = 25 # in degrees
 threshold_correpondence = 0.08
 
 
@@ -72,20 +82,14 @@ sceneGraph_a.load_SceneGraph(path_a)
 sceneGraph_b = SceneGraph()
 sceneGraph_b.load_SceneGraph(path_b)
 
-
-
-
 matrix_distances, dict_transformationMatrices, dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b = get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectIDs_a, objectIDs_b, number_components)
 
-print('matrix_distances')
-print(matrix_distances)
-
+# print('matrix_distances')
+# print(matrix_distances)
 # print('dict_transformationMatrices')
 # print(dict_transformationMatrices)
-
 # print('dict_associationsIndexObjectID_a')
 # print(dict_associationsIndexObjectID_a)
-
 # print('dict_associationsIndexObjectID_b')
 # print(dict_associationsIndexObjectID_b)
 
@@ -94,25 +98,45 @@ list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_sti
                                                                                                       dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
 
 
-print('list_newID_added')
-print(list_newID_added)
-
-print('list_oldID_removed')
-print(list_oldID_removed)
-
-print('dict_oldIDnewID_moved')
-print(dict_oldIDnewID_moved)
-
-print('dict_oldIDnewID_still')
-print(dict_oldIDnewID_still)
-
-print('dict_corr_oldNew_dist')
-print(dict_corr_oldNew_dist)
+# print('list_newID_added')
+# print(list_newID_added)
+# print('list_oldID_removed')
+# print(list_oldID_removed)
+# print('dict_oldIDnewID_moved')
+# print(dict_oldIDnewID_moved)
+# print('dict_oldIDnewID_still')
+# print(dict_oldIDnewID_still)
+# print('dict_corr_oldNew_dist')
+# print(dict_corr_oldNew_dist)
 
 
 end_time = time.time()
 elapsed_time = end_time - start_time
 print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+
+
+#
+# Visualise the scene graphs with changes
+#
+
+deepcopy_old_SceneGraph, deepcopy_new_SceneGraph = update_changes(sceneGraph_a, sceneGraph_b, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still)
+
+_, list_centroids_a, list_colors_vertices_a, list_labels_a, PCDs_a, _, list_pairs_edges_a = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_a, threshold_edges, color = 'withUpdates')
+_, list_centroids_b, list_colors_vertices_b, list_labels_b, PCDs_b, _, list_pairs_edges_b = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_b, threshold_edges, color = 'withUpdates')
+
+
+deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_a, list_colors_vertices_a, list_labels_a, list_pairs_edges_a, PCDs_a, path_save_a, wantLabels = True)
+time.sleep(4)
+deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_b, list_colors_vertices_b, list_labels_b, list_pairs_edges_b, PCDs_b, path_save_b, wantLabels = True)
+
+
+
+
+
+
+
+
 
 
 

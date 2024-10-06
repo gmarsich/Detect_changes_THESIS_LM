@@ -347,7 +347,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
         return list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges
 
     # OK
-    def draw_SceneGraph_PyViz3D(self, list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True):
+    def draw_SceneGraph_PyViz3D(self, list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True):
 
         # Functions to adjust the origin of the axis
 
@@ -364,8 +364,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
 
         current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
         folder_name = f'sceneGraph_PyViz3D_{current_time}'
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        folder_path = os.path.join(current_dir, folder_name)
+        folder_path = os.path.join(path_save, folder_name)
 
 
         # Build the rendering of the points
@@ -394,7 +393,8 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
         list_colors_edges = [[1, 0, 1] for index in range(len(list_pairs_edges))] # TOSET you can change the color of the edges
         lines_start = np.array(list(map(lambda x: x[0], list_pairs_edges)))
         lines_end = np.array(list(map(lambda x: x[1], list_pairs_edges)))
-        v.add_lines(name='Edges', lines_start=transform_points(lines_start, centroid), lines_end=transform_points(lines_end, centroid), colors=np.array(list_colors_edges), visible=True)
+        if list_pairs_edges:
+            v.add_lines(name='Edges', lines_start=transform_points(lines_start, centroid), lines_end=transform_points(lines_end, centroid), colors=np.array(list_colors_edges), visible=True)
 
 
         # Add the labels
@@ -491,7 +491,7 @@ if __name__ == '__main__':
     graph.print_info_node('4')
     list_IDs = [4, 5, 10, 12]
     list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = graph.get_visualisation_SceneGraph(list_IDs, threshold=5, color = 'absoluteColor')
-    graph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True)
+    graph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True)
     
 
 
@@ -519,7 +519,7 @@ if __name__ == '__main__':
     # deepcopy_old_SceneGraph, deepcopy_new_SceneGraph = update_changes(graph_0, graph_1, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still)
 
     # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_0, threshold=5, color = 'withUpdates')
-    # deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True)
+    # deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True)
 
     # # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_1, threshold=5, color = 'withUpdates')
-    # # deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, wantLabels = True)
+    # # deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True)
