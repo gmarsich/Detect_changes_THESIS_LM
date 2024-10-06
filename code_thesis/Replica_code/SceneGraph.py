@@ -162,7 +162,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
 
 
 
-        # If path_distanceMatrix and path_associationsObjectIdIndex are not None save the distances in a matrix
+        # If path_distanceMatrix and path_associationsObjectIdIndex are not None, save the distances in a matrix
         
         if path_distanceMatrix and path_associationsObjectIdIndex:
             matrix = []
@@ -210,8 +210,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
 
             for objectId, data in self.nodes.items():
                 label = data['label']
-                data['absolute color'] = data_dict.get(label, [0, 0, 0]) # if the label does not exist in the dictionary (in my case, I will have "None", the color will be black)
-                self.nodes[objectId]['absolute color'] = data['absolute color']
+                data['absolute color'] = data_dict.get(label, [0, 0, 0]) # if the label does not exist in the dictionary (in my case, I will have "None") the color will be black
     
     # OK
     def load_SceneGraph(self, path_SceneGraph_folder): # CAVEAT: the complete point cloud is saved differently from the one that is loaded with populate_SceneGraph
@@ -258,13 +257,12 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
         return pcd
     
     # OK
-    def save_SceneGraph(self):
-        # Create the folder where to store the data. Same folder of where this very same script is
+    def save_SceneGraph(self, path_save): # CAVEAT: the complete point cloud is saved differently from the one that is loaded with populate_SceneGraph
+        # Create the folder where to store the data
 
         current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
         folder_name = f'sceneGraph_{current_time}'
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        folder_path = os.path.join(current_dir, folder_name)
+        folder_path = os.path.join(path_save, folder_name)
         os.makedirs(folder_path)
 
         # Save the data in the folder
@@ -277,8 +275,12 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
         if self.matrix_distances:
             with open(os.path.join(folder_path, 'matrix_distances.txt'), 'w') as text_file: # save self.matrix_distances if it exists
                 text_file.write('\n') # FIRST LINE HAS TO BE BLANK to be coherent with the files I had generated before
-                for row in self.matrix_distances:
-                    text_file.write(' '.join(map(str, row)) + '\n')
+                for i, row in enumerate(self.matrix_distances):
+                    row_text = ' '.join(map(str, row))
+                    if i < len(self.matrix_distances) - 1:
+                        text_file.write(row_text + '\n')  # Add newline for all rows except the last one
+                    else:
+                        text_file.write(row_text) 
 
         if self.associations_objectIdIndex:
             with open(os.path.join(folder_path, 'associations_objectIdIndex.json'), 'w') as json_file: # save self.associations_objectIdIndex if it exists
