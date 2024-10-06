@@ -6,10 +6,28 @@ from scipy.spatial import KDTree
 
 import open3d as o3d
 
-colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_77.ply')
-colored_point_cloud_2 = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Segmentation/mesh_semantic.ply_39.ply')
-o3d.visualization.draw_geometries([colored_point_cloud])
-o3d.visualization.draw_geometries([colored_point_cloud_2])
+transformation_matrix = [[ 0.93039052 , 0.10583947, -0.35095796 ,0], 
+                         [ 0.23923753 , 0.55008223 , 0.80010933 ,0],
+                         [ 0.27773888 ,-0.82837645 , 0.48647052, 0],
+                         [ 0.    ,      0.       ,   0.    ,      1.        ]]
+
+print(transformation_matrix[:3][:3])
+
+pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply')
+pcd_b = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply')
+o3d.visualization.draw_geometries([pcd_a, pcd_b])
+
+points = np.asarray(pcd_a.points)
+centroid = np.mean(points, axis=0)
+pcd_a.translate(-centroid)
+pcd_b.translate(-centroid)
+
+pcd_b.transform(transformation_matrix)
+o3d.visualization.draw_geometries([pcd_a, pcd_b])
+
+print(np.rad2deg(np.arccos((np.trace(transformation_matrix[:3][:3]) - 1) / 2)))
+# o3d.visualization.draw_geometries([colored_point_cloud_2])
+
 
 
 

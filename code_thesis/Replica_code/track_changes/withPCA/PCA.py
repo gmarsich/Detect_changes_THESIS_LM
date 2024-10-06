@@ -1,7 +1,14 @@
 # environment: sceneGraphs_groundTruth_Replica
 
 '''In input it takes 2 SceneGraph objects and for each one a list of IDs of instances that one wants to compare.
-PCA is applied to TODO'''
+PCA is applied to get the embeddings, that are then compared to find the associations. The output is made of four variables:
+- list_newID_added
+- list_oldID_removed
+- dict_oldIDnewID_moved
+- dict_oldIDnewID_still
+
+'''
+
 import os
 import sys
 
@@ -9,7 +16,7 @@ grandparent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..
 sys.path.insert(0, grandparent_dir)
 
 from SceneGraph import SceneGraph # local file
-from align_instancePCD import get_transformationMatrix # local file
+from side_code.find_associations import get_distances_and_transformationMatrices, get_associations # local file
 import numpy as np
 from sklearn.decomposition import PCA
 import open3d as o3d
@@ -17,8 +24,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 import json
 import matplotlib.pyplot as plt
-import copy
-from scipy.spatial import KDTree
 
 
 #
@@ -33,13 +38,17 @@ namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground tru
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
-objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
+objectIDs_a = ['34', '39', '27', '103', '38', '164'] # 1: # bike, bike, ceiling, sofa, cup, sink
+objectIDs_b = ['77', '93', '10', '4', '66', '59'] # 0: bike, bike, ceiling, sofa, mat, book
 
-objectID_a = str(93)
-objectID_b = str(39)
+# objectID_a = str(93)
+# objectID_b = str(39)
 
 number_components = 2
+threshold = 0.08
+translation_threshold = 0.2 # in meters
+rotation_threshold = 15 # in degrees
+threshold_correpondence = 0.08
 
 
 path_explainedVariance = os.path.join(basePath, 'PCA_variance/dict_explainedVariance.json') # be aware that the folder should already exist!
@@ -84,50 +93,6 @@ def pca_embedding(pcd, n_components=3):
     return pca, embedding
 
 
-def farthest_point_sampling(pcd, n_samples):
-
-    sampled_pcd = copy.deepcopy(pcd)
-
-    points = np.asarray(pcd.points)
-    colors = np.asarray(pcd.colors)
-    n_points = points.shape[0]
-
-    if n_points > n_samples:
-    
-        sampled_indices = np.zeros(n_samples, dtype=int)
-        sampled_indices[0] = np.random.randint(n_points) # randomly select the first point
-
-        distances = np.full(n_points, np.inf)
-
-        for i in range(1, n_samples):
-            current_point = points[sampled_indices[i - 1]]
-            distances = np.minimum(distances, np.linalg.norm(points - current_point, axis=1))
-            sampled_indices[i] = np.argmax(distances) # select the farthest point
-
-        # Create a new point cloud from the sampled points
-        sampled_points = points[sampled_indices]
-        sampled_colors = colors[sampled_indices]
-        sampled_pcd = o3d.geometry.PointCloud()
-        sampled_pcd.points = o3d.utility.Vector3dVector(sampled_points)
-        sampled_pcd.colors = o3d.utility.Vector3dVector(sampled_colors)
-
-    return sampled_pcd
-
-
-def downsample_pair_pcd(pcd_a, pcd_b):
-    num_points_a = len(pcd_a.points)
-    num_points_b = len(pcd_b.points)
-
-    if num_points_a > num_points_b:
-        pcd_a_downsampled = farthest_point_sampling(pcd_a, num_points_b)
-        pcd_b_downsampled = pcd_b
-    else:
-        pcd_b_downsampled = farthest_point_sampling(pcd_b, num_points_a)
-        pcd_a_downsampled = pcd_a
-
-    return pcd_a_downsampled, pcd_b_downsampled
-
-
 def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
     dict_explainedVariance = {}
     for index, graph in enumerate(list_sceneGraphs):
@@ -150,19 +115,6 @@ def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
     
     with open(path_explainedVariance, 'w') as json_file:
         json.dump(dict_explainedVariance, json_file, indent=4)
-
-
-# from: https://medium.com/@sim30217/chamfer-distance-4207955e8612
-def chamfer_distance(A, B):
-    """
-    Computes the chamfer distance between two sets of points A and B.
-    """
-    tree = KDTree(B)
-    dist_A = tree.query(A)[0]
-    tree = KDTree(A)
-    dist_B = tree.query(B)[0]
-    return np.mean(dist_A) + np.mean(dist_B)
-
 
 
 
@@ -243,7 +195,7 @@ if savePlot:
 # Performing PCA and comparing the results
 #
 
-# Load the scene graph and the point clouds. Apply the tranformation to try to align the two point clouds
+# Load the scene graphs
 
 sceneGraph_a = SceneGraph()
 sceneGraph_a.populate_SceneGraph(path_plyFile_a, path_distanceMatrix = path_distanceMatrix_a, path_associationsObjectIdIndex = path_associationsObjectIdIndex_a,
@@ -256,34 +208,17 @@ sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_distanceMatrix = path_dist
 
 
 
-matrix_distances = []
+matrix_distances, dict_transformationMatrices, dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b = get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectIDs_a, objectIDs_b, number_components)
+
+list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
+                                                                                                      matrix_distances, dict_transformationMatrices,
+                                                                                                      dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
 
 
 
 
 
 
-
-
-pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=False)
-pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=False)
-
-transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False)
-pcd_b.transform(transformationMatrix)
-
-
-# Perform a downsampling. Compute the embeddings. Use Chamfer distance
-
-pcd_a_downsampled = farthest_point_sampling(pcd_a, n_samples=round(len(pcd_a.points)/10)) # 10 is chosen more or less randomly
-pcd_b_downsampled = farthest_point_sampling(pcd_b, n_samples=round(len(pcd_b.points)/10)) # 10 is chosen more or less randomly
-
-_, emb_a = pca_embedding(pcd_a_downsampled, n_components=number_components)
-_, emb_b = pca_embedding(pcd_b_downsampled, n_components=number_components)
-
-
-dist = chamfer_distance(emb_a, emb_b)
-
-print("Chamfer Distance (2D as 3D): ", objectID_a + "+" + objectID_b + "=" + str(dist))
 
 
 
@@ -296,6 +231,21 @@ print("Chamfer Distance (2D as 3D): ", objectID_a + "+" + objectID_b + "=" + str
 
 
 # # Compute the embeddings; cosine similarity as a metric
+
+# def downsample_pair_pcd(pcd_a, pcd_b):
+#     num_points_a = len(pcd_a.points)
+#     num_points_b = len(pcd_b.points)
+
+#     if num_points_a > num_points_b:
+#         pcd_a_downsampled = farthest_point_sampling(pcd_a, num_points_b)
+#         pcd_b_downsampled = pcd_b
+#     else:
+#         pcd_b_downsampled = farthest_point_sampling(pcd_b, num_points_a)
+#         pcd_a_downsampled = pcd_a
+
+#     return pcd_a_downsampled, pcd_b_downsampled
+
+
 
 # pcd_a_downsampled, pcd_b_downsampled = downsample_pair_pcd(pcd_a, pcd_b) # so that the embeddings can be better compared. The new pcds have the same amount of points
 

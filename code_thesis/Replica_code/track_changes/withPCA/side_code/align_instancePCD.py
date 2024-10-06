@@ -1,4 +1,4 @@
-# environment: sgm
+# environment: sceneGraphs_groundTruth_Replica
 
 '''This script tries to perform an alignment of two objects (coming from different scenes of the Replica dataset).
 "Tries" because it is not granted that two objects are the same. The script will provide the transformation matrix.
