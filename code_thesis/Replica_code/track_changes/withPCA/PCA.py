@@ -18,7 +18,6 @@ sys.path.insert(0, grandparent_dir)
 from SceneGraph import SceneGraph # local file
 from side_code.find_associations import get_distances_and_transformationMatrices, get_associations # local file
 import numpy as np
-from sklearn.decomposition import PCA
 import open3d as o3d
 from sklearn.metrics.pairwise import cosine_similarity
 import time
@@ -38,8 +37,8 @@ nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker o
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['34', '39', '27', '103', '38', '164'] # 1: # bike, bike, ceiling, sofa, cup, sink
-objectIDs_b = ['77', '93', '10', '4', '66', '59'] # 0: bike, bike, ceiling, sofa, mat, book
+objectIDs_a = ['10', '4', '71', '77']
+objectIDs_b = ['27', '103', '136', '34'] 
 
 
 #
@@ -62,25 +61,6 @@ threshold_correpondence = 0.08
 
 
 #
-# Some useful functions
-#
-
-# Function to compute PCA embedding of a point cloud
-def pca_embedding(pcd, n_components):
-    points = np.asarray(pcd.points)
-    colors = np.asarray(pcd.colors)
-    points_with_colors = np.hstack((points, colors))
-    centered_points_with_colors = points_with_colors - np.mean(points_with_colors, axis=0) # substract the mean as required by PCA
-    pca = PCA(n_components)
-    embedding = pca.fit_transform(centered_points_with_colors)
-
-    #print("Explained variance ratio by each PCA component: ", pca.explained_variance_ratio_)
-
-    return pca, embedding
-
-
-
-#
 # Performing PCA and comparing the results
 #
 
@@ -96,6 +76,18 @@ sceneGraph_b.load_SceneGraph(path_b)
 
 
 matrix_distances, dict_transformationMatrices, dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b = get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectIDs_a, objectIDs_b, number_components)
+
+print('matrix_distances')
+print(matrix_distances)
+
+print('dict_transformationMatrices')
+print(dict_transformationMatrices)
+
+print('dict_associationsIndexObjectID_a')
+print(dict_associationsIndexObjectID_a)
+
+print('dict_associationsIndexObjectID_b')
+print(dict_associationsIndexObjectID_b)
 
 # list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
 #                                                                                                       matrix_distances, dict_transformationMatrices,

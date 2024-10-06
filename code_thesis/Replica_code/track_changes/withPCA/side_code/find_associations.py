@@ -1,17 +1,11 @@
 '''This script provides some functions used by the PCA method.'''
 
-import os
-import sys
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, parent_dir)
-
-from PCA import pca_embedding
 import numpy as np
 import copy
 import open3d as o3d
 from scipy.spatial import KDTree
-from align_instancePCD import get_transformationMatrix # local file
+from sklearn.decomposition import PCA
+from .align_instancePCD import get_transformationMatrix # local file
 
 
 
@@ -58,6 +52,19 @@ def farthest_point_sampling(pcd, n_samples):
 
     return sampled_pcd
 
+# side function
+# Function to compute PCA embedding of a point cloud
+def pca_embedding(pcd, n_components):
+    points = np.asarray(pcd.points)
+    colors = np.asarray(pcd.colors)
+    points_with_colors = np.hstack((points, colors))
+    centered_points_with_colors = points_with_colors - np.mean(points_with_colors, axis=0) # substract the mean as required by PCA
+    pca = PCA(n_components)
+    embedding = pca.fit_transform(centered_points_with_colors)
+
+    #print("Explained variance ratio by each PCA component: ", pca.explained_variance_ratio_)
+
+    return pca, embedding
 
 
 
@@ -70,14 +77,17 @@ def get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectI
     dict_associationsIndexObjectID_b = {}
 
     for index_a, objectID_a in enumerate(objectIDs_a):
+
+        dict_transformationMatrices[index_a] = {}
+
         for index_b, objectID_b in enumerate(objectIDs_b):
 
             pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=False)
             pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=False)
 
             # Bring the pcd_a to have the centroid in the origin. pcd_b follows. Useful to then understand if there was a movement.
-            # Then get the transformation matrix
-
+            # Then get the transformation matrix and transform pcd_b
+            
             points = np.asarray(pcd_a.points)
             centroid = np.mean(points, axis=0)
             pcd_a.translate(-centroid)
@@ -98,7 +108,7 @@ def get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectI
 
             matrix_distances[index_a][index_b] = dist
             dict_transformationMatrices[index_a][index_b] = transformationMatrix
-            dict_associationsIndexObjectID_a[index_a] = objectID_b
+            dict_associationsIndexObjectID_a[index_a] = objectID_a
             dict_associationsIndexObjectID_b[index_b] = objectID_b
 
             #print("Chamfer Distance (2D as 3D): ", objectID_a + "+" + objectID_b + "=" + str(dist))
