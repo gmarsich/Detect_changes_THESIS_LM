@@ -170,8 +170,7 @@ matrix = compute_distance_matrix(dict_info, path_save_files, compute_distance = 
 
 #
 # Get the point cloud with the nice header, and with the alignment!
-# Note that Mask3D / LabelMaker does not keep everything from the initial point cloud. Therefore, I added a objectID -1 to retrieve the points that
-# do not belong to any pred_mask
+# Note that Mask3D / LabelMaker does not keep everything from the initial point cloud
 #
 
 # TODO: if you want to test Replica processed with LabelMaker on SGAligner, you can easily work on the following code to get the equivalent of frl_apartment_i_coloredMesh_with_IDs.ply
@@ -216,18 +215,18 @@ for key, value in dict_info.items():
 
 
 
+# NOT DONE
+# # Take into account the parts of the point cloud that were not labelled
 
-# Take into account the parts of the point cloud that were not labelled
+# all_points_tuples = [tuple(point.tolist()) for point in all_points]
 
-all_points_tuples = [tuple(point.tolist()) for point in all_points]
-
-for i in range(len(original_pcd_points)):
-    point_tuple = tuple(original_pcd_points[i].tolist()) 
-    if point_tuple not in all_points_tuples:
-        all_points.append(original_pcd_points[i])
-        all_colors.append(original_pcd_colors[i])
-        all_normals.append(original_pcd_normals[i])
-        all_object_ids.append(-1)
+# for i in range(len(original_pcd_points)):
+#     point_tuple = tuple(original_pcd_points[i].tolist()) 
+#     if point_tuple not in all_points_tuples:
+#         all_points.append(original_pcd_points[i])
+#         all_colors.append(original_pcd_colors[i])
+#         all_normals.append(original_pcd_normals[i])
+#         all_object_ids.append(-1)
 
 
 all_points = np.vstack(all_points)
@@ -269,7 +268,7 @@ with open(path_save_newPCD, 'w') as f:
     for point in combined_data:
         f.write(f"{point[0]:.6f} {point[1]:.6f} {point[2]:.6f} {int(point[3])} {int(point[4])} {int(point[5])} {point[6]:.6f} {point[7]:.6f} {point[8]:.6f} {int(point[9])}\n")
 
-colored_point_cloud = o3d.io.read_point_cloud(path_save_newPCD)
+# colored_point_cloud = o3d.io.read_point_cloud(path_save_newPCD)
 # o3d.visualization.draw_geometries([colored_point_cloud])
 
 
@@ -281,9 +280,9 @@ print(f"Elapsed time: {elapsed_time:.6f} seconds")
 
 # TIMINGS:
 
-# frl_apartment_0: 217.977136 seconds
-# frl_apartment_1_to_frl_apartment_0: 183.858268 seconds
-# frl_apartment_2_to_frl_apartment_0: 231.501902 seconds
-# frl_apartment_3_to_frl_apartment_0: 214.810219 seconds
-# frl_apartment_4_to_frl_apartment_0: 214.273004 seconds
-# frl_apartment_5_to_frl_apartment_0: 209.540157 seconds
+# frl_apartment_0: 188.734877 seconds
+# frl_apartment_1_to_frl_apartment_0: 160.045755 seconds
+# frl_apartment_2_to_frl_apartment_0: 200.970042 seconds
+# frl_apartment_3_to_frl_apartment_0: 186.024420 seconds
+# frl_apartment_4_to_frl_apartment_0: 187.507952 seconds
+# frl_apartment_5_to_frl_apartment_0: 183.355843 seconds
