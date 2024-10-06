@@ -18,6 +18,7 @@ import time
 import json
 import matplotlib.pyplot as plt
 import copy
+from scipy.spatial import KDTree
 
 
 #
@@ -35,8 +36,8 @@ basePath = '/local/home/gmarsich/Desktop/data_Replica'
 objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
 objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
 
-objectID_a = str(4)
-objectID_b = str(121)
+objectID_a = str(93)
+objectID_b = str(39)
 
 number_components = 2
 
@@ -151,6 +152,19 @@ def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
         json.dump(dict_explainedVariance, json_file, indent=4)
 
 
+# from: https://medium.com/@sim30217/chamfer-distance-4207955e8612
+def chamfer_distance(A, B):
+    """
+    Computes the chamfer distance between two sets of points A and B.
+    """
+    tree = KDTree(B)
+    dist_A = tree.query(A)[0]
+    tree = KDTree(A)
+    dist_B = tree.query(B)[0]
+    return np.mean(dist_A) + np.mean(dist_B)
+
+
+
 
 #
 # Statistics: how much is the variance explained by the components of the PCA?
@@ -242,56 +256,68 @@ sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_distanceMatrix = path_dist
 
 
 
+matrix_distances = []
 
 
 
 
-pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=True)
-pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=True)
 
 
+
+
+pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=False)
+pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=False)
 
 transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False)
 pcd_b.transform(transformationMatrix)
-o3d.visualization.draw_geometries([pcd_a, pcd_b])
+
+
+# Perform a downsampling. Compute the embeddings. Use Chamfer distance
+
+pcd_a_downsampled = farthest_point_sampling(pcd_a, n_samples=round(len(pcd_a.points)/10)) # 10 is chosen more or less randomly
+pcd_b_downsampled = farthest_point_sampling(pcd_b, n_samples=round(len(pcd_b.points)/10)) # 10 is chosen more or less randomly
+
+_, emb_a = pca_embedding(pcd_a_downsampled, n_components=number_components)
+_, emb_b = pca_embedding(pcd_b_downsampled, n_components=number_components)
+
+
+dist = chamfer_distance(emb_a, emb_b)
+
+print("Chamfer Distance (2D as 3D): ", objectID_a + "+" + objectID_b + "=" + str(dist))
 
 
 
 
-# Compute the embeddings; cosine similarity as a metric
-
-pcd_0_downsampled, pcd_1_downsampled = downsample_pair_pcd(pcd_a, pcd_b) # so that the embeddings can be better compared. The new pcds have the same amount of points
-
-pcd_0_downsampled = farthest_point_sampling(pcd_0_downsampled, n_samples=1000)
-pcd_1_downsampled = farthest_point_sampling(pcd_1_downsampled, n_samples=1000)
-
-emb_0 = pca_embedding(pcd_0_downsampled, n_components=number_components)
-emb_1 = pca_embedding(pcd_1_downsampled, n_components=number_components)
-
-# pcd = o3d.geometry.PointCloud()
-# pcd.points = o3d.utility.Vector3dVector(emb_0)
-# pcd_1 = o3d.geometry.PointCloud()
-# pcd_1.points = o3d.utility.Vector3dVector(emb_1)
-# o3d.visualization.draw_geometries([pcd.paint_uniform_color([1, 0.706, 0]), pcd_1.paint_uniform_color([0, 0.651, 0.929])])
-
-cos_sim = cosine_similarity(emb_0, emb_1)
-cos_sim_max = []
-while cos_sim.size > 0:
-    max_value = np.max(cos_sim)
-    max_index = np.unravel_index(np.argmax(cos_sim), cos_sim.shape) # get row and column of the max
-
-    cos_sim_max.append(max_value)
-
-    cos_sim = np.delete(cos_sim, max_index[0], axis=0)  # remove the row
-    cos_sim = np.delete(cos_sim, max_index[1], axis=1)  # remove the column
-
-average_similarity = np.mean(cos_sim_max)
-print("Average Cosine Similarity:", average_similarity)
 
 
 
-# Chamfer distance
 
 
 
-# TODO: downsampling
+
+# # Compute the embeddings; cosine similarity as a metric
+
+# pcd_a_downsampled, pcd_b_downsampled = downsample_pair_pcd(pcd_a, pcd_b) # so that the embeddings can be better compared. The new pcds have the same amount of points
+
+# pcd_a_downsampled = farthest_point_sampling(pcd_a_downsampled, n_samples=1000)
+# pcd_b_downsampled = farthest_point_sampling(pcd_b_downsampled, n_samples=1000)
+
+# _, emb_a = pca_embedding(pcd_a_downsampled, n_components=number_components)
+# _, emb_b = pca_embedding(pcd_b_downsampled, n_components=number_components)
+
+# cos_sim = cosine_similarity(emb_a, emb_b)
+# cos_sim_max = []
+# while cos_sim.size > 0:
+#     max_value = np.max(cos_sim)
+#     max_index = np.unravel_index(np.argmax(cos_sim), cos_sim.shape) # get row and column of the max
+
+#     cos_sim_max.append(max_value)
+
+#     cos_sim = np.delete(cos_sim, max_index[0], axis=0)  # remove the row
+#     cos_sim = np.delete(cos_sim, max_index[1], axis=1)  # remove the column
+
+# average_similarity = np.mean(cos_sim_max)
+# print("Average Cosine Similarity:", average_similarity)
+
+
+
