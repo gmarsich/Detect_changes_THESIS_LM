@@ -25,6 +25,8 @@ import time
 
 
 
+start_time = time.time()
+
 #
 # Variables
 #
@@ -32,40 +34,30 @@ import time
 frl_apartment_a = 'frl_apartment_0'
 frl_apartment_b = 'frl_apartment_1'
 
-namePLY_a = frl_apartment_a + '_withIDs.ply' # _withIDs.ply: from the ground truth; _withIDs_LabelMaker.ply: from labelMaker
-namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground truth; _withIDs_LabelMaker.ply: from labelMaker
+nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker or _GT
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
 objectIDs_a = ['34', '39', '27', '103', '38', '164'] # 1: # bike, bike, ceiling, sofa, cup, sink
 objectIDs_b = ['77', '93', '10', '4', '66', '59'] # 0: bike, bike, ceiling, sofa, mat, book
 
-# objectID_a = str(93)
-# objectID_b = str(39)
+
+#
+# Automatic variables
+#
+
+path_a = os.path.join(basePath, frl_apartment_a, 'Scene_Graphs', nameSceneGraph)
+path_b = os.path.join(basePath, frl_apartment_b, 'Scene_Graphs', nameSceneGraph)
+
+
+#
+# Hardcoded conditions
+#
 
 number_components = 2
-threshold = 0.08
 translation_threshold = 0.2 # in meters
 rotation_threshold = 15 # in degrees
 threshold_correpondence = 0.08
-
-
-
-#
-# Automatic variables: they should be fine like this. CHANGE IF YOU WANT THE GROUND TRUTH OF LABELMAKER; CHANGE THE MATRIX DISTANCE
-#
-
-path_colorDict_frlApartments = os.path.join(basePath, 'colorDict_frlApartments.json')
-
-path_plyFile_a = os.path.join(basePath, frl_apartment_a, namePLY_a)
-path_listInstances_a = os.path.join(basePath, frl_apartment_a, 'list_instances.txt')
-path_distanceMatrix_a = os.path.join(basePath, frl_apartment_a, 'matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt') 
-path_associationsObjectIdIndex_a = os.path.join(basePath, frl_apartment_a, 'associations_objectIdIndex.json')
-
-path_plyFile_b = os.path.join(basePath, frl_apartment_b, namePLY_b)
-path_listInstances_b = os.path.join(basePath, frl_apartment_b, 'list_instances.txt')
-path_distanceMatrix_b = os.path.join(basePath, frl_apartment_b, 'matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt') 
-path_associationsObjectIdIndex_b = os.path.join(basePath, frl_apartment_b, 'associations_objectIdIndex.json')
 
 
 
@@ -95,28 +87,28 @@ def pca_embedding(pcd, n_components):
 # Load the scene graphs
 
 sceneGraph_a = SceneGraph()
-sceneGraph_a.populate_SceneGraph(path_plyFile_a, path_distanceMatrix = path_distanceMatrix_a, path_associationsObjectIdIndex = path_associationsObjectIdIndex_a,
-                                 path_listInstances = path_listInstances_a, path_colorDict_frlApartments = path_colorDict_frlApartments)
+sceneGraph_a.load_SceneGraph(path_a)
 
 sceneGraph_b = SceneGraph()
-sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_distanceMatrix = path_distanceMatrix_b, path_associationsObjectIdIndex = path_associationsObjectIdIndex_b,
-                                 path_listInstances = path_listInstances_b, path_colorDict_frlApartments = path_colorDict_frlApartments)
+sceneGraph_b.load_SceneGraph(path_b)
 
 
 
 
 matrix_distances, dict_transformationMatrices, dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b = get_distances_and_transformationMatrices(sceneGraph_a, sceneGraph_b, objectIDs_a, objectIDs_b, number_components)
 
-list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
-                                                                                                      matrix_distances, dict_transformationMatrices,
-                                                                                                      dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
+# list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
+#                                                                                                       matrix_distances, dict_transformationMatrices,
+#                                                                                                       dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
 
 
 
 
 
 
-
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")
 
 
 
