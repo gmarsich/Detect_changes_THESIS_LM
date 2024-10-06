@@ -80,22 +80,34 @@ matrix_distances, dict_transformationMatrices, dict_associationsIndexObjectID_a,
 print('matrix_distances')
 print(matrix_distances)
 
-print('dict_transformationMatrices')
-print(dict_transformationMatrices)
+# print('dict_transformationMatrices')
+# print(dict_transformationMatrices)
 
-print('dict_associationsIndexObjectID_a')
-print(dict_associationsIndexObjectID_a)
+# print('dict_associationsIndexObjectID_a')
+# print(dict_associationsIndexObjectID_a)
 
-print('dict_associationsIndexObjectID_b')
-print(dict_associationsIndexObjectID_b)
+# print('dict_associationsIndexObjectID_b')
+# print(dict_associationsIndexObjectID_b)
 
-# list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
-#                                                                                                       matrix_distances, dict_transformationMatrices,
-#                                                                                                       dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
-
-
+list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still, dict_corr_oldNew_dist = get_associations(threshold_correpondence, translation_threshold, rotation_threshold,
+                                                                                                      matrix_distances, dict_transformationMatrices,
+                                                                                                      dict_associationsIndexObjectID_a, dict_associationsIndexObjectID_b)
 
 
+print('list_newID_added')
+print(list_newID_added)
+
+print('list_oldID_removed')
+print(list_oldID_removed)
+
+print('dict_oldIDnewID_moved')
+print(dict_oldIDnewID_moved)
+
+print('dict_oldIDnewID_still')
+print(dict_oldIDnewID_still)
+
+print('dict_corr_oldNew_dist')
+print(dict_corr_oldNew_dist)
 
 
 end_time = time.time()
