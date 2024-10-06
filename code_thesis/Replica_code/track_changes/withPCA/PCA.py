@@ -31,30 +31,36 @@ namePLY_b = frl_apartment_b + '_withIDs.ply' # _withIDs.ply: from the ground tru
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-path_explainedVariance = os.path.join(basePath, 'PCA_variance/dict_explainedVariance.json') # be aware that the folder should already exist!
-needDictExplainedVariance = False
-savePlot = False # save the plot of the explained variance
-key_frl_apartment = '0'
-
 objectIDs_a = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
 objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
 
 objectID_a = str(4)
 objectID_b = str(121)
 
-number_components = 2
+number_components = 1
+
+
+path_explainedVariance = os.path.join(basePath, 'PCA_variance/dict_explainedVariance.json') # be aware that the folder should already exist!
+needDictExplainedVariance = False
+savePlot = False # save the plot of the explained variance
+key_frl_apartment = '0'
 
 
 #
-# Automatic variables: they should be fine like this
+# Automatic variables: they should be fine like this. CHANGE IF YOU WANT THE GROUND TRUTH OF LABELMAKER; CHANGE THE MATRIX DISTANCE
 #
+
+path_colorDict_frlApartments = os.path.join(basePath, 'colorDict_frlApartments.json')
 
 path_plyFile_a = os.path.join(basePath, frl_apartment_a, namePLY_a)
 path_listInstances_a = os.path.join(basePath, frl_apartment_a, 'list_instances.txt')
-
+path_distanceMatrix_a = os.path.join(basePath, frl_apartment_a, 'matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt') 
+path_associationsObjectIdIndex_a = os.path.join(basePath, frl_apartment_a, 'associations_objectIdIndex.json')
 
 path_plyFile_b = os.path.join(basePath, frl_apartment_b, namePLY_b)
 path_listInstances_b = os.path.join(basePath, frl_apartment_b, 'list_instances.txt')
+path_distanceMatrix_b = os.path.join(basePath, frl_apartment_b, 'matrix_distances_file<function distance_Euclidean_closest_points at 0x7f774e90e830>.txt') 
+path_associationsObjectIdIndex_b = os.path.join(basePath, frl_apartment_b, 'associations_objectIdIndex.json')
 
 
 
@@ -144,6 +150,7 @@ def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
 #
 # Statistics: how much is the variance explained by the components of the PCA?
 #
+
 if needDictExplainedVariance:
 
     sceneGraph_a = SceneGraph()
@@ -169,7 +176,6 @@ if needDictExplainedVariance:
     # frl_apartment_3: 1.535040 seconds
     # frl_apartment_4: 1.534008 seconds
     # frl_apartment_5: 1.371782 seconds
-
 
 
 if savePlot:
@@ -214,17 +220,6 @@ if savePlot:
 
 
 
-
-
-
-
-    
-
-
-
-
-
-'''
 #
 # Performing PCA and comparing the results
 #
@@ -232,9 +227,16 @@ if savePlot:
 # Load the scene graph and the point clouds. Apply the tranformation to try to align the two point clouds
 
 sceneGraph_a = SceneGraph()
-sceneGraph_a.populate_SceneGraph(path_plyFile_a, path_listInstances=path_listInstances_a)
+sceneGraph_a.populate_SceneGraph(path_plyFile_a, path_distanceMatrix = path_distanceMatrix_a, path_associationsObjectIdIndex = path_associationsObjectIdIndex_a,
+                                 path_listInstances = path_listInstances_a, path_colorDict_frlApartments = path_colorDict_frlApartments)
+
 sceneGraph_b = SceneGraph()
-sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_listInstances=path_listInstances_b)
+sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_distanceMatrix = path_distanceMatrix_b, path_associationsObjectIdIndex = path_associationsObjectIdIndex_b,
+                                 path_listInstances = path_listInstances_b, path_colorDict_frlApartments = path_colorDict_frlApartments)
+
+
+
+
 
 pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=True)
 pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=True)
@@ -316,7 +318,3 @@ print("Average Cosine Similarity:", average_similarity)
 
 
 # TODO: downsampling
-
-
-
-'''
