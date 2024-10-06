@@ -97,13 +97,7 @@ def get_transformationMatrix(point_cloud_target, point_cloud_source, seeRenderin
 if __name__ == '__main__':
 
     #
-    #
     # Tests
-    #
-    #
-
-    #
-    # Variables to set
     #
 
     path_target_pcd = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_4.ply" # its reference system will be used as world reference system; scene 0

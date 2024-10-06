@@ -17,6 +17,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 import json
 import matplotlib.pyplot as plt
+import copy
 
 
 #
@@ -37,7 +38,7 @@ objectIDs_b = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
 objectID_a = str(4)
 objectID_b = str(121)
 
-number_components = 1
+number_components = 2
 
 
 path_explainedVariance = os.path.join(basePath, 'PCA_variance/dict_explainedVariance.json') # be aware that the folder should already exist!
@@ -84,26 +85,30 @@ def pca_embedding(pcd, n_components=3):
 
 def farthest_point_sampling(pcd, n_samples):
 
+    sampled_pcd = copy.deepcopy(pcd)
+
     points = np.asarray(pcd.points)
     colors = np.asarray(pcd.colors)
     n_points = points.shape[0]
+
+    if n_points > n_samples:
     
-    sampled_indices = np.zeros(n_samples, dtype=int)
-    sampled_indices[0] = np.random.randint(n_points) # randomly select the first point
+        sampled_indices = np.zeros(n_samples, dtype=int)
+        sampled_indices[0] = np.random.randint(n_points) # randomly select the first point
 
-    distances = np.full(n_points, np.inf)
+        distances = np.full(n_points, np.inf)
 
-    for i in range(1, n_samples):
-        current_point = points[sampled_indices[i - 1]]
-        distances = np.minimum(distances, np.linalg.norm(points - current_point, axis=1))
-        sampled_indices[i] = np.argmax(distances) # select the farthest point
+        for i in range(1, n_samples):
+            current_point = points[sampled_indices[i - 1]]
+            distances = np.minimum(distances, np.linalg.norm(points - current_point, axis=1))
+            sampled_indices[i] = np.argmax(distances) # select the farthest point
 
-    # Create a new point cloud from the sampled points
-    sampled_points = points[sampled_indices]
-    sampled_colors = colors[sampled_indices]
-    sampled_pcd = o3d.geometry.PointCloud()
-    sampled_pcd.points = o3d.utility.Vector3dVector(sampled_points)
-    sampled_pcd.colors = o3d.utility.Vector3dVector(sampled_colors)
+        # Create a new point cloud from the sampled points
+        sampled_points = points[sampled_indices]
+        sampled_colors = colors[sampled_indices]
+        sampled_pcd = o3d.geometry.PointCloud()
+        sampled_pcd.points = o3d.utility.Vector3dVector(sampled_points)
+        sampled_pcd.colors = o3d.utility.Vector3dVector(sampled_colors)
 
     return sampled_pcd
 
@@ -238,14 +243,19 @@ sceneGraph_b.populate_SceneGraph(path_plyFile_b, path_distanceMatrix = path_dist
 
 
 
+
+
+
 pcd_a = sceneGraph_a.get_pointCloud(objectID_a, wantVisualisation=True)
 pcd_b = sceneGraph_b.get_pointCloud(objectID_b, wantVisualisation=True)
 
 
 
-transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False) # a downsampling is performed internally to compute the matrix
+transformationMatrix = get_transformationMatrix(pcd_a, pcd_b, seeRenderings = False)
 pcd_b.transform(transformationMatrix)
 o3d.visualization.draw_geometries([pcd_a, pcd_b])
+
+
 
 
 # Compute the embeddings; cosine similarity as a metric
@@ -280,41 +290,8 @@ print("Average Cosine Similarity:", average_similarity)
 
 
 
-
-
-
-# cos_sim_min = np.max(cos_sim, axis=1) # get the maximum value across each row
-# average_similarity = np.mean(cos_sim_min)
-# print("Average Cosine Similarity:", average_similarity)
-
-
-
-
-
-
-
-
-
-# mean_emb_0 = np.mean(emb_0, axis=0)
-# mean_emb_1 = np.mean(emb_1, axis=0)
-# distance = np.linalg.norm(mean_emb_0 - mean_emb_1)
-# print(distance)
-
-
-
-
-
-# Euclidean distance
-
-
-
 # Chamfer distance
 
-# Hausdorff Distance
-
-# Wasserstein Distance
-
-# Kolmogorov-Smirnov (K-S) test
 
 
 # TODO: downsampling
