@@ -1,6 +1,7 @@
 # environment: sceneGraphs_groundTruth_Replica
 
-'''This script enquires about the importance of the PCA components. It generates and saves a plots (given the frl apartment) showing the importance of each component in the PCA.
+'''This script enquires about the importance of the PCA components. It generates a dictionary with all the information (on the 6 apartments)
+Given the key, saves a plot of a frl apartment showing the importance of each component in the PCA.
 The importance is given by averaging the explained variance across all the instances in the analysed frl apartment.'''
 
 import os
@@ -12,7 +13,8 @@ import open3d as o3d
 import time
 import numpy as np
 import json
-from PCA import pca_embedding # local file
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from SceneGraph import SceneGraph # local file
 
 
@@ -21,69 +23,103 @@ from SceneGraph import SceneGraph # local file
 #
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
-path_save_data = os.path.join(basePath, 'PCA_variance') # will be created it does not exist
 
-path_explainedVariance = os.path.join(path_save_data, '/dict_explainedVariance.json') # be aware that the folder should already exist!
-needDictExplainedVariance = True
-savePlot = True # save the plot of the explained variance
+needDictExplainedVariance = True # considers all the frl apartments
 key_frl_apartment = '0'
+savePlot = True # save the plot of the explained variance of a specific frl apartment
+
+
+#
+# Automatic variables
+#
+
+path_save_data = os.path.join(basePath, 'PCA_variance') # will be created it does not exist
+path_explainedVariance = os.path.join(path_save_data, 'dict_explainedVariance.json')
+
+# Get the paths of the scene graphs
+
+list_paths_sceneGraphs = [os.path.join(basePath, 'frl_apartment_0/Scene_Graphs/sceneGraph_GT'),
+                    os.path.join(basePath, 'frl_apartment_1/Scene_Graphs/sceneGraph_GT'),
+                    os.path.join(basePath, 'frl_apartment_2/Scene_Graphs/sceneGraph_GT'),
+                    os.path.join(basePath, 'frl_apartment_3/Scene_Graphs/sceneGraph_GT'),
+                    os.path.join(basePath, 'frl_apartment_4/Scene_Graphs/sceneGraph_GT'),
+                    os.path.join(basePath, 'frl_apartment_5/Scene_Graphs/sceneGraph_GT'),]
+
+
 
 
 #
 # Do the computations. Statistics: how much is the variance explained by the components of the PCA?
 #
 
+def pca_embedding(pcd, n_components):
+    points = np.asarray(pcd.points)
+    colors = np.asarray(pcd.colors)
+    points_with_colors = np.hstack((points, colors))
+    centered_points_with_colors = points_with_colors - np.mean(points_with_colors, axis=0) # substract the mean as required by PCA
+    pca = PCA(n_components)
+    embedding = pca.fit_transform(centered_points_with_colors)
+
+    #print("Explained variance ratio by each PCA component: ", pca.explained_variance_ratio_)
+
+    return pca, embedding
+
+
+
+
 os.makedirs(path_save_data, exist_ok=True)
 
-def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
-    dict_explainedVariance = {}
-    for index, graph in enumerate(list_sceneGraphs):
-        start_time = time.time()
 
-        dict_explainedVariance[index] = {}
+# Compute the distionary
+
+if needDictExplainedVariance:
+
+    # Load the scene graphs
+
+    list_sceneGraphs = []
+
+    for path in list_paths_sceneGraphs:
+        graph = SceneGraph()
+        graph.load_SceneGraph(path)
+        list_sceneGraphs.append(graph)
+
+
+    def compute_and_save_dictExplainedVariance(list_sceneGraphs): # for ground truth
+        dict_explainedVariance = {}
+        for index, graph in enumerate(list_sceneGraphs):
+            start_time = time.time()
+
+            dict_explainedVariance[index] = {}
+            
+            for objectId in graph.nodes.keys():
+                if graph.nodes[objectId]['label'] != 'None':
+                    pcd_object = o3d.geometry.PointCloud()
+                    pcd_object.points = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_geometric']))
+                    pcd_object.colors = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_color']) / 255)
+                    pca, _ = pca_embedding(pcd_object, n_components=6)
+                    dict_explainedVariance[index][objectId] = list(pca.explained_variance_ratio_)
+
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
         
-        for objectId in graph.nodes.keys():
-            if graph.nodes[objectId]['label'] != 'None':
-                pcd_object = o3d.geometry.PointCloud()
-                pcd_object.points = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_geometric']))
-                pcd_object.colors = o3d.utility.Vector3dVector(np.array(graph.nodes[objectId]['points_color']) / 255)
-                pca, _ = pca_embedding(pcd_object, n_components=6)
-                dict_explainedVariance[index][objectId] = list(pca.explained_variance_ratio_)
+        with open(path_explainedVariance, 'w') as json_file:
+            json.dump(dict_explainedVariance, json_file, indent=4)
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time:.6f} seconds")
-
-    
-    with open(path_explainedVariance, 'w') as json_file:
-        json.dump(dict_explainedVariance, json_file, indent=4)
+    compute_and_save_dictExplainedVariance(list_sceneGraphs)
 
 
-
-sceneGraph_a = SceneGraph()
-sceneGraph_a.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_0/frl_apartment_0_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_0/list_instances.txt'))
-sceneGraph_b = SceneGraph()
-sceneGraph_b.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_1/frl_apartment_1_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_1/list_instances.txt'))
-sceneGraph_c = SceneGraph()
-sceneGraph_c.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_2/frl_apartment_2_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_2/list_instances.txt'))
-sceneGraph_d = SceneGraph()
-sceneGraph_d.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_3/frl_apartment_3_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_3/list_instances.txt'))
-sceneGraph_e = SceneGraph()
-sceneGraph_e.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_4/frl_apartment_4_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_4/list_instances.txt'))
-sceneGraph_f = SceneGraph()
-sceneGraph_f.populate_SceneGraph(os.path.join(basePath, 'frl_apartment_5/frl_apartment_5_withIDs.ply'), path_listInstances=os.path.join(basePath, 'frl_apartment_5/list_instances.txt'))
-
-compute_and_save_dictExplainedVariance([sceneGraph_a, sceneGraph_b, sceneGraph_c, sceneGraph_d, sceneGraph_e, sceneGraph_f])
+    # TIMINGS:
+    # frl_apartment_0: 1.455555 seconds
+    # frl_apartment_1: 1.411105 seconds
+    # frl_apartment_2: 1.505795 seconds
+    # frl_apartment_3: 1.525883 seconds
+    # frl_apartment_4: 1.434572 seconds
+    # frl_apartment_5: 1.389904 seconds
 
 
-# TIMINGS:
-# frl_apartment_0: 1.477730 seconds
-# frl_apartment_1: 1.504907 seconds
-# frl_apartment_2: 1.444942 seconds
-# frl_apartment_3: 1.535040 seconds
-# frl_apartment_4: 1.534008 seconds
-# frl_apartment_5: 1.371782 seconds
-
+# Save the plot of one frl apartment
 
 if savePlot:
 
@@ -98,7 +134,6 @@ if savePlot:
         for subkey, subvalue in value.items():
             all_variance_lists[key].append(subvalue)
 
-    key_frl_apartment = '5'
     data = all_variance_lists[key_frl_apartment]
 
     data_array = np.array(data)

@@ -4,19 +4,8 @@ import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 
 
-
-
-
-
-
-
 pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_2/scannet200_mask3d_1/mesh_labelled.ply')
 o3d.visualization.draw_geometries([pcd_a])
-
-
-
-
-
 
 
 

@@ -22,8 +22,7 @@ from sklearn.decomposition import PCA
 import open3d as o3d
 from sklearn.metrics.pairwise import cosine_similarity
 import time
-import json
-import matplotlib.pyplot as plt
+
 
 
 #
@@ -75,7 +74,7 @@ path_associationsObjectIdIndex_b = os.path.join(basePath, frl_apartment_b, 'asso
 #
 
 # Function to compute PCA embedding of a point cloud
-def pca_embedding(pcd, n_components=3):
+def pca_embedding(pcd, n_components):
     points = np.asarray(pcd.points)
     colors = np.asarray(pcd.colors)
     points_with_colors = np.hstack((points, colors))
