@@ -405,6 +405,8 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
                             positions = transform_points(positions_vertices, centroid),
                             colors = color_vertices,
                             visible=False)
+            
+        #v.save('sceneGraph_PyViz3D')
 
         v.save(folder_path)
 

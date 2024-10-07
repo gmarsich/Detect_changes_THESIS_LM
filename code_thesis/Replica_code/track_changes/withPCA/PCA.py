@@ -37,10 +37,10 @@ nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker o
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['10', '4', '71', '77'] # to analyse
+objectIDs_a = ['10', '4', '71'] # to analyse
 objectIDs_b = ['27', '103', '136', '34'] # to analyse
 
-list_IDs_a = ['10', '4', '71', '77', '45'] # to visualise
+list_IDs_a = ['10', '4', '71'] # to visualise
 list_IDs_b = ['27', '103', '136', '34'] # to visualise
 
 threshold_edges = 2 # in the scene graph, to see the edges
@@ -64,8 +64,8 @@ os.makedirs(path_save_b, exist_ok=True)
 #
 
 number_components = 2
-translation_threshold = 0.2 # in meters
-rotation_threshold = 25 # in degrees
+translation_threshold = 0.25 # in meters
+rotation_threshold = 20 # in degrees
 threshold_correpondence = 0.08
 
 
@@ -127,9 +127,19 @@ _, list_centroids_b, list_colors_vertices_b, list_labels_b, PCDs_b, _, list_pair
 
 
 deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_a, list_colors_vertices_a, list_labels_a, list_pairs_edges_a, PCDs_a, path_save_a, wantLabels = True)
-time.sleep(4)
 deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_b, list_colors_vertices_b, list_labels_b, list_pairs_edges_b, PCDs_b, path_save_b, wantLabels = True)
 
+
+print('list_newID_added:')
+print(list_newID_added)
+print('\nlist_oldID_removed:')
+print(list_oldID_removed)
+print('\ndict_oldIDnewID_moved:')
+print(dict_oldIDnewID_moved)
+print('\ndict_oldIDnewID_still:')
+print(dict_oldIDnewID_still)
+print('\ndict_corr_oldNew_dist:')
+print(dict_corr_oldNew_dist)
 
 
 

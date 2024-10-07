@@ -136,15 +136,13 @@ def get_associations(threshold_correpondence, translation_threshold, rotation_th
 
         dict_corr_oldNew_dist[dict_associationsIndexObjectID_a[row_index]] = {}
         dict_corr_oldNew_dist[dict_associationsIndexObjectID_a[row_index]][dict_associationsIndexObjectID_b[col_index]] = min
-        
+
         # Check if the instance stayed still of if it was moved
 
         movement_matrix = np.array(dict_transformationMatrices[row_index][col_index])
 
         translation = np.sqrt((movement_matrix[0, 3])**2 + (movement_matrix[1, 3])**2 + (movement_matrix[2, 3])**2)
         rotation = np.rad2deg(np.arccos((np.trace(movement_matrix[:3][:3]) - 1) / 2)) # from https://en.wikipedia.org/wiki/Rotation_matrix
-
-
 
         if translation < translation_threshold and rotation < rotation_threshold: # the instance remained still
             dict_oldIDnewID_still[dict_associationsIndexObjectID_a[row_index]] = dict_associationsIndexObjectID_b[col_index]
