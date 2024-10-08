@@ -37,11 +37,11 @@ nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker o
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['10', '4', '71'] # to analyse
-objectIDs_b = ['27', '103', '136', '34'] # to analyse
+objectIDs_a = ['10', '4', '71', '77', '45', '120'] # to analyse
+objectIDs_b = ['27', '103', '136', '34', '127', '89'] # to analyse
 
-list_IDs_a = ['10', '4', '71'] # to visualise
-list_IDs_b = ['27', '103', '136', '34'] # to visualise
+list_IDs_a = ['10', '4', '71', '77', '45', '120', '30', '231'] # to visualise
+list_IDs_b = ['27', '103', '136', '34', '127', '89', '121'] # to visualise
 
 threshold_edges = 2 # in the scene graph, to see the edges
 
@@ -112,7 +112,7 @@ list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_sti
 
 end_time = time.time()
 elapsed_time = end_time - start_time
-print(f"Elapsed time: {elapsed_time:.6f} seconds")
+print(f"\n\nElapsed time: {elapsed_time:.6f} seconds")
 
 
 
@@ -130,7 +130,7 @@ deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_a, list_colors_ve
 deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_b, list_colors_vertices_b, list_labels_b, list_pairs_edges_b, PCDs_b, path_save_b, wantLabels = True)
 
 
-print('list_newID_added:')
+print('\nlist_newID_added:')
 print(list_newID_added)
 print('\nlist_oldID_removed:')
 print(list_oldID_removed)
@@ -144,6 +144,9 @@ print(dict_corr_oldNew_dist)
 
 
 
+# IMPORTANT:
+# After you obtained the scene graphs, follow the instructions that appear in the terminal to visualise them. You should act in the sceneGraphs_groundTruth_Replica environment.
+# Additionally, you may need to use two different browsers (e.g., Chrome and Edge), one for a scene graph and the other for the other rendering
 
 
 
