@@ -23,7 +23,7 @@ else:
         print("Keys: %s" % list(file.keys()))
 
         # Access the specific dataset
-        dataset_name = 'dataset'  # TODO TOSET: change depenting on your hdf5 file
+        dataset_name = 'dataset'  # TODO TOSET: change depending on your hdf5 file
         if dataset_name in file:
             dataset = file[dataset_name]
             

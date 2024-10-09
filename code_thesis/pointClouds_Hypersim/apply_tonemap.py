@@ -13,12 +13,10 @@ def apply_tonemapping(rgb_color):
     brightness_nth_percentile_desired = 0.8       # ...to be this bright after scaling
 
     brightness = 0.3 * rgb_color[:, :, 0] + 0.59 * rgb_color[:, :, 1] + 0.11 * rgb_color[:, :, 2]  # "CCIR601 YIQ" method for computing brightness
-
     brightness_nth_percentile_current = np.percentile(brightness, percentile)
-
     scale = np.power(brightness_nth_percentile_desired, inv_gamma) / brightness_nth_percentile_current
-
     rgb_color_tm = np.power(np.maximum(scale * rgb_color, 0), gamma)
+
     return rgb_color_tm
 
 def apply_tonemapping_to_hdf5(in_hdf5_file, out_hdf5_file):
@@ -29,10 +27,8 @@ def apply_tonemapping_to_hdf5(in_hdf5_file, out_hdf5_file):
         print(f"WARNING: Could not load HDF5 file: {in_hdf5_file} - {e}")
         return
 
-    # Apply tonemapping to the RGB data
     tonemapped_rgb = apply_tonemapping(rgb_color)
 
-    # Save tonemapped data to new HDF5 file
     with h5py.File(out_hdf5_file, "w") as f:
         f.create_dataset("tonemapped_rgb", data=tonemapped_rgb)
 
