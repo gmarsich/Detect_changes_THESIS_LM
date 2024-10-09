@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 
 
-pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Segmentation/mesh_semantic.ply_81.ply')
-norm = pcd_a.normals
-print(norm[0])
+pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/PointClouds_Hypersim/point_cloud_DEPTHS_TONEMAP_ai_001_001_cam_00_METERS.ply')
 o3d.visualization.draw_geometries([pcd_a])
 
 

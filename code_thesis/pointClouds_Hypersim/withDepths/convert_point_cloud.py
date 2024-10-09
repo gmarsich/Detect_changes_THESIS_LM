@@ -1,13 +1,13 @@
 # environment: thesisPlayground_pointClouds_env
 
 '''
-The point cloud generated starting from depths is in asset units and with the following system of camera coordinates:
+The point cloud generated starting from depths is in asset units. 
 
+Images were given with this convention:
 "Our convention for storing camera orientations is that the camera's positive x-axis points right,
 the positive y-axis points up, and the positive z-axis points away from where the camera is looking."
 (https://github.com/apple/ml-hypersim)
 
-However, in world coordinates the z axis points up (i.e., inverse of gravity).
 '''
 
 import numpy as np
