@@ -2,10 +2,24 @@ import open3d as o3d
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
+from Replica_code.SceneGraph import SceneGraph
+
+path_0 = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs/sceneGraph_LabelMaker'
+path_save = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs'
+list_IDs_0 = [x for x in range(128)]
+
+graph_0 = SceneGraph()
+graph_0.load_SceneGraph(path_0)
+list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges = graph_0.get_visualisation_SceneGraph(list_IDs_0, threshold=1, color = 'absoluteColor')
+graph_0.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = False)
 
 
-pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply')
-o3d.visualization.draw_geometries([pcd_a])
+
+
+
+
+# pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply')
+# o3d.visualization.draw_geometries([pcd_a])
 
 
 

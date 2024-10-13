@@ -331,7 +331,7 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
 
         # Get the edges
 
-        list_edges = []
+        #list_edges = []
         list_pairs_edges = []
         for i in range(len(list_IDs)):
             for j in range(i + 1, len(list_IDs)):
@@ -342,11 +342,11 @@ class SceneGraph(): # possible attributes: self.complete_pointCloud, self.nodes,
                     centroid_i = self.nodes[str(list_IDs[i])]['centroid']
                     centroid_j = self.nodes[str(list_IDs[j])]['centroid']
                     list_pairs_edges.append([centroid_i, centroid_j])
-                    current_edge = create_cylinder_between_points(centroid_i, centroid_j, color = np.array([0, 0, 0]) / 255) # TOSET you can set a different color for the edges
-                    list_edges.append(current_edge)
+                    #current_edge = create_cylinder_between_points(centroid_i, centroid_j, color = np.array([0, 0, 0]) / 255) # TOSET you can set a different color for the edges
+                    #list_edges.append(current_edge)
 
 
-        return list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges
+        return list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges
 
     # OK
     def draw_SceneGraph_PyViz3D(self, list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True):
@@ -522,8 +522,8 @@ if __name__ == '__main__':
 
     # deepcopy_old_SceneGraph, deepcopy_new_SceneGraph = update_changes(graph_0, graph_1, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still)
 
-    # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_0, threshold=5, color = 'withUpdates')
+    # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_0, threshold=5, color = 'withUpdates')
     # deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True)
 
-    # # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_edges, list_pairs_edges = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_1, threshold=5, color = 'withUpdates')
+    # # list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_1, threshold=5, color = 'withUpdates')
     # # deepcopy_new_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = True)
