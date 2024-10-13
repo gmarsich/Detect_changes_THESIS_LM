@@ -1,3 +1,5 @@
+# COMMENTED
+
 ''' Class SceneGraph: given as input a .ply with this header:
 ply
 format ascii 1.0

@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica
 
 '''Collection of functions useful to get the segmentation ground truth of a Replica scene.'''

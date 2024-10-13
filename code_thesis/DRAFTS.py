@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
 
 
-pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/PointClouds_Hypersim/point_cloud_DEPTHS_TONEMAP_ai_001_001_cam_00_METERS.ply')
+pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply')
 o3d.visualization.draw_geometries([pcd_a])
 
 
@@ -75,7 +75,6 @@ o3d.visualization.draw_geometries([pcd_a])
 
 # colored_point_cloud = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_0/mesh.ply')
 # o3d.visualization.draw_geometries([colored_point_cloud])
-
 
 
 

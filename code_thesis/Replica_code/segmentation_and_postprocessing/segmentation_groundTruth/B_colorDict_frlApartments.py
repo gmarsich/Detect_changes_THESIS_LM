@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica DONE
 
 '''With this script I want to get a file colorDict_frlApartments.json that is a dictionary containing all the possible labels that appear

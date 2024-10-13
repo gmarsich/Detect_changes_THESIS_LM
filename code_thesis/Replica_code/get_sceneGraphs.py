@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica
 
 '''In this script I save a scene graph given the frl apartment. The files may come from the ground truth or from LabelMaker.'''

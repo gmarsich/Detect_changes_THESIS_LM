@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica DONE
 
 '''This script performs an alignment of the frl apartments in the Replica dataset, because frl apartments don't have a common reference system even
