@@ -14,7 +14,7 @@ data :
   pred_subfix     : inseg.ply
 
 preprocess :
-  pc_resolutions      : [4000]
+  pc_resolutions      : [64, 128, 256, 512]
   subscenes_per_scene : 2 # GAIA initially it was 7, but for the work I need to do with Replica I have to try with 2
   filter_segment_size : 512
   min_obj_points      : 50 # GAIA was 50, but I tried to modify it

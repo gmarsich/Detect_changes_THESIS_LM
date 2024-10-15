@@ -2,23 +2,75 @@ import open3d as o3d
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import KDTree
+import os
 from Replica_code.SceneGraph import SceneGraph
+import pickle
 
-path_0 = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs/sceneGraph_LabelMaker'
-path_save = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs'
-list_IDs_0 = [x for x in range(128)]
+path_a = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_4/Scene_Graphs/sceneGraph_GT'
+sceneGraph_a = SceneGraph()
+sceneGraph_a.load_SceneGraph(path_a)
 
-graph_0 = SceneGraph()
-graph_0.load_SceneGraph(path_0)
-list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges = graph_0.get_visualisation_SceneGraph(list_IDs_0, threshold=1, color = 'absoluteColor')
-graph_0.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = False)
-
-
+pcd_a = sceneGraph_a.get_pointCloud('148')
+pcd_complete_a = sceneGraph_a.complete_pointCloud.paint_uniform_color([1, 0, 0])
+o3d.visualization.draw_geometries([pcd_complete_a, pcd_a])
 
 
 
+# path_a = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs/sceneGraph_GT'
+# sceneGraph_a = SceneGraph()
+# sceneGraph_a.load_SceneGraph(path_a)
 
-# pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/data2TB/DATASETS/Replica/frl_apartment_1/mesh.ply')
+# pcd_a = sceneGraph_a.get_pointCloud('4')
+# pcd_complete_a = sceneGraph_a.complete_pointCloud.paint_uniform_color([1, 0, 0])
+# o3d.visualization.draw_geometries([pcd_complete_a, pcd_a])
+
+
+
+# path_b = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs/sceneGraph_LabelMaker'
+# sceneGraph_b = SceneGraph()
+# sceneGraph_b.load_SceneGraph(path_b)
+
+# pcd_b = sceneGraph_b.get_pointCloud('124')
+# pcd_complete_b = sceneGraph_b.complete_pointCloud.paint_uniform_color([1, 0, 0])
+# o3d.visualization.draw_geometries([pcd_complete_b, pcd_b])
+
+
+
+
+
+
+
+
+
+
+
+
+# path_0 = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs/sceneGraph_LabelMaker'
+# path_save = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/Scene_Graphs'
+# list_IDs_0 = [x for x in range(128)]
+
+# graph_0 = SceneGraph()
+# graph_0.load_SceneGraph(path_0)
+# list_vertices, list_centroids, list_colors_vertices, list_labels, PCDs, list_pairs_edges = graph_0.get_visualisation_SceneGraph(list_IDs_0, threshold=1, color = 'absoluteColor')
+# graph_0.draw_SceneGraph_PyViz3D(list_centroids, list_colors_vertices, list_labels, list_pairs_edges, PCDs, path_save, wantLabels = False)
+
+
+
+
+
+# path = '/local/home/gmarsich/Desktop/steps_3RScan/3RScan_original_allScenes/out/files/orig/data/754e884c-ea24-2175-8b34-cead19d4198d_0.pkl'
+
+# with open(path, 'rb') as file:
+#     data = pickle.load(file)
+
+# # Print or work with the data
+# print(data.keys())
+
+
+
+
+
+# pcd_a = o3d.io.read_point_cloud('/local/home/gmarsich/Desktop/DATA/3RScan/4acaebcc-6c10-2a2a-858b-29c7e4fb410d/labels.instances.annotated.v2.ply')
 # o3d.visualization.draw_geometries([pcd_a])
 
 

@@ -188,14 +188,14 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
 
 
 
-    path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner_toOrigin/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
-    path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
-    path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner_toOrigin/data.npy' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
-    pc_resolution = 4000
-    objectIDs_src = [34, 39, 27, 103, 38, 164] # 1: # bike, bike, ceiling, sofa, cup, sink
-    objectIDs_ref = [77, 93, 10, 4, 66, 59] # 0: bike, bike, ceiling, sofa, mat, book
+    path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
+    path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
+    path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
+    pc_resolution = 128
+    objectIDs_src = [34, 39, 27, 103, 38, 164]
+    objectIDs_ref = [77, 93, 10, 4, 66, 59]
     
-    path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes_toOrigin.json'
+    path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
 
     new_data_dict = preprocessing.replica_toOrigin.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
     tester = AlignerRegTester(cfg, parser, new_data_dict)

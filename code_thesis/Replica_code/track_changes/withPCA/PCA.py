@@ -32,20 +32,20 @@ start_time = time.time()
 # Variables
 #
 
-frl_apartment_a = 'frl_apartment_0'
-frl_apartment_b = 'frl_apartment_1'
+frl_apartment_a = 'frl_apartment_4'
+frl_apartment_b = 'frl_apartment_5'
 
 nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker or _GT
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['10', '4', '71', '77', '45', '120'] # to analyse
-objectIDs_b = ['27', '103', '136', '34', '127', '89'] # to analyse
+objectIDs_a = ['96', '186', '202', '137', '148', '222'] # refrigerator, sofa, ceiling, bike, bike, table
+objectIDs_b = ['200', '21', '6', '185', '143', '134'] # refrigerator, sofa, ceiling, bike, table, cabinet
 
-list_IDs_a = [x for x in 233] # to visualise # TODO
-list_IDs_b = [x for x in 221] # to visualise # TODO
+list_IDs_a = objectIDs_a # to visualise # TODO
+list_IDs_b = objectIDs_b # to visualise # TODO
 
-threshold_edges = 2 # in the scene graph, to see the edges
+threshold_edges = 0.7 # in the scene graph, to see the edges
 
 path_save_a = os.path.join(basePath, frl_apartment_a, 'sceneGraphs_changes') # if it does not exist, the folder will be created
 path_save_b = os.path.join(basePath, frl_apartment_b, 'sceneGraphs_changes') # if it does not exist, the folder will be created
@@ -124,8 +124,8 @@ print(f"\n\nElapsed time: {elapsed_time:.6f} seconds")
 
 deepcopy_old_SceneGraph, deepcopy_new_SceneGraph = update_changes(sceneGraph_a, sceneGraph_b, list_newID_added, list_oldID_removed, dict_oldIDnewID_moved, dict_oldIDnewID_still)
 
-_, list_centroids_a, list_colors_vertices_a, list_labels_a, PCDs_a, _, list_pairs_edges_a = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_a, threshold_edges, color = 'withUpdates')
-_, list_centroids_b, list_colors_vertices_b, list_labels_b, PCDs_b, _, list_pairs_edges_b = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_b, threshold_edges, color = 'withUpdates')
+_, list_centroids_a, list_colors_vertices_a, list_labels_a, PCDs_a, list_pairs_edges_a = deepcopy_old_SceneGraph.get_visualisation_SceneGraph(list_IDs_a, threshold_edges, color = 'withUpdates')
+_, list_centroids_b, list_colors_vertices_b, list_labels_b, PCDs_b, list_pairs_edges_b = deepcopy_new_SceneGraph.get_visualisation_SceneGraph(list_IDs_b, threshold_edges, color = 'withUpdates')
 
 
 deepcopy_old_SceneGraph.draw_SceneGraph_PyViz3D(list_centroids_a, list_colors_vertices_a, list_labels_a, list_pairs_edges_a, PCDs_a, path_save_a, wantLabels = True)
