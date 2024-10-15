@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica
 
 '''This script enquires about the importance of the PCA components. It generates a dictionary with all the information (on the 6 apartments)
@@ -70,7 +72,7 @@ def pca_embedding(pcd, n_components):
 os.makedirs(path_save_data, exist_ok=True)
 
 
-# Compute the distionary
+# Compute the dictionary
 
 if needDictExplainedVariance:
 

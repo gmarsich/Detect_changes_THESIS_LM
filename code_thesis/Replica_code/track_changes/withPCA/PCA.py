@@ -1,3 +1,5 @@
+# COMMENTED
+
 # environment: sceneGraphs_groundTruth_Replica
 
 '''In input it takes 2 SceneGraph objects and for each one a list of IDs of instances that one wants to compare.
@@ -40,8 +42,8 @@ basePath = '/local/home/gmarsich/Desktop/data_Replica'
 objectIDs_a = ['10', '4', '71', '77', '45', '120'] # to analyse
 objectIDs_b = ['27', '103', '136', '34', '127', '89'] # to analyse
 
-list_IDs_a = ['10', '4', '71', '77', '45', '120', '30', '231'] # to visualise
-list_IDs_b = ['27', '103', '136', '34', '127', '89', '121'] # to visualise
+list_IDs_a = [x for x in 233] # to visualise # TODO
+list_IDs_b = [x for x in 221] # to visualise # TODO
 
 threshold_edges = 2 # in the scene graph, to see the edges
 

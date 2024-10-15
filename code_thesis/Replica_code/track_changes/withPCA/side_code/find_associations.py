@@ -1,3 +1,5 @@
+# COMMENTED
+
 '''This script provides some functions used by the PCA method.'''
 
 import numpy as np

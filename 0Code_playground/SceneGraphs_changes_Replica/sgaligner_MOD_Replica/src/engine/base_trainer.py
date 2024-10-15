@@ -6,6 +6,7 @@ from collections import OrderedDict
 import argparse
 import sys
 sys.path.append('..')
+sys.path.append(osp.abspath(osp.join(osp.dirname(__file__), '..', '..')))
 import json
 
 import torch
