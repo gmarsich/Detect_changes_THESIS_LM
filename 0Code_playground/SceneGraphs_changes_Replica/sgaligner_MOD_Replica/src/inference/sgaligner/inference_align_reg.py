@@ -9,6 +9,7 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
 sys.path.append('.')
 sys.path.append('GeoTransformer')
+import time
 
 from engine.single_tester import SingleTester
 # from engine.registration_evaluator import RegistrationEvaluator # TODO
@@ -20,6 +21,7 @@ from configs import config, update_config
 from utils import alignment, common, point_cloud
 # from GeoTransformer.config import make_cfg as make_cfg_reg # GAIA seems not to be useful in this code
 import preprocessing.replica_toOrigin.D_create_new_dictionary
+
 
 class AlignerRegTester(SingleTester):
     def __init__(self, cfg, parser, new_data_dict):
@@ -174,6 +176,8 @@ def parse_args(args_list=None): # GAIA modified parse_args
 #     tester.run()
 
 def main(): # GAIA modified main, but does not work properly (the snapshot is not carried in the right way in the code). Had to play a trick in a piece of code (src/engine/base_tester.py)
+    start_time = time.time()
+    
     args_list = [
         '--config', '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_3RScan/configs/scan3r/scan3r_ground_truth.yaml',
         '--snapshot', '/local/home/gmarsich/Desktop/weights+files/point-epoch-50.pth.tar',
@@ -200,6 +204,10 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
     new_data_dict = preprocessing.replica_toOrigin.D_create_new_dictionary.get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)
     tester = AlignerRegTester(cfg, parser, new_data_dict)
     tester.run()
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"\n\nElapsed time: {elapsed_time:.6f} seconds")
 
 if __name__ == '__main__':
     main()
