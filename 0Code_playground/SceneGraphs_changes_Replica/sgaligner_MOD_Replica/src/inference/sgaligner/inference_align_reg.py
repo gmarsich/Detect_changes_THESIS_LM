@@ -191,13 +191,13 @@ def main(): # GAIA modified main, but does not work properly (the snapshot is no
 
 
 
+    path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
+    path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data.npy' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
+    path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
 
-    path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
-    path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
-    path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy' #'/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
-    pc_resolution = 128
-    objectIDs_src = [34, 39, 27, 103, 38, 164]
-    objectIDs_ref = [77, 93, 10, 4, 66, 59]
+    pc_resolution = 512
+    objectIDs_src = [16, 42, 188, 129, 201]
+    objectIDs_ref = [93, 9, 201, 38]
     
     path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
 

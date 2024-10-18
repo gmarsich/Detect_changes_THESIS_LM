@@ -6,13 +6,47 @@ import os
 from Replica_code.SceneGraph import SceneGraph
 import pickle
 
-path_a = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_4/Scene_Graphs/sceneGraph_GT'
-sceneGraph_a = SceneGraph()
-sceneGraph_a.load_SceneGraph(path_a)
 
-pcd_a = sceneGraph_a.get_pointCloud('148')
-pcd_complete_a = sceneGraph_a.complete_pointCloud.paint_uniform_color([1, 0, 0])
-o3d.visualization.draw_geometries([pcd_complete_a, pcd_a])
+
+
+def replace_indices_with_strings(tuples_list, objectIDs_a):
+    return [(objectIDs_a[i], objectIDs_a[j]) for i, j in tuples_list]
+
+# Example usage:
+objectIDs_a = ['96', '186', '202', '137', '148', '222', '200', '21', '6', '185', '143', '134'] 
+input_tuples = [(0, 6), (1, 7), (2, 8), (3, 9), (5, 10)]
+
+result = replace_indices_with_strings(input_tuples, objectIDs_a)
+print(result)
+
+
+
+
+
+
+
+
+
+
+
+# path_a = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/Scene_Graphs/sceneGraph_LabelMaker'
+# path_save_a = '/local/home/gmarsich/Desktop/'
+# sceneGraph_a = SceneGraph()
+# sceneGraph_a.load_SceneGraph(path_a)
+
+# # list_IDs_a = [x for x in range(128)] # TODO
+
+# # _, list_centroids_b, list_colors_vertices_b, list_labels_b, PCDs_b, list_pairs_edges_b = sceneGraph_a.get_visualisation_SceneGraph(list_IDs_a, threshold = 2, color = 'absoluteColor')
+
+# # sceneGraph_a.draw_SceneGraph_PyViz3D(list_centroids_b, list_colors_vertices_b, list_labels_b, list_pairs_edges_b, PCDs_b, path_save_a, wantLabels = True)
+
+
+
+
+
+# pcd_a = sceneGraph_a.get_pointCloud('11')
+# pcd_complete_a = sceneGraph_a.complete_pointCloud.paint_uniform_color([0.6, 0.6, 0.6])
+# o3d.visualization.draw_geometries([pcd_complete_a, pcd_a])
 
 
 

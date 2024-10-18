@@ -32,15 +32,15 @@ start_time = time.time()
 # Variables
 #
 
-frl_apartment_a = 'frl_apartment_4'
-frl_apartment_b = 'frl_apartment_5'
+frl_apartment_a = 'frl_apartment_0'
+frl_apartment_b = 'frl_apartment_1'
 
-nameSceneGraph = 'sceneGraph_GT' # depending if you basically have _LabelMaker or _GT
+nameSceneGraph = 'sceneGraph_LabelMaker' # depending if you basically have _LabelMaker or _GT
 
 basePath = '/local/home/gmarsich/Desktop/data_Replica'
 
-objectIDs_a = ['96', '186', '202', '137', '148', '222'] # refrigerator, sofa, ceiling, bike, bike, table
-objectIDs_b = ['200', '21', '6', '185', '143', '134'] # refrigerator, sofa, ceiling, bike, table, cabinet
+objectIDs_a = ['16', '9', '7', '12'] # ceiling, door, plant, couch
+objectIDs_b = ['9', '23', '6', '11', '7'] # ceiling , door, plant, armchair, couch # door not good segmenttaion, nor armchair
 
 list_IDs_a = objectIDs_a # to visualise # TODO
 list_IDs_b = objectIDs_b # to visualise # TODO
@@ -68,7 +68,7 @@ os.makedirs(path_save_b, exist_ok=True)
 number_components = 2
 translation_threshold = 0.25 # in meters
 rotation_threshold = 20 # in degrees
-threshold_correpondence = 0.08
+threshold_correpondence = 0.3
 
 
 

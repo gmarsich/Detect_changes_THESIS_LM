@@ -16,7 +16,7 @@ import json
 path_to_pkl_ref = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner/data_dict.pkl'
 path_to_pkl_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data_dict.pkl'
 path_to_npy_src = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/SGAligner/data.npy'
-pc_resolution = 4000
+pc_resolution = 512
 objectIDs_ref = [77, 93, 10, 4, 66, 59] # bike, bike, ceiling, sofa, mat, book
 objectIDs_src = [34, 39, 27, 103, 38, 164] # bike, bike, ceiling, sofa, cup, sink
 path_save_indexChanges = '/local/home/gmarsich/Desktop/data_Replica/index_changes.json'
@@ -93,6 +93,7 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     #
 
     new_data_dict['graph_per_obj_count'] = np.array([new_src_object_points.shape[0], new_ref_object_points.shape[0]])
+    print((new_data_dict['graph_per_obj_count'][0]))
 
     #
     # e1i and e2i + index_change.json
@@ -133,4 +134,4 @@ def get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_res
     return new_data_dict
 
 
-#new_data_dict = get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref)
+new_data_dict = get_new_dictionary(path_to_pkl_src, path_to_pkl_ref, path_to_npy_src, pc_resolution, objectIDs_src, objectIDs_ref, path_save_indexChanges)

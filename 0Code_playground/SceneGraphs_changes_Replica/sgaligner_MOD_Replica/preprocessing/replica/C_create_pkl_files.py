@@ -5,24 +5,19 @@ import numpy as np
 import os
 import json
 import pickle
-import open3d as o3d
+import time
 
-import sys
-sys.path.append('.')
 
-from utils import point_cloud
-import random
-from configs import config, update_config
-
+start_time = time.time()
 
 #
 # Variables
 #
 
-base_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_0/SGAligner'
+base_path = '/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/SGAligner'
+list_resolutions = [64, 128, 256, 512]
 path_to_npy = os.path.join(base_path, 'data.npy')
 path_objData = os.path.join(base_path, 'objects.json')
-path_config = '/local/home/gmarsich/Desktop/Thesis/0Code_playground/SceneGraphs_changes_Replica/sgaligner_MOD_Replica/configs/scan3r/scan3r_ground_truth.yaml'
 path_save_pkl_file = os.path.join(base_path, 'data_dict.pkl')
 
 
@@ -30,7 +25,40 @@ path_save_pkl_file = os.path.join(base_path, 'data_dict.pkl')
 # Build the dictionary data_dict
 #
 
-def get_data_dict(path_to_npy, obj_data, cfg):
+# side function. Taken from utils/point_cloud.py
+def pcl_farthest_sample(point, npoint, return_idxs = False):
+    """
+    Input:
+        xyz: pointcloud data, [N, D]
+        npoint: number of samples
+    Return:
+        centroids: sampled pointcloud index, [npoint, D]
+    """
+    N, D = point.shape
+    if N < npoint:
+        indices = np.random.choice(point.shape[0], npoint)
+        point = point[indices]
+        return point
+
+    xyz = point[:, :3]
+    centroids = np.zeros((npoint,))
+    distance = np.ones((N,)) * 1e10
+    farthest = np.random.randint(0, N)
+    for i in range(npoint):
+        centroids[i] = farthest
+        centroid = xyz[farthest, :]
+        dist = np.sum((xyz - centroid) ** 2, -1)
+        mask = dist < distance
+        distance[mask] = dist[mask]
+        farthest = np.argmax(distance, -1)
+    point = point[centroids.astype(np.int32)]
+
+    if return_idxs: return point, centroids.astype(np.int32)
+    return point
+
+
+
+def get_data_dict(path_to_npy, obj_data, list_resolutions):
     '''Get, for the dictionary:
         'obj_points' # something like: data_dict['object_points'][pc_resolution][i]
         'ei' # id (as in objects.json) of the instances in the scene
@@ -42,9 +70,8 @@ def get_data_dict(path_to_npy, obj_data, cfg):
 
     # Initialize the dictionary to store object points for different resolutions
     object_points = {}
-    for pc_resolution in cfg.preprocess.pc_resolutions:
+    for pc_resolution in list_resolutions:
         object_points[pc_resolution] = []
-        print(pc_resolution)
 
     # Extract object data from obj_data
     object_data = obj_data['objects'] # obj_data['objects'][i] is the i-th dictionary, with info on a specific instance. The value of count in that dictionary is i
@@ -74,7 +101,7 @@ def get_data_dict(path_to_npy, obj_data, cfg):
         
         # For each resolution, sample the object point cloud and store it
         for pc_resolution in object_points.keys():
-            obj_pcl = point_cloud.pcl_farthest_sample(obj_pcl, pc_resolution)
+            obj_pcl = pcl_farthest_sample(obj_pcl, pc_resolution)
             object_points[pc_resolution].append(obj_pcl) # object_points[pc_resolution][i] is refererred to the i-th instance in the objects.json
 
         # if object_id == 154:
@@ -96,13 +123,10 @@ def get_data_dict(path_to_npy, obj_data, cfg):
     return data_dict
 
 
-cfg = update_config(config, path_config, ensure_dir=False)
-random.seed(cfg.seed)
-
 with open(path_objData, 'r') as f:
     obj_data = json.load(f)
 
-data_dict = get_data_dict(path_to_npy, obj_data, cfg)
+data_dict = get_data_dict(path_to_npy, obj_data, list_resolutions)
 
 
 
@@ -113,3 +137,9 @@ data_dict = get_data_dict(path_to_npy, obj_data, cfg)
 with open(path_save_pkl_file, 'wb') as f:  # 'wb' is write binary mode
     pickle.dump(data_dict, f)
 
+
+
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")

@@ -3,14 +3,17 @@ This scripts takes in input a point cloud containing some information and create
 
 import numpy as np
 import os
+import time
 
+
+start_time = time.time()
 
 #
 # Variables
 #
 
-base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_1/"
-ply_file_path = os.path.join(base_path, "Segmentation/colored_mesh_with_IDs.ply")
+base_path = "/local/home/gmarsich/Desktop/data_Replica/frl_apartment_5/"
+ply_file_path = os.path.join(base_path, "frl_apartment_5_withIDs.ply")
 npy_file_path = os.path.join(base_path, "SGAligner/data.npy")  # where to save the .npy file
 
 
@@ -32,7 +35,7 @@ def read_ply_and_convert_to_npy(ply_file_path, npy_file_path):
             
             x, y, z = float(parts[0]), float(parts[1]), float(parts[2])
             red, green, blue = int(parts[3]), int(parts[4]), int(parts[5])
-            object_id = int(parts[6])
+            object_id = int(parts[9])
 
             data.append((x, y, z, red, green, blue, object_id))
 
@@ -44,3 +47,10 @@ def read_ply_and_convert_to_npy(ply_file_path, npy_file_path):
 
 
 read_ply_and_convert_to_npy(ply_file_path, npy_file_path)
+
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Elapsed time: {elapsed_time:.6f} seconds")
+
+
